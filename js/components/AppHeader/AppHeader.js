@@ -2,7 +2,9 @@ import React from 'react';
 
 class AppHeader extends React.Component {
   render() {
-    return <header className="titlebar">Header</header>;
+    return <div className="titlebar">
+      <h2>Buy Strings!</h2>
+      </div>;
   }
 }
 export default AppHeader;
