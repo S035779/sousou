@@ -1,0 +1,18 @@
+@charset "utf-8";
+body,div,ul,ol,li,h1,h2,h3,p,article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section {
+  display: block;
+  margin: 0;
+  padding: 0;
+}
+ul,ol,li {
+  list-style: none;
+}
+img {
+  border: 0;
+  vertical-align: text-bottom;
+}
+h1,h2,h3 {
+  font-weight: normal;
+}
+
+/*# sourceMappingURL=common.css.map*/
