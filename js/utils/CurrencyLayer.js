@@ -35,7 +35,7 @@ class CurrencyLayer {
     return new Promise((resolve) => {
       net.get(url, (stat, head, body) => {
         if(stat !== 200) reject(body);
-        log.trace(stat, head, body);
+        //log.trace(stat, head, body);
         resolve(body);
       });
     });

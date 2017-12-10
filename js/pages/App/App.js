@@ -19,7 +19,6 @@ class App extends React.Component {
     const search = this.props.location.search.split('?');
     const { id, token } = std.decodeFormData(search[1]);
     AppAction.fetchPayment({ id, token });
-    AppAction.fetchCurrency({ id, token });
   }
 
   render() {

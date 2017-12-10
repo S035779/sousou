@@ -20,40 +20,39 @@ var encodeFormData = function(data) {
 
 (function(){
 
-'use strict';
+  'use strict';
 
-// 目印のaタグからパラメータとってきたら消す
-var atag  = document.getElementsByClassName('paypal-widget');
-var size  = atag[0].dataset.size;
-var option = {};
-option['token']  = atag[0].dataset.token;
-option['id']     = atag[0].dataset.id;
-atag[0].style.display = 'none';
+  // 目印のaタグからパラメータとってきたら消す
+  var atag  = document.getElementsByClassName('paypal-widget');
+  var size  = atag[0].dataset.size;
+  var option = {};
+  option['token']  = atag[0].dataset.token;
+  option['id']     = atag[0].dataset.id;
+  atag[0].style.display = 'none';
 
-var iframe = document.createElement('iframe');
-iframe.src = 'http://localhost:8080/' + size + '?'
-  + encodeFormData(option);
-switch(size) {
-  case 'small':
-    iframe.width = '640px';
-    iframe.height = '480px';
-    break;
-  case 'medium':
-    iframe.width = '800px';
-    iframe.height = '600px';
-    break;
-  case 'large':
-    iframe.width = '960px';
-    iframe.height = '720px';
-    break;
-}
-iframe.scrolling = 'no';
-iframe.frameBorder = 0;
-iframe.marginWidth = 0;
-iframe.marginHeight = 0;
-iframe.id = 'paypal-widget';
+  var iframe = document.createElement('iframe');
+  iframe.src = '/' + size + '?'
+    + encodeFormData(option);
+  switch(size) {
+    case 'small':
+      iframe.width = '640px';
+      iframe.height = '480px';
+      break;
+    case 'medium':
+      iframe.width = '800px';
+      iframe.height = '600px';
+      break;
+    case 'large':
+      iframe.width = '960px';
+      iframe.height = '720px';
+      break;
+  }
+  iframe.scrolling = 'no';
+  iframe.frameBorder = 0;
+  iframe.marginWidth = 0;
+  iframe.marginHeight = 0;
+  iframe.id = 'paypal-widget';
 
-// atagの隣にiframeを挿入
- atag[0].parentNode.insertBefore(iframe,atag[0]);
-
+  // atagの隣にiframeを挿入
+  atag[0].parentNode.insertBefore(iframe,atag[0]);
 })();

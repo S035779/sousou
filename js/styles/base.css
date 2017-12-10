@@ -14,4 +14,6 @@ img {
 h1,h2,h3 {
   font-weight: normal;
 }
-
+#paypal-button {
+  width: 480px;
+}

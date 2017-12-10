@@ -1,8 +1,5 @@
 var log = require('./logutils').logs;
 var std = require('./stdutils');
-/*
- * An 'netutils' module for Node.
- */
 
 /*
  * Simple HTTP GET request
@@ -14,7 +11,6 @@ var get = function(url, callback) {
     , path      = url.pathname
     , query     = url.query;
   if (query) path += '?' + query;
-
   var client = require('http');
   var req = client.get({
     host: hostname
@@ -28,13 +24,13 @@ var get = function(url, callback) {
     res.on('data', function(chunk) { body += chunk; });
     res.on('end', function() {
       switch (stat) {
-        case 200:
+        case 200: case 201: case 202: case 204:
           process.stdout.write('-');
-          if (callback) callback(stat, head, body);
+          if (callback) callback(null, head, body);
           break;
         case 400: case 401: case 403: case 404:
           log.error(`HTTP Request Failed. Status Code: ${stat}`);
-          if (callback) callback(stat, head, body);
+          if (callback) callback(new Error(body));
           break; 
         case 500: case 503:
           process.stdout.write('x');
@@ -44,22 +40,22 @@ var get = function(url, callback) {
         default:
           process.stdout.write('?');
           log.warn(`HTTP Request Failed. Status Code: ${stat}`);
-          if (callback) callback(stat, head, body);
+          if (callback) callback(new Error(body));
           break;
       }
     });
   });
-
   req.on('error', function(err) {
     log.error(`Problem with HTTP Request: ${err.code}`);
     log.trace(`${err.message}`);
     log.trace(`${err.stack}`);
+    if (callback) callback(new Error(body));
   });
 };
 module.exports.get = get;
 
 /*
- * Advanced HTTPS GET request
+ * HTTPS GET request
  */
 var get2 = function(url, callback) {  
   url = require('url').parse(url);
@@ -68,7 +64,6 @@ var get2 = function(url, callback) {
     , path      = url.pathname
     , query     = url.query;
   if (query) path += '?' + query;
-
   var client = require('https');
   var req = client.get({
     host: hostname
@@ -82,32 +77,32 @@ var get2 = function(url, callback) {
     res.on('data', function(chunk) { body += chunk; });
     res.on('end', function() {
       switch (stat) {
-        case 200:
+        case 200: case 201: case 202: case 204:
           process.stdout.write('-');
-          if (callback) callback(stat, head, body);
+          if (callback) callback(null, head, body);
           break;
         case 400: case 401: case 403: case 404:
           log.error(`HTTP Request Failed. Status Code: ${stat}`);
-          if (callback) callback(stat, head, body);
+          if (callback) callback(new Error(body));
           break; 
         case 500: case 503:
           process.stdout.write('x');
           log.warn(`HTTP Request Failed. Status Code: ${stat}`);
-          get(url, callback);
+          get2(url, callback);
           break;
         default:
           process.stdout.write('?');
           log.warn(`HTTP Request Failed. Status Code: ${stat}`);
-          if (callback) callback(stat, head, body);
+          if (callback) callback(new Error(body));
           break;
       }
     });
   });
-
   req.on('error', function(err) {
     log.error(`Problem with HTTP Request: ${err.code}`);
     log.trace(`${err.message}`);
     log.trace(`${err.stack}`);
+    if (callback) callback(new Error(body));
   });
 };
 module.exports.get2 = get2;
@@ -115,25 +110,21 @@ module.exports.get2 = get2;
 /*
  * Simple HTTP POST request with data as the request body
  */
-var post = function(url, data, callback) {
+var postData = function(url, body, callback) {
   url = require('url').parse(url);
   var hostname  = url.hostname
     , port      = url.port || 80
     , path      = url.pathname
     , query     = url.query;
   if (query) path += '?' + query;
-
   var type;
-  if (data == null) data = '';
-  if (data instanceof Buffer)
-    type = 'application/octet-stream';
-  else if (typeof data === 'string')
-    type = 'text/plain; charset=UTF-8';
-  else if (typeof data === 'object') {
-    data = require('querystring').stringify(data);
+  if (body == null) body = '';
+  if (body instanceof Buffer)          type = 'application/octet-stream';
+  else if (typeof body === 'string')   type = 'text/plain; charset=UTF-8';
+  else if (typeof body === 'object') {
+    body = require('querystring').stringify(body);
     type = 'application/x-www-form-urlencoded';
   }
-
   var client = require('http');
   var req = client.request({
     hostname: hostname,
@@ -142,7 +133,7 @@ var post = function(url, data, callback) {
     method: 'POST',
     headers: {
       'Content-Type': type,
-      'Content-Length': Buffer.byteLength(data)
+      'Content-Length': Buffer.byteLength(body)
     }
   }, function(res) {
     var stat = res.statusCode;
@@ -152,63 +143,69 @@ var post = function(url, data, callback) {
     res.on('data', function(chunk) { body += chunk; });
     res.on('end', function() {
       switch (stat) {
-        case 200:
+        case 200: case 201: case 202: case 204:
           process.stdout.write('-');
-          if (callback) callback(stat, head, body);
+          if (callback) callback(null, head, body);
           break;
         case 400: case 401: case 403: case 404:
           log.error(`HTTP Request Failed. Status Code: ${stat}`);
-          res.resume();
+          if (callback) callback(new Error(body));
           return; 
         case 500: case 503:
           process.stdout.write('x');
           log.warn(`HTTP Request Failed. Status Code: ${stat}`);
-          post(url, data, callback);
+          postData(url, body, callback);
           break;
         default:
           process.stdout.write('?');
           log.warn(`HTTP Request Failed. Status Code: ${stat}`);
-          if (callback) callback(stat, head, body);
+          if (callback) callback(new Error(body));
           break;
       }
     });
   });
-
   req.on('error', function(err) {
     log.error(`Problem with HTTP Request: ${err.code}`);
     log.trace(`${err.message}`);
     log.trace(`${err.stack}`);
+    if (callback) callback(new Error(body));
   });
-
-  req.write(data);
+  req.write(body);
   req.end();
 };
-module.exports.post = post;
+module.exports.postData = postData;
 
 /*
- * Advanced HTTPS POST request with data as the request body
+ * HTTPS POST request with urlencoded data as the request body
  */
-var post2 = function(url, headers, data, callback) {
+var postData2 = function(url, auth, body, callback) {
   url = require('url').parse(url);
   var hostname  = url.hostname
     , port      = url.port || 443
     , path      = url.pathname
     , query     = url.query;
   if (query) path += '?' + query;
-
   var type;
-  if (data == null) data = '';
-  if (data instanceof Buffer)
-    type = 'application/octet-stream';
-  else if (typeof data === 'string')
-    type = 'text/plain; charset=UTF-8';
-  else if (typeof data === 'object') {
-    data = require('querystring').stringify(data);
+  if (body == null) body = '';
+  if (body instanceof Buffer)         type = 'application/octet-stream';
+  else if (typeof body === 'string')  type = 'text/plain; charset=UTF-8';
+  else if (typeof body === 'object') {
+    body = require('querystring').stringify(body);
     type = 'application/x-www-form-urlencoded';
   }
-  headers['Content-Type'] =  type;
-  headers['Content-Length'] =  Buffer.byteLength(data);
-
+  var headers = {
+    'Accept':             'application/json'
+    , 'Accept-Language':  'ja_JP'
+    , 'Content-Length':   Buffer.byteLength(body)
+    , 'Content-Type':     type
+  };
+  if(auth && auth.hasOwnProperty('user') && auth.hasOwnProperty('pass')) {
+    headers['Authorization'] = 'Basic ' 
+      + std.encode_base64(auth.user + ':' : auth.pass);
+  } else if (auth && auth.hasOwnProperty('bearer')) {
+    headers['Authorization'] =' Bearer ' 
+      + auth.bearer;
+  }
   var client = require('https');
   var req = client.request({
     hostname: hostname,
@@ -224,38 +221,116 @@ var post2 = function(url, headers, data, callback) {
     res.on('data', function(chunk) { body += chunk; });
     res.on('end', function() {
       switch (stat) {
-        case 200:
+        case 200: case 201: case 202: case 204:
           process.stdout.write('-');
-          if (callback) callback(stat, head, body);
+          if (callback) callback(null, head, body);
           break;
         case 400: case 401: case 403: case 404:
           log.error(`HTTP Request Failed. Status Code: ${stat}`);
           log.trace(`Header:`, head);
           log.trace(`Body:`, body);
-          res.resume();
+          if (callback) callback(new Error(body));
           return; 
         case 500: case 503:
           process.stdout.write('x');
           log.warn(`HTTP Request Failed. Status Code: ${stat}`);
-          post(url, data, callback);
+          postData2(url, body, callback);
           break;
         default:
           process.stdout.write('?');
           log.warn(`HTTP Request Failed. Status Code: ${stat}`);
-          if (callback) callback(stat, head, body);
+          if (callback) callback(new Error(body));
           break;
       }
     });
   });
-
   req.on('error', function(err) {
     log.error(`Problem with HTTP Request: ${err.code}`);
     log.trace(`${err.message}`);
     log.trace(`${err.stack}`);
+    if (callback) callback(new Error(body));
   });
-
-  req.write(data);
+  req.write(body);
   req.end();
 };
-module.exports.post2 = post2;
+module.exports.postData2 = postData2;
 
+/*
+ * HTTPS POST request with json as the request body
+ */
+var postJson2 = function(url, auth, body, callback) {
+  url = require('url').parse(url);
+  var hostname  = url.hostname
+    , port      = url.port || 443
+    , path      = url.pathname
+    , query     = url.query;
+  if (query) path += '?' + query;
+  var type;
+  if (body == null) body = '';
+  if (body instanceof Buffer)          type = 'application/octet-stream';
+  else if (typeof body === 'string')   type = 'text/plain; charset=UTF-8';
+  else if (typeof body === 'object') {
+    body = JSON.stringify(body);
+    type = 'application/json';
+  }
+  var headers = {
+    'Accept':             'application/json'
+    , 'Accept-Language':  'ja_JP'
+    , 'Content-Length':   Buffer.byteLength(body)
+    , 'Content-Type':     type
+  };
+  if(auth && auth.hasOwnProperty('user') && auth.hasOwnProperty('pass')) {
+    headers['Authorization'] =
+      'Basic ' +  std.encode_base64(auth.user + ':' : auth.pass);
+  } else if (auth && auth.hasOwnProperty('bearer')) {
+    headers['Authorization'] =
+      'Bearer ' + auth.bearer;
+  }
+  var client = require('https');
+  var req = client.request({
+    hostname: hostname,
+    port: port,
+    path: path,
+    method: 'POST',
+    headers: headers 
+  }, function(res) {
+    var stat = res.statusCode;
+    var head = res.headers;
+    res.setEncoding('utf8');
+    var body = '';
+    res.on('data', function(chunk) { body += chunk; });
+    res.on('end', function() {
+      switch (stat) {
+        case 200: case 201: case 202: case 204:
+          process.stdout.write('-');
+          if (callback) callback(null, head, body);
+          break;
+        case 400: case 401: case 403: case 404:
+          log.error(`HTTP Request Failed. Status Code: ${stat}`);
+          log.trace(`Header:`, head);
+          log.trace(`Body:`, body);
+          if (callback) callback(new Error(body));
+          return; 
+        case 500: case 503:
+          process.stdout.write('x');
+          log.warn(`HTTP Request Failed. Status Code: ${stat}`);
+          postJson2(url, body, callback);
+          break;
+        default:
+          process.stdout.write('?');
+          log.warn(`HTTP Request Failed. Status Code: ${stat}`);
+          if (callback) callback(new Error(body));
+          break;
+      }
+    });
+  });
+  req.on('error', function(err) {
+    log.error(`Problem with HTTP Request: ${err.code}`);
+    log.trace(`${err.message}`);
+    log.trace(`${err.stack}`);
+    if (callback) callback(new Error(body));
+  });
+  req.write(body);
+  req.end();
+};
+module.exports.postJson2 = postJson2;

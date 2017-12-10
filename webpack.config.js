@@ -10,8 +10,6 @@ const config = {
     common:   [
       'react',
       'react-dom',
-      'ramda',
-      'rx',
       './main.css'
     ]
   },

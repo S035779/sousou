@@ -20,7 +20,7 @@ const currency_keyset = {
 
 log.config('console', 'color', 'webpay-app', 'ALL');
 
-const pspid = 'ItemService';
+const pspid = 'ssr-server';
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -34,46 +34,44 @@ router.use((req, res, next) => {
 router.route('/currency')
 .get((req, res) => {
   const { id, token } = req.query;
-  log.trace(`${pspid}>`, id, token );
   currency_keyset['token'] = token;
-  CurrencyLayer.of(paypal_keyset).fetchCurrency(id)
+  CurrencyLayer.of(paypal_keyset).fetchCurrency()
   .subscribe(
-    items   => { res.json(items); }
-    , error => { log.error(`${pspid}>`, error); }
-    , ()    => { log.info(`${pspid}>`, 'Completed'); }
+    data  => { res.json(data); }
+    , err => { log.error(`${pspid}>`, err); }
+    , ()  => { log.info(`${pspid}>`, 'Completed'); }
   );
 })
-.put((req, res, next) => {
-  next(new Error('not implemented'));
-})
-.post((req, res, next) => {
-  next(new Error('not implemented'));
-})
-.delete((req, res, next) => {
-  next(new Error('not implemented'));
-});
+.put((req, res, next)     => { next(new Error('not implemented')); })
+.post((req, res, next)    => { next(new Error('not implemented')); })
+.delete((req, res, next)  => { next(new Error('not implemented')); });
 
-router.route('/payment')
-.get((req, res) => {
-  const { id, token } = req.query;
-  log.trace(`${pspid}>`, id, token );
-  paypal_keyset['token'] = token;
-  PayPalPayment.of(paypal_keyset).fetchPayment(id)
+router.route('/payment/create-payment')
+.get((req, res, next)     => { next(new Error('not implemented')); })
+.put((req, res, next)     => { next(new Error('not implemented')); })
+.post((req, res, next)    => {
+  PayPalPayment.of(paypal_keyset).createPayment()
   .subscribe(
-    items   => { res.json(items); }
-    , error => { log.error(`${pspid}>`, error); }
-    , ()    => { log.info(`${pspid}>`, 'Completed'); }
+    data  => { res.json({ id: data.id }); }
+    , err => { log.error(`${pspid}>`, err); }
+    , ()  => { log.info(`${pspid}>`, 'Completed'); }
   );
 })
-.put((req, res, next) => {
-  next(new Error('not implemented'));
+.delete((req, res, next)  => { next(new Error('not implemented')); });
+
+router.route('/payment/execute-payment')
+.get((req, res, next)     => { next(new Error('not implemented')); })
+.put((req, res, next)     => { next(new Error('not implemented')); })
+.post((req, res, next)    => {
+  const { paymentID, payerID } = req.body;
+  PayPalPayment.of(paypal_keyset).executePayment({ paymentID, payerID })
+  .subscribe(
+    data  => { res.json({ data }); }
+    , err => { log.error(`${pspid}>`, err); }
+    , ()  => { log.info(`${pspid}>`, 'Completed'); }
+  );
 })
-.post((req, res, next) => {
-  next(new Error('not implemented'));
-})
-.delete((req, res, next) => {
-  next(new Error('not implemented'));
-});
+.delete((req, res, next)  => { next(new Error('not implemented')); });
 
 app.use('/api', router);
 app.listen(port);
