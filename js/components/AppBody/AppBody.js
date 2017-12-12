@@ -1,8 +1,14 @@
 import React from 'react';
 
 class AppBody extends React.Component {
+  handleChangeAgree(event) {
+    this.props.onChangeAgree();
+  }
+
   render() {
-    return <div className="content"></div>;
+    const language = this.props.language;
+    return <div className="contents">
+    </div>;
   }
 };
 export default AppBody;

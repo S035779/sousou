@@ -3,6 +3,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import PayPalPayment from './utils/PayPalPayment';
 import CurrencyLayer from './utils/CurrencyLayer';
+import Shipping from './utils/Shipping';
 import { logs as log } from './utils/logutils';
 
 const app = express();
@@ -71,6 +72,20 @@ router.route('/payment/execute-payment')
     , ()  => { log.info(`${pspid}>`, 'Completed'); }
   );
 })
+.delete((req, res, next)  => { next(new Error('not implemented')); });
+
+router.route('/shipping')
+.get((req, res, next)     => {
+  const { length, weight, from } = req.query;
+  Shipping.of({ length, weight, from }).fetchShipping()
+  .subscribe(
+    data  => { res.json({ data }); }
+    //, err => { log.error(`${pspid}>`, err); }
+    //, ()  => { log.info(`${pspid}>`, 'Completed'); }
+  );
+})
+.post((req, res, next)    => { next(new Error('not implemented')); })
+.put((req, res, next)     => { next(new Error('not implemented')); })
 .delete((req, res, next)  => { next(new Error('not implemented')); });
 
 app.use('/api', router);

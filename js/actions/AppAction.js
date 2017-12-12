@@ -5,13 +5,13 @@ export default {
   fetchPayment(options) {
     return AppApiClient.fetchPayment(options)
       .then(items => {
-        dispatch({ type: 'item/fetch/payment', items, options });
+        dispatch({ type: 'item/fetch/payment', options, items });
       });
   },
-  fetchCurrency(options) {
-    return AppApiClient.fetchCurrency(options)
-      .then(currency => {
-        dispatch({ type: 'item/fetch/currency', currency, options });
+  fetchShipping(options) {
+    return AppApiClient.fetchShipping(options)
+      .then(shipping => {
+        dispatch({ type: 'config/fetch/shipping', shipping });
       });
   }
 }

@@ -23,30 +23,20 @@ var encodeFormData = function(data) {
   'use strict';
 
   // 目印のaタグからパラメータとってきたら消す
-  var atag  = document.getElementsByClassName('paypal-widget');
-  var size  = atag[0].dataset.size;
+  var atag = document.getElementsByClassName('paypal-widget');
+  var language = atag[0].dataset.language;
   var option = {};
-  option['token']  = atag[0].dataset.token;
-  option['id']     = atag[0].dataset.id;
+  option['usd']  = atag[0].dataset.usd;
+  option['jpn']  = atag[0].dataset.jpn;
+  option['length']  = atag[0].dataset.length;
+  option['weight']  = atag[0].dataset.weight;
+  option['from']  = atag[0].dataset.from;
   atag[0].style.display = 'none';
 
   var iframe = document.createElement('iframe');
-  iframe.src = '/' + size + '?'
-    + encodeFormData(option);
-  switch(size) {
-    case 'small':
-      iframe.width = '640px';
-      iframe.height = '480px';
-      break;
-    case 'medium':
-      iframe.width = '800px';
-      iframe.height = '600px';
-      break;
-    case 'large':
-      iframe.width = '960px';
-      iframe.height = '720px';
-      break;
-  }
+  iframe.src = '/' + language + '?' + encodeFormData(option);
+  iframe.width = '820px';
+  iframe.height = '580px';
   iframe.scrolling = 'no';
   iframe.frameBorder = 0;
   iframe.marginWidth = 0;

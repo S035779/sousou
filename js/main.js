@@ -5,6 +5,6 @@ import App from './pages/App/App';
  
 ReactDOM.render((<BrowserRouter>
   <Switch>
-    <Route exact path="/:size" component={App}/>>
+    <Route exact path="/:language" component={App}/>>
   </Switch>
 </BrowserRouter>), document.getElementById('app'));

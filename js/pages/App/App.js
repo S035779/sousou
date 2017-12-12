@@ -17,16 +17,27 @@ class App extends React.Component {
 
   componentDidMount() {
     const search = this.props.location.search.split('?');
-    const { id, token } = std.decodeFormData(search[1]);
-    AppAction.fetchPayment({ id, token });
+    const { length, weight, from } = std.decodeFormData(search[1]);
+    AppAction.fetchShipping({ length, weight, from });
+  }
+
+  handleChangeAgree(event) {
+    const { language } = this.props.match.params;
+    const search = this.props.location.search.split('?');
+    const { usd, jpn } = std.decodeFormData(search[1]);
+    const options = {};
+    // Create options object...
+    AppAction.fetchPayment(options);
   }
 
   render() {
-    const { size } = this.props.match.params;
+    const { language } = this.props.match.params;
     return (
-      <div id={size} className="window">
+      <div className="window">
       <AppHeader />
-      <AppBody items={this.state.items}/>
+      <AppBody
+        language={language}
+        onChangeAgree={this.handleChangeAgree.bind(this)} />
       </div>
     );
   }

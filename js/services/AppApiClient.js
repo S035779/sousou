@@ -31,40 +31,17 @@ export default {
             }
             , payment: function(data, actions) {
               return actions.payment.create({
-                payment: { transactions: [
-                  { amount:
-                    { total: '30.11', currency: 'USD', details: {
-                      subtotal:           "30.00",
-                      tax:                "0.07",
-                      shipping:           "0.03",
-                      handling_fee:       "1.00",
-                      shipping_discount:  "-1.00",
-                      insurance:          "0.01"  } },
-                    item_list: {
-                      items: [
-                        {
-                          name: "商品名",
-                          description: "商品概要",
-                          quantity: "1",
-                          price: "30.00",
-                          tax: "0.07",
-                          sku: "商品コード",
-                          currency: "USD"
-                        },
-                      ],
-                      shipping_address: {
-                        recipient_name: "名前",
-                        line1: "部屋番号・階層",
-                        line2: "建物名",
-                        city: "市区町村",
-                        country_code: "JP",
-                        postal_code: "134-0083",
-                        phone: "+81-090-0000-0000",
-                        state: "都道府県"
-                      }
-                    }
+                payment: { transactions: [{
+                  amount: {
+                    total:            options.total
+                    , currency:       options.currency
+                    , details:        options.details
+                  },
+                  item_list: {
+                    items:            [options.item],
+                    shipping_address: options.shipping_address
                   }
-                ]}
+                }]}
               });
             }
             , onAuthorize: function(data, actions) {
@@ -74,7 +51,7 @@ export default {
                 });
             }
             , onCancel: function() {
-              resolve({message: 'Buyer cancelled the payment.'});
+              resolve('Buyer cancelled the payment.');
             }
             , onError: function(err) {
               reject(err.message);
@@ -105,32 +82,38 @@ export default {
               });
             }
             , onCancel: function() {
-              resolve({message: 'Buyer cancelled the payment.'});
+              resolve('Buyer cancelled the payment.');
             }
             , onError: function(err) {
               reject(err.message);
             }
           }, '#paypal-button');
         });
+      case '/shipping':
+        return new Promise((resolve, reject) => {
+          xhr.get(uri, options
+            , obj => { resolve(obj); }
+            , err => { reject(err.message);});
+          });
       default:
         return new Promise((resolve, reject) => {
-          reject({message: 'Unknown Operation.'});
-        });
+            reject('Unknown Operation.');
+          });
     }
   },
   getPayment(options) {
     return this.request('/payment', options);
   },
-  getCurrency(options) {
-    return this.request('/currency', options);
+  getShipping(options) {
+    return this.request('/shipping', options);
   },
   fetchPayment(options) {
     return this.getPayment(options)
       .then(R.tap(this.logTrace.bind(this)))
       .catch(this.logError);
   },
-  fetchCurrency(options) {
-    return this.getCurrency(options)
+  fetchShipping(options) {
+    return this.getShipping(options)
       .then(R.tap(this.logTrace.bind(this)))
       .catch(this.logError);
   },
