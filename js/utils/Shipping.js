@@ -21,6 +21,19 @@ const files = [
   , 'paypal_americas.csv'
   , 'paypal_asia_pacific.csv'
   , 'paypal_europe.csv'
+  , 'jpp_hokkaido.csv'
+  , 'jpp_touhoku.csv'
+  , 'jpp_kantou.csv'
+  , 'jpp_shinetsu.csv'
+  , 'jpp_hokuriku.csv'
+  , 'jpp_toukai.csv'
+  , 'jpp_kinki.csv'
+  , 'jpp_chuugoku.csv'
+  , 'jpp_shikoku.csv'
+  , 'jpp_kyuusyuu.csv'
+  , 'jpp_okinawa.csv'
+  , 'jpp_matrix.csv'
+  , 'jpp_price.csv'
 ];
 
 /**
@@ -47,7 +60,6 @@ class Shipping {
     return new Promise((resolve, reject) => {
       fs.readFile(file, { encoding: 'utf-8' }, (err, data) => {
         if(err) reject(err.message);
-        //log.trace(data);
         resolve(data);
       });
     });
@@ -66,19 +78,23 @@ class Shipping {
     return this.forFile(files)
       .map(R.map(R.split('\n')))
       .map(R.map(R.filter(s => s !== '')))
-      .map(this.setFile.bind(this))
-      .map(R.tap(log.trace.bind(this)));
+      .map(this.setFiles.bind(this))
+      .map(R.tap(this.logTrace.bind(this)));
   }
 
-  setFile(objs) {
+  logTrace(message) {
+    log.trace(`${pspid}>`, 'Trace:', message);
+  }
+
+  setFiles(objs) {
     const code = R.map(R.split(','),objs[0]);
     const country_code = R.map(this.setCode, code)
     const ems_1 = objs[1]
     const ems_2_1 = R.flatten(R.slice(2, 5, objs))
     const ems_2_2 = objs[5]
     const ems_3 = R.concat(objs[6],objs[7])
-    const price = R.map(R.split(','),objs[8]);
-    const ems_price = R.map(this.setPrice, price)
+    const prices = R.map(R.split(','),objs[8]);
+    const ems_price = R.map(this.setEmsPrice, prices)
     const paypal_area = R.flatten(R.slice(9,14, objs))
 
     let results = [];
@@ -87,28 +103,29 @@ class Shipping {
     results = this.setEms2_1(results, ems_2_1);
     results = this.setEms2_2(results, ems_2_2);
     results = this.setEms3(results, ems_3);
-    results = this.setPrice(results, ems_price);
+    results = this.setEmsPrices(results, ems_price);
     return results;
   }
 
-  setPrice(country_code, ems_price) {
+  setEmsPrices(country_code, ems_price) {
     return R.map(code => {
-      return this.getPrice(code, ems_price)
-        ? Object.assgin({}, code, { price })
-        : Object.assgin({}, code);
+      const price = this.isEmsPrices(code, ems_price)
+      return price
+        ? Object.assign({}, code, { price })
+        : Object.assign({}, code);
     }, country_code);
   }
 
-  getPrice(code, prices) {
+  isEmsPrices(code, prices) {
     for(let i=0; i<prices.length; i++) {
-      if(this.weight < prices[0]) {
-        if(code.ems1   === 'ok') return prices[1];
-        if(code.ems2_1 === 'ok') return prices[2];
-        if(code.ems2_2 === 'ok') return prices[3];
-        if(code.ems3   === 'ok') return prices[4];
+      if(Number(this.weight) <= Number(prices[i].weight)) {
+        if     (code.ems1   === 'ok') return prices[i].area_1;
+        else if(code.ems2_1 === 'ok') return prices[i].area_2_1;
+        else if(code.ems2_2 === 'ok') return prices[i].area_2_2;
+        else if(code.ems3   === 'ok') return prices[i].area_3;
       }
-      return 0;
     }
+    return 0;
   }
 
   setEms3(country_code, ems_area) {
@@ -157,14 +174,25 @@ class Shipping {
     return false;
   }
 
-  setPrice(arr) {
-    return { weight: arr[0], area_1: arr[1], area_2_1: arr[2]
-      , area_2_2: arr[3], area_3: arr[4] };
+  setEmsPrice(arr) {
+    return {
+      weight:     arr[0]
+      , area_1:   arr[1]
+      , area_2_1: arr[2]
+      , area_2_2: arr[3]
+      , area_3:   arr[4]
+    };
   }
 
   setCode(arr) {
-    return { code_2: arr[0], code_3: arr[1], code_id: arr[2]
-      , name_jp: arr[3], name_en: arr[4], number: arr[5]};
+    return {
+      code_2:     arr[0]
+      , code_3:   arr[1]
+      , code_id:  arr[2]
+      , name_jp:  arr[3]
+      , name_en:  arr[4]
+      , number:   arr[5]
+    };
   }
 
 };
