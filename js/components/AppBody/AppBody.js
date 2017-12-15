@@ -71,6 +71,28 @@ class AppBody extends React.Component {
     this.setState(newState);
   }
 
+  handleChange() {
+    const state = this.state;
+    if(this.isValid(state)) return;
+
+    const curr = this.props.currency;
+    const ship = this.props.shipping;
+    const isJP = obj => obj.country_code.join() === 'JP';
+    const price = isJP(state) ? curr.JPY : Math.ceil(curr.USD);
+    const shipping = isJP(state) 
+      ? ship.jpp.filter(jpp => jpp.city === state.city)[0].price
+      : ship.ems.filter(ems =>
+        ems.code_2 === state.country_code.join())[0].price;
+    const subtotal = Number(price) * Number(state.quantity);
+    const total = Number(subtotal) + Number(shipping);
+    const total_currency = 'JPY';
+    const name = 'Myanmar Companies YearBook Vol.1';
+    const description = 'Myanmar Companies Yearbook';
+    const currency = 'JPY';
+    this.setState({ price, shipping, subtotal, total, total_currency
+      , name, description,currency });
+  }
+
   renderOption(objs, prop1, prop2) {
     if(!objs) return null;
     const len = arguments.length;
@@ -87,37 +109,25 @@ class AppBody extends React.Component {
     })
   }
 
+  isValid(obj) {
+    return (
+      obj.country_code && (obj.country_code.join() !== '')
+      && obj.quantity  && (obj.quantity.join() !== '')
+      && obj.payment   && (obj.payment.join() !== '')
+      && obj.city
+      && obj.first_name && obj.last_name
+      && obj.phone
+      && obj.email     && (obj.email === obj.confirm_emal)
+      && obj.postal_code
+      && obj.line1
+      && obj.agreement
+    ) ? true : false;
+  }
+
   submitHandler(e) {
-    this.logTrace(this.state);
     e.preventDefault();
-    const options = {
-      total: this.state.total
-      , total_currency: this.state.currency
-      , subtotal: this.state.subtotal
-      , shipping: this.state.shipping
-      , name: this.state.name
-      , description: this.state.description
-      , quantity: this.state.quantity
-      , price: this.state.price
-      , currency: this.state.currency
-      , recipient_name: this.state.recipient_name
-      , line1: this.state.line1
-      , line2: this.state.line2
-      , city: this.state.city
-      , country_code: this.state.country_code
-      , postal_code: this.state.postal_code
-      , phone: this.state.phone
-      , state: this.state.state
-      , first_name: this.state.first_name
-      , last_name: this.state.last_name
-      , gender: this.state.gender
-      , year: this.state.year
-      , month: this.state.month
-      , day: this.state.day
-      , email: this.state.email
-      , confirm_email: this.state.confirm_email
-      , agreement: this.state.agreement
-    }
+    const state = this.state;
+    if(!this.isValid(state)) return;
     this.logTrace(options);
   }
 
@@ -126,9 +136,8 @@ class AppBody extends React.Component {
   }
 
   render() {
-    log.trace(`${pspid}>`, 'state:', this.state);
-
-    const language = this.props.language;
+    this.logTrace(this.state);
+    //const language = this.props.language;
     //const shipping = this.props.shipping;
     //const country = language === 'jp' 
     //  ? renderOption(shipping, 'name_jp') 
@@ -272,7 +281,7 @@ class AppBody extends React.Component {
             className="required">
           <option value=""></option>
           <option value="JP">日本</option>
-          <option value="AA">ミャンマー</option>
+          <option value="MM">ミャンマー</option>
           <option value="BB">タイ</option>
           <option value="CC">中国</option>
           <option value="DD">シンガポール</option>

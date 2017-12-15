@@ -13,5 +13,11 @@ export default {
       .then(shipping => {
         dispatch({ type: 'config/fetch/shipping', shipping });
       });
+  },
+  fetchCurrency(options) {
+    return AppApiClient.fetchCurrency(options)
+      .then(currency => {
+        dispatch({ type: 'config/fetch/currency', currency });
+      });
   }
 }

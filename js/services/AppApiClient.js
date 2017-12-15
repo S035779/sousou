@@ -95,6 +95,12 @@ export default {
             , obj => { resolve(obj); }
             , err => { reject(err.message);});
           });
+      case '/currency':
+        return new Promise((resolve, reject) => {
+          xhr.get(uri, options
+            , obj => { resolve(obj); }
+            , err => { reject(err.message);});
+          });
       default:
         return new Promise((resolve, reject) => {
             reject('Unknown Operation.');
@@ -107,13 +113,21 @@ export default {
   getShipping(options) {
     return this.request('/shipping', options);
   },
+  getCurrency(options) {
+    return this.request('/currency', options);
+  },
   fetchPayment(options) {
     return this.getPayment(options)
-      .then(R.tap(this.logTrace.bind(this)))
+      //.then(R.tap(this.logTrace.bind(this)))
       .catch(this.logError);
   },
   fetchShipping(options) {
     return this.getShipping(options)
+      //.then(R.tap(this.logTrace.bind(this)))
+      .catch(this.logError);
+  },
+  fetchCurrency(options) {
+    return this.getCurrency(options)
       .then(R.tap(this.logTrace.bind(this)))
       .catch(this.logError);
   },

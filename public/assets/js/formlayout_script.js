@@ -1,34 +1,4 @@
 jQuery(function($) {
-/*
-	// minimalect
-	$('#month').minimalect({
-		placeholder: '1',
-    onchange: function() {
-      $('#month').trigger('change');
-    }
-	});
-
-	$('#country_code').minimalect({
-		placeholder: '日本',
-    onchange: function() {
-      $('#country_code').trigger('change');
-    }
-	});
-
-	$('#quantity').minimalect({
-		placeholder: '1',
-    onchange: function() {
-      $('#quantity').trigger('change');
-    }
-	});
-
-	$('#payment').minimalect({
-		placeholder: 'クレジットカード（PayPal）',
-    onchange: function() {
-      $('#payment').trigger('change');
-    }
-	});
-*/
 	// ah-placeholder
 	$('.add-placeholder').ahPlaceholder({
 		placeholderColor: 'silver', // プレースホルダーの文字色

@@ -16,7 +16,6 @@ const paypal_keyset = {
 };
 const currency_keyset = {
   access_key:   process.env.CURRENCY_ACCESS_KEY
-  , secret_key: process.env.CURRENCY_SECRET_KEY
 };
 
 log.config('console', 'color', 'webpay-app', 'ALL');
@@ -32,21 +31,6 @@ router.use((req, res, next) => {
   next();
 });
 
-router.route('/currency')
-.get((req, res) => {
-  const { id, token } = req.query;
-  currency_keyset['token'] = token;
-  CurrencyLayer.of(paypal_keyset).fetchCurrency()
-  .subscribe(
-    data  => { res.json(data); }
-    , err => { log.error(`${pspid}>`, err); }
-    , ()  => { log.info(`${pspid}>`, 'Completed'); }
-  );
-})
-.put((req, res, next)     => { next(new Error('not implemented')); })
-.post((req, res, next)    => { next(new Error('not implemented')); })
-.delete((req, res, next)  => { next(new Error('not implemented')); });
-
 router.route('/payment/create-payment')
 .get((req, res, next)     => { next(new Error('not implemented')); })
 .put((req, res, next)     => { next(new Error('not implemented')); })
@@ -55,7 +39,7 @@ router.route('/payment/create-payment')
   .subscribe(
     data  => { res.json({ id: data.id }); }
     , err => { log.error(`${pspid}>`, err); }
-    , ()  => { log.info(`${pspid}>`, 'Completed'); }
+    , ()  => { log.info(`${pspid}>`, 'Completed to create payment.'); }
   );
 })
 .delete((req, res, next)  => { next(new Error('not implemented')); });
@@ -69,7 +53,7 @@ router.route('/payment/execute-payment')
   .subscribe(
     data  => { res.json({ data }); }
     , err => { log.error(`${pspid}>`, err); }
-    , ()  => { log.info(`${pspid}>`, 'Completed'); }
+    , ()  => { log.info(`${pspid}>`, 'Completed to execute payment.'); }
   );
 })
 .delete((req, res, next)  => { next(new Error('not implemented')); });
@@ -79,13 +63,27 @@ router.route('/shipping')
   const { length, weight, from } = req.query;
   Shipping.of({ length, weight, from }).fetchShipping()
   .subscribe(
-    data  => { res.json({ data }); }
+    data  => { res.json(data); }
     , err => { log.error(`${pspid}>`, err); }
-    , ()  => { log.info(`${pspid}>`, 'Completed'); }
+    , ()  => { log.info(`${pspid}>`, 'Completed to response shipping.'); }
   );
 })
 .post((req, res, next)    => { next(new Error('not implemented')); })
 .put((req, res, next)     => { next(new Error('not implemented')); })
+.delete((req, res, next)  => { next(new Error('not implemented')); });
+
+router.route('/currency')
+.get((req, res) => {
+  const { usd, jpy } = req.query;
+  CurrencyLayer.of(currency_keyset).fetchCurrency({ usd, jpy })
+  .subscribe(
+    data  => { res.json(data); }
+    , err => { log.error(`${pspid}>`, err); }
+    , ()  => { log.info(`${pspid}>`, 'Completed to responce currency.'); }
+  );
+})
+.put((req, res, next)     => { next(new Error('not implemented')); })
+.post((req, res, next)    => { next(new Error('not implemented')); })
 .delete((req, res, next)  => { next(new Error('not implemented')); });
 
 app.use('/api', router);

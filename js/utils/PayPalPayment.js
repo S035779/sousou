@@ -25,10 +25,10 @@ class PayPalPayment {
   }
 
   static of({ access_key, secret_key }) {
-    return new PayPalPayment(access_key, secret_key );
+    return new PayPalPayment(access_key, secret_key);
   }
 
-  request(operation, { auth, body }) {
+  request(operation, { query, auth, body }) {
     const uri = development + operation;
     switch(operation) {
       case '/v1/oauth2/token':
@@ -116,7 +116,7 @@ class PayPalPayment {
   }
 
   logTrace(message) {
-    log.trace(`${pspid}>`, 'Response:', message)
+    log.trace(`${pspid}>`, 'Trace:', message);
   }
 
   parseXml(xml) {

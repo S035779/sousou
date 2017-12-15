@@ -4,12 +4,10 @@ import std from './stdutils';
 import net from './netutils';
 import { logs as log } from './logutils';
 
-const production = 'http://apilayer.net/api/';
-const params = {
-  format:   1
-}
+const development = 'http://apilayer.net/api/';
+const procuctions = 'https://apilayer.net/api/'
 
-const pspid = 'CryApiClient';
+const pspid = 'currency-api';
 /**
  * CurrencyLayer Api Client class.
  *
@@ -19,52 +17,144 @@ const pspid = 'CryApiClient';
  * @param {string} token - The access token for this application.
  */
 class CurrencyLayer {
-  constructor(access_key, secret_key, token) {
+  constructor(access_key) {
     this.access_key = access_key;
-    this.secret_key = secret_key;
-    this.token = token;
   }
 
-  static of({ access_key, secret_key, token }) {
-    return new CurrencyLayer(access_key, secret_key, token );
+  static of({ access_key }) {
+    return new CurrencyLayer(access_key);
   }
 
-  request(operation, options) {
-    options = Object.assign({}, params, options);
-    const url = this.url(operation, options);
-    return new Promise((resolve) => {
-      net.get(url, (stat, head, body) => {
-        if(stat !== 200) reject(body);
-        //log.trace(stat, head, body);
-        resolve(body);
-      });
-    });
+  request(operation, { query }) {
+    const url = development + operation;
+    switch(operation) {
+      case 'list':
+        return new Promise((resolve, reject) => {
+          net.get(url, query, (err, head, body) => {
+            if(err) reject(err);
+            resolve(JSON.parse(body));
+          });
+        });
+      case 'live':
+        return new Promise((resolve, reject) => {
+          net.get(url, query, (err, head, body) => {
+            if(err) reject(err);
+            resolve(JSON.parse(body));
+          });
+        });
+      case 'historical':
+        return new Promise((resolve, reject) => {
+          net.get(url, query, (err, head, body) => {
+            if(err) reject(err);
+            resolve(JSON.parse(body));
+          });
+        });
+      case 'convert':
+        return new Promise((resolve, reject) => {
+          net.get2(url, query, (err, head, body) => {
+            if(err) reject(err);
+            resolve(JSON.parse(body));
+          });
+        });
+      case 'timeframe':
+        return new Promise((resolve, reject) => {
+          net.get2(url, query, (err, head, body) => {
+            if(err) reject(err);
+            resolve(JSON.parse(body));
+          });
+        });
+      case 'change':
+        return new Promise((resolve, reject) => {
+          net.get2(url, query, (err, head, body) => {
+            if(err) reject(err);
+            resolve(JSON.parse(body));
+          });
+        });
+      default:
+        return new Promise((resolve, reject) => {
+          reject('Unknown Operation!');
+        });
+    }
   }
 
-  getCurrency(id) {
-    const options = {};
-    options['id'] = id;
-    return this.request('currency', options);
+  getList() {
+    const options = {
+      query: {
+        access_key: this.access_key
+      }
+    };
+    return this.request('list', options);
   }
 
-  fetchCurrency(id) {
-    return Rx.Observable.fromPromise(this.getCurrency(id));
+  getLive(currencies, source) {
+    const options = {
+      query: {
+        access_key: this.access_key
+        , currencies
+        , source
+      } 
+    };
+    return this.request('live', options);
   }
 
-  parseXml(xml) {
-    return Rx.Observable.fromPromise(std.parse_xml(xml));
+  getHistorical(date, source) {
+    const options = {
+      query: {
+        access_key: this.access_key
+        , date
+        , source
+      }
+    };
+    return this.request('historical', options);
   }
 
-  forkJoin(promises) {
-    return Rx.Observable.forkJoin(promises);
+  getConvert(from, to, amount) {
+    const options = {
+      query: {
+        access_key: this.access_key
+        , from
+        , to
+        , amount
+      }
+    };
+    return this.request('convert', options);
   }
 
-  forParseXml(objs) {
-    return this.forkJoin(R.map(obj => this.parseXml(obj), objs));
+  getTimeframe(start_date, end_date, currencies, source) {
+    const options = {
+      query: {
+        access_key: this.access_key
+        , start_date
+        , end_date
+        , currencies
+        , source
+      }
+    };
+    return this.request('timeframe', options);
   }
 
-  url(operation, options) {
-    return production;
+  getChange(start_date, end_date, currencies, source) {
+    const options = {
+      query: {
+        access_key: this.access_key
+        , start_date
+        , end_date
+        , currencies
+        , source
+      }
+    };
+    return this.request('change', options);
+  }
+
+  fetchCurrency({ usd, jpy }) {
+    return Rx.Observable.fromPromise(this.getLive('JPY', 'USD'))
+      .map(obj => obj.quotes.USDJPY)
+      .map(val => ({ USDJPY: val, USD: usd*val, JPY: jpy }))
+      //.map(R.tap(this.logTrace.bind(this)));
+  }
+
+  logTrace(message) {
+    log.trace(`${pspid}>`, 'Trace:', message);
   }
 };
 export default CurrencyLayer;

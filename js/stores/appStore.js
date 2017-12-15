@@ -6,6 +6,7 @@ class AppStore extends ReduceStore<number> {
   getInitialState() {
     return { 
       shipping:   {}
+      , currency: {}
       , items:    {}
       , options:  {
         total:  0
@@ -53,6 +54,10 @@ class AppStore extends ReduceStore<number> {
       case 'config/fetch/shipping':
         return Object.assign({}, state, {
           shipping: action.shipping
+        });
+      case 'config/fetch/currency':
+        return Object.assign({}, state, {
+          currency: action.currency
         });
       default: 
         return state; 
