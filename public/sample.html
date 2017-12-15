@@ -1,16 +1,76 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="ja">
 <head>
+	<meta charset="utf-8">
+	<title>WebPay Online Sample</title>
+	<link href="assets/css/jquery.minimalect.min.css" rel="stylesheet"
+    type="text/css" media="all"/>
+	<link href="common.css" rel="stylesheet"
+    type="text/css" media="all"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+	<script>
+  window.jQuery || document.write(
+    '<script src="asset/js/jquery-1.10.1.min.js"><\/script>')
+  </script>
+	<script src="assets/js/jquery.validate.min.js"></script>
+	<script src="assets/js/jquery.minimalect.min.js"></script>
+	<script src="assets/js/jquery.ah-placeholder.min.js"></script>
+	<script src="assets/js/formlayout_script.js"></script>
 </head>
 <body>
-<a href="/" target="blank" class="paypal-widget"
-  data-language="jp"
-  data-usd="600"
-  data-jpn="57000"
-  data-length='60'
-  data-weight='30'
-  data-from='tokyo'
->This site is here!</a>
-<script src="/assets/js/widget.js"></script>
+<div id="cb">
+
+<div id="header">
+	<div class="inner">
+		<h1>WebPay Online</h1>
+		<div id="global-nav">
+			<ul>
+				<li><a href="#">Home</a></li>
+				<li><a href="#">Living Room</a></li>
+				<li><a href="#">Kitchen</a></li>
+				<li><a href="#">Bed Rooms</a></li>
+				<li><a href="#">Tableware</a></li>
+				<li><a href="#">Goods</a></li>
+			</ul>
+		</div>
+		<p id="login-here"><a href="#">Login</a></p>
+	</div>
+</div>
+
+<div id="contents" class="sign-up-page">
+
+  <a href="/" target="blank" class="paypal-widget"
+    data-language="jp"
+    data-usd="600"
+    data-jpn="57000"
+    data-length='60'
+    data-weight='30'
+    data-from='東京都'
+  >This site is here!</a>
+  <script src="/assets/js/widget.js"></script>
+
+</div>
+
+
+<div id="footer">
+	<div class="inner">
+		<div class="topic-path">
+			<p><a href="#">Home</a></p>
+			<p class="current">Sign Up</p>
+		</div>
+		<div class="footer-nav-others">
+			<ul>
+				<li><a href="#">Company Info</a></li>
+				<li><a href="#">Site Map</a></li>
+				<li><a href="#">Contact Us</a></li>
+				<li><a href="#">Privacy Policy</a></li>
+			</ul>
+		</div>
+		<p id="copyright">&copy; WebPay Online. All right reserved.</p>
+	</div>
+</div>
+
+</div>
 </body>
 </html>

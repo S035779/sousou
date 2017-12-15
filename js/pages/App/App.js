@@ -3,6 +3,7 @@ import { Container } from 'flux/utils';
 import appStore from '../../stores/appStore';
 import AppAction from '../../actions/AppAction';
 import AppHeader from '../../components/AppHeader/AppHeader';
+import AppFooter from '../../components/AppFooter/AppFooter';
 import AppBody from '../../components/AppBody/AppBody';
 import std from '../../utils/stdutils';
 
@@ -17,7 +18,9 @@ class App extends React.Component {
 
   componentDidMount() {
     const search = this.props.location.search.split('?');
-    const { length, weight, from } = std.decodeFormData(search[1]);
+    const query = std.decodeFormData(search[1]);
+    console.log(query);
+    const { length, weight, from } = query;
     AppAction.fetchShipping({ length, weight, from });
   }
 
@@ -32,14 +35,14 @@ class App extends React.Component {
 
   render() {
     const { language } = this.props.match.params;
-    return (
-      <div className="window">
+    return <div id="cb">
       <AppHeader />
       <AppBody
         language={language}
+        options={this.state.options}
         onChangeAgree={this.handleChangeAgree.bind(this)} />
-      </div>
-    );
+      <AppFooter />
+      </div>;
   }
 }
 export default Container.create(App);

@@ -1,4 +1,4 @@
 {
-  "presets": ["react", "env"],
+  "presets": ["react", "env" ],
   "compact" : true
 }

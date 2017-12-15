@@ -48,7 +48,7 @@ class Shipping {
   constructor(length, weight, from) {
     this.length = length;
     this.weight = weight;
-    this.from = from;
+    this.from = decodeURIComponent(from);
   }
 
   static of({ length, weight, from }) {
@@ -79,7 +79,7 @@ class Shipping {
       .map(R.map(R.split('\n')))
       .map(R.map(R.filter(s => s !== '')))
       .map(this.setFiles.bind(this))
-      .map(R.tap(this.logTrace.bind(this)));
+      //.map(R.tap(this.logTrace.bind(this)));
   }
 
   logTrace(message) {
@@ -87,113 +87,273 @@ class Shipping {
   }
 
   setFiles(objs) {
-    const code = R.map(R.split(','),objs[0]);
-    const country_code = R.map(this.setCode, code)
+    const tmp_1 = R.map(R.split(','),objs[0]);
+    const country_code = R.map(this.setCode, tmp_1)
     const ems_1 = objs[1]
     const ems_2_1 = R.flatten(R.slice(2, 5, objs))
     const ems_2_2 = objs[5]
     const ems_3 = R.concat(objs[6],objs[7])
-    const prices = R.map(R.split(','),objs[8]);
-    const ems_price = R.map(this.setEmsPrice, prices)
+    const tmp_2 = R.map(R.split(','),objs[8]);
+    const ems_price = R.map(this.setEmsPrice, tmp_2)
     const paypal_area = R.flatten(R.slice(9,14, objs))
 
-    let results = [];
-    results = this.setPaypal(country_code, paypal_area); 
-    results = this.setEms1(results, ems_1);
-    results = this.setEms2_1(results, ems_2_1);
-    results = this.setEms2_2(results, ems_2_2);
-    results = this.setEms3(results, ems_3);
-    results = this.setEmsPrices(results, ems_price);
-    return results;
+    let ems = this.setPaypal(country_code, paypal_area);
+    ems = this.setEms1(ems_1, ems)
+    ems = this.setEms2_1(ems_2_1, ems)
+    ems = this.setEms2_2(ems_2_2, ems)
+    ems = this.setEms3(ems_3, ems)
+    ems = this.setEmsPrices(ems_price, ems)
+
+    const jpp_hokkaido = objs[13];
+    const jpp_touhoku = objs[14];
+    const jpp_kantou = objs[15];
+    const jpp_shinetsu = objs[16];
+    const jpp_hokuriku = objs[17];
+    const jpp_toukai = objs[18];
+    const jpp_kinki = objs[19];
+    const jpp_chuugoku = objs[20];
+    const jpp_shikoku = objs[21];
+    const jpp_kyuusyuu = objs[22];
+    const jpp_okinawa = objs[23];
+    const tmp_3 = R.map(R.split(','),objs[24]);
+    const jpp_area = R.map(this.setJppArea, tmp_3);
+    const tmp_4 = R.map(R.split(','),objs[25]);
+    const jpp_price = R.map(this.setJppPrice, tmp_4);
+
+    let jpp = [];
+    jpp = this.setHokkaido(jpp_hokkaido, jpp)
+    jpp = this.setTouhoku(jpp_touhoku, jpp)
+    jpp = this.setKantou(jpp_kantou, jpp)
+    jpp = this.setShinetsu(jpp_shinetsu, jpp)
+    jpp = this.setHokuriku(jpp_hokuriku, jpp)
+    jpp = this.setToukai(jpp_toukai, jpp)
+    jpp = this.setKinki(jpp_kinki, jpp)
+    jpp = this.setChuugoku(jpp_chuugoku, jpp)
+    jpp = this.setShikoku(jpp_shikoku, jpp)
+    jpp = this.setKyuusyuu(jpp_kyuusyuu, jpp)
+    jpp = this.setOkinawa(jpp_okinawa, jpp)
+    jpp = this.setJppAreas(jpp_area, jpp)
+    jpp = this.setJppPrices(jpp_price, jpp)
+
+    return { ems, jpp };
   }
 
-  setEmsPrices(country_code, ems_price) {
+  setJppPrices(jpp_prices, objs) {
+    const prices = this.isJppPrice(jpp_prices);
+    return R.map(obj => Object.assign({}, obj
+      , { size: this.length, price: prices[obj.destination] }), objs);
+  }
+
+  setJppAreas(jpp_area, objs) {
+    const src = this.isJppArea(objs);
+    const dst = jpp_area[src-1].destinations;
+    return R.map(obj => Object.assign({}, obj, {
+        source: src
+        , destination: this.from === obj.city ? 0 : dst[obj.code-1]
+      }), objs);
+  }
+
+  setOkinawa(jpp_area, objs) {
+    const area = R.map(city => (
+      { city, area: '沖縄', code: 11 }), jpp_area);
+    return R.concat(objs, area);
+  }
+
+  setKyuusyuu(jpp_area, objs) {
+    const area = R.map(city => (
+      { city, area: '九州', code: 10 }), jpp_area);
+    return R.concat(objs, area);
+  }
+
+  setShikoku(jpp_area, objs) {
+    const area = R.map(city => (
+      { city, area: '四国', code: 9 }), jpp_area);
+    return R.concat(objs, area);
+  }
+
+  setChuugoku(jpp_area, objs) {
+    const area = R.map(city => (
+      { city, area: '中国', code: 8 }), jpp_area);
+    return R.concat(objs, area);
+  }
+
+  setKinki(jpp_area, objs) {
+    const area = R.map(city => (
+      { city, area: '近畿', code: 7 }), jpp_area);
+    return R.concat(objs, area);
+  }
+
+  setToukai(jpp_area, objs) {
+    const area = R.map(city => (
+      { city, area: '東海', code: 6 }), jpp_area);
+    return R.concat(objs, area);
+  }
+
+  setHokuriku(jpp_area, objs) {
+    const area = R.map(city => (
+      { city, area: '北陸', code: 5 }), jpp_area);
+    return R.concat(objs, area);
+  }
+
+  setShinetsu(jpp_area, objs) {
+    const area = R.map(city => (
+      { city, area: '信越', code: 4 }), jpp_area);
+    return R.concat(objs, area);
+  }
+
+  setKantou(jpp_area, objs) {
+    const area = R.map(city => (
+      { city, area: '関東', code: 3 }), jpp_area);
+    return R.concat(objs, area);
+  }
+
+  setTouhoku(jpp_area, objs) {
+    const area = R.map(city => (
+      { city, area: '東北', code: 2 }), jpp_area);
+    return R.concat(objs, area);
+  }
+
+  setHokkaido(jpp_area, objs) {
+    const area = R.map(city => (
+      { city, area: '北海道', code: 1 }), jpp_area);
+    return R.concat(objs, area);
+  }
+
+  setEmsPrices(ems_price, objs) {
     return R.map(code => {
       const price = this.isEmsPrices(code, ems_price)
       return price
         ? Object.assign({}, code, { price })
         : Object.assign({}, code);
-    }, country_code);
+    }, objs);
+  }
+
+  setEms3(ems_area, objs) {
+    return R.map(code => (
+      this.isEmsArea(code.name_jp, ems_area) 
+      ? Object.assign({}, code, { ems3: 'OK' })
+      : Object.assign({}, code, { ems3: 'NO' })
+    ), objs);
+  }
+
+  setEms2_2(ems_area, objs) {
+    return R.map(code => (
+      this.isEmsArea(code.name_jp, ems_area) 
+      ? Object.assign({}, code, { ems2_2: 'OK' })
+      : Object.assign({}, code, { ems2_2: 'NO' })
+    ), objs);
+  }
+
+  setEms2_1(ems_area, objs) {
+    return R.map(code => (
+      this.isEmsArea(code.name_jp, ems_area) 
+      ? Object.assign({}, code, { ems2_1: 'OK' })
+      : Object.assign({}, code, { ems2_1: 'NO' })
+    ), objs);
+  }
+
+  setEms1(ems_area, objs) {
+    return R.map(code => (
+      this.isEmsArea(code.name_jp, ems_area) 
+      ? Object.assign({}, code, { ems1: 'OK' })
+      : Object.assign({}, code, { ems1: 'NO' })
+    ), objs);
+  }
+
+  setPaypal(country_code, paypal_area) {
+    return R.map(code => (
+      this.isEmsArea(code.name_en, paypal_area) 
+      ? Object.assign({}, code, { paypal: 'OK' })
+      : Object.assign({}, code, { paypal: 'NO' })
+    ), country_code);
   }
 
   isEmsPrices(code, prices) {
     for(let i=0; i<prices.length; i++) {
       if(Number(this.weight) <= Number(prices[i].weight)) {
-        if     (code.ems1   === 'ok') return prices[i].area_1;
-        else if(code.ems2_1 === 'ok') return prices[i].area_2_1;
-        else if(code.ems2_2 === 'ok') return prices[i].area_2_2;
-        else if(code.ems3   === 'ok') return prices[i].area_3;
+        if     (code.ems1   === 'OK') return prices[i].area_1;
+        else if(code.ems2_1 === 'OK') return prices[i].area_2_1;
+        else if(code.ems2_2 === 'OK') return prices[i].area_2_2;
+        else if(code.ems3   === 'OK') return prices[i].area_3;
       }
     }
     return 0;
   }
 
-  setEms3(country_code, ems_area) {
-    return R.map(code => (
-      this.isArea(code.name_jp, ems_area) 
-      ? Object.assign({}, code, { ems3: 'ok' })
-      : Object.assign({}, code, { ems3: 'ng' })
-    ), country_code);
-  }
-
-  setEms2_2(country_code, ems_area) {
-    return R.map(code => (
-      this.isArea(code.name_jp, ems_area) 
-      ? Object.assign({}, code, { ems2_2: 'ok' })
-      : Object.assign({}, code, { ems2_2: 'ng' })
-    ), country_code);
-  }
-
-  setEms2_1(country_code, ems_area) {
-    return R.map(code => (
-      this.isArea(code.name_jp, ems_area) 
-      ? Object.assign({}, code, { ems2_1: 'ok' })
-      : Object.assign({}, code, { ems2_1: 'ng' })
-    ), country_code);
-  }
-
-  setEms1(country_code, ems_area) {
-    return R.map(code => (
-      this.isArea(code.name_jp, ems_area) 
-      ? Object.assign({}, code, { ems1: 'ok' })
-      : Object.assign({}, code, { ems1: 'ng' })
-    ), country_code);
-  }
-
-  setPaypal(country_code, paypal_area) {
-    return R.map(code => (
-      this.isArea(code.name_en, paypal_area) 
-      ? Object.assign({}, code, { paypal: 'ok' })
-      : Object.assign({}, code, { paypal: 'ng' })
-    ), country_code);
-  }
-
-  isArea(name, areas) {
+  isEmsArea(name, areas) {
     for(let i=0; i<areas.length; i++) 
       if(areas[i] === name) return true;
     return false;
   }
 
-  setEmsPrice(arr) {
+  isJppPrice(objs) {
+    for( let i=0; i<objs.length; i++ ) {
+      if(this.length === objs[i].length) return objs[i].prices;
+    }
+    return 0;
+  }
+
+  isJppArea(objs) {
+    for( let i=0; i<objs.length; i++ ) {
+      if(this.from === objs[i].city) return objs[i].code;
+    }
+    return 0;
+  }
+
+  setEmsPrice(cols) {
     return {
-      weight:     arr[0]
-      , area_1:   arr[1]
-      , area_2_1: arr[2]
-      , area_2_2: arr[3]
-      , area_3:   arr[4]
+      weight:     cols[0]
+      , area_1:   cols[1]
+      , area_2_1: cols[2]
+      , area_2_2: cols[3]
+      , area_3:   cols[4]
     };
   }
 
-  setCode(arr) {
+  setCode(cols) {
     return {
-      code_2:     arr[0]
-      , code_3:   arr[1]
-      , code_id:  arr[2]
-      , name_jp:  arr[3]
-      , name_en:  arr[4]
-      , number:   arr[5]
+      code_2:     cols[0]
+      , code_3:   cols[1]
+      , code_id:  cols[2]
+      , name_jp:  cols[3]
+      , name_en:  cols[4]
+      , number:   cols[5]
     };
   }
 
+  setJppPrice(objs) {
+    return {
+      length: objs[0]
+      , prices: [
+        objs[1]
+        , objs[2]
+        , objs[3]
+        , objs[4]
+        , objs[5]
+        , objs[6]
+        , objs[7]
+        , objs[8]
+      ]
+    };
+  }
+
+  setJppArea(objs) {
+    return {
+      source: objs[0]
+      , destinations: [
+        objs[1]
+        , objs[2]
+        , objs[3]
+        , objs[4]
+        , objs[5]
+        , objs[6]
+        , objs[7]
+        , objs[8]
+        , objs[9]
+        , objs[10]
+        , objs[11]
+      ] 
+    };
+  }
 };
 export default Shipping;

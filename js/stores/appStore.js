@@ -27,7 +27,20 @@ class AppStore extends ReduceStore<number> {
           , postal_code: ''
           , phone: ''
           , state: ''
-        }}};
+        }
+        , infomation: {
+          first_name: ''
+          , last_name: ''
+          , gender: ''
+          , year: ''
+          , month: ''
+          , day: ''
+          , email: ''
+          , confirm_email: ''
+          , payment: ''
+          , agreement: false
+        }
+      }};
   }
   
   reduce(state, action) {

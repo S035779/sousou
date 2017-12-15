@@ -35,8 +35,8 @@ var encodeFormData = function(data) {
 
   var iframe = document.createElement('iframe');
   iframe.src = '/' + language + '?' + encodeFormData(option);
-  iframe.width = '820px';
-  iframe.height = '580px';
+  iframe.width = '640px';
+  iframe.height = '1800px';
   iframe.scrolling = 'no';
   iframe.frameBorder = 0;
   iframe.marginWidth = 0;

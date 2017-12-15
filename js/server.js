@@ -80,8 +80,8 @@ router.route('/shipping')
   Shipping.of({ length, weight, from }).fetchShipping()
   .subscribe(
     data  => { res.json({ data }); }
-    //, err => { log.error(`${pspid}>`, err); }
-    //, ()  => { log.info(`${pspid}>`, 'Completed'); }
+    , err => { log.error(`${pspid}>`, err); }
+    , ()  => { log.info(`${pspid}>`, 'Completed'); }
   );
 })
 .post((req, res, next)    => { next(new Error('not implemented')); })
