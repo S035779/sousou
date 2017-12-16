@@ -71,26 +71,83 @@ class AppBody extends React.Component {
     this.setState(newState);
   }
 
-  handleChange() {
-    const state = this.state;
-    if(this.isValid(state)) return;
+  submitHandler(e) {
+    e.preventDefault();
+    if(!this.isValid(this.state)) return;
+    this.logTrace(state);
+  }
 
-    const curr = this.props.currency;
-    const ship = this.props.shipping;
+  componentDidUpdate(prevProps, prevState) {
+    if(!this.isValid(this.state)) return;
+    const state = this.state;
+    const curr = prevProps.currency;
+    const ship = prevProps.shipping;
     const isJP = obj => obj.country_code.join() === 'JP';
+    const isCty = obj => ship.jpp.filter(jpp =>
+      jpp.city === obj.city).join();
+    const isEms = obj => ship.ems.filter(ems =>
+      ems.code_2 === state.country_code.join()).join();
+    const isPay = obj => true;
     const price = isJP(state) ? curr.JPY : Math.ceil(curr.USD);
-    const shipping = isJP(state) 
-      ? ship.jpp.filter(jpp => jpp.city === state.city)[0].price
-      : ship.ems.filter(ems =>
-        ems.code_2 === state.country_code.join())[0].price;
+    const shipping = isJP(state)
+      ? isCty(state) ? isCty(state).price : 0
+      : isEms(state) && isPay(state) ? isEms(state).price : 0;
     const subtotal = Number(price) * Number(state.quantity);
     const total = Number(subtotal) + Number(shipping);
     const total_currency = 'JPY';
     const name = 'Myanmar Companies YearBook Vol.1';
     const description = 'Myanmar Companies Yearbook';
     const currency = 'JPY';
-    this.setState({ price, shipping, subtotal, total, total_currency
-      , name, description,currency });
+    this.payment = { price, shipping, subtotal, total, total_currency
+      , name, description,currency };
+    this.logTrace(this.payment);
+  }
+
+  isValid(state) {
+    const isValid = (
+      state.country_code  && (state.country_code.join() !== '')
+      && state.city
+      && state.quantity   && (state.quantity.join() !== '')
+      && state.payment    && (state.payment.join() !== '')
+      && state.first_name
+      && state.last_name
+      && state.phone
+      && state.email      && (state.email === state.confirm_email)
+      && state.postal_code
+      && state.line1
+      && state.agreement
+    );
+    if(isValid) return true;
+    return false;
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    const next = nextState;
+    const prev = this.state;
+    const isNotChanged = (
+      next.country_code     === prev.country_code
+      && next.gender        === prev.gender
+      && next.year          === prev.year
+      && next.month         === prev.month
+      && next.day           === prev.day
+      && next.city          === prev.city
+      && next.quantity      === prev.country_code
+      && next.payment       === prev.payment
+      && next.first_name    === prev.first_name  
+      && next.last_name     === prev.last_name   
+      && next.phone         === prev.phone       
+      && next.email         === prev.email       
+      && next.confirm_email === prev.confirm_email
+      && next.postal_code   === prev.postal_code
+      && next.line1         === prev.line1       
+      && next.agreement     === prev.agreement   
+    );
+    if(!isNotChanged) return true;
+    return false;
+  }
+
+  logTrace(message) {
+    log.trace(`${pspid}>`, 'Trace:', message);
   }
 
   renderOption(objs, prop1, prop2) {
@@ -103,36 +160,8 @@ class AppBody extends React.Component {
         : obj.Item.ResultSet.Result[prop1][prop2];
     })
     const opts = std.dst(items);
-    return opts.map((opt, idx) => {
-      return <option
-        key={"choice-" + idx} value={opt} >{opt}</option>;
-    })
-  }
-
-  isValid(obj) {
-    return (
-      obj.country_code && (obj.country_code.join() !== '')
-      && obj.quantity  && (obj.quantity.join() !== '')
-      && obj.payment   && (obj.payment.join() !== '')
-      && obj.city
-      && obj.first_name && obj.last_name
-      && obj.phone
-      && obj.email     && (obj.email === obj.confirm_emal)
-      && obj.postal_code
-      && obj.line1
-      && obj.agreement
-    ) ? true : false;
-  }
-
-  submitHandler(e) {
-    e.preventDefault();
-    const state = this.state;
-    if(!this.isValid(state)) return;
-    this.logTrace(options);
-  }
-
-  logTrace(message) {
-    log.trace(`${pspid}>`, 'Trace:', message);
+    return opts.map((opt, idx) => (<option
+      key={"choice-" + idx} value={opt} >{opt}</option>));
   }
 
   render() {
@@ -396,8 +425,9 @@ class AppBody extends React.Component {
           冊 x 72,000円（税込／送料別）
           </label>
           <span className="notes">
-          日本国外への配送は、US $600ドルを
-          当日レートで日本円に換算した金額のご請求となります。
+          日本国外への配送は
+          US $600
+          を当日レートで日本円に換算した金額のご請求となります。
           </span>
           </td>
         </tr>
@@ -418,8 +448,9 @@ class AppBody extends React.Component {
           <option value="other">その他</option>
           </select>
           <span className="notes">
-          クレジット決済の場合はPayPalアカウントが
-          必要となります。
+          クレジット決済の場合は
+          PayPalアカウント
+          が必要となります。
           </span>
           </td>
         </tr>
