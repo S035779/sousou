@@ -149,7 +149,10 @@ class CurrencyLayer {
   fetchCurrency({ usd, jpy }) {
     return Rx.Observable.fromPromise(this.getLive('JPY', 'USD'))
       .map(obj => obj.quotes.USDJPY)
-      .map(val => ({ USDJPY: val, USD: usd*val, JPY: jpy }))
+      .map(val => ({
+        USDJPY: val
+        , USD: Number(usd)*val
+        , JPY: Number(jpy) }))
       //.map(R.tap(this.logTrace.bind(this)));
   }
 

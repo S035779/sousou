@@ -2,22 +2,24 @@ import { dispatch } from '../dispatcher';
 import AppApiClient from '../services/AppApiClient';
 
 export default {
-  fetchPayment(options) {
-    return AppApiClient.fetchPayment(options)
+  fetchPayment() {
+    return AppApiClient.fetchPayment()
       .then(items => {
-        dispatch({ type: 'item/fetch/payment', options, items });
+        dispatch({ type: 'item/fetch/payment', items });
       });
   },
-  fetchShipping(options) {
-    return AppApiClient.fetchShipping(options)
+  fetchShipping({ length, weight, from }) {
+    return AppApiClient.fetchShipping({ length, weight, from })
       .then(shipping => {
-        dispatch({ type: 'config/fetch/shipping', shipping });
+        dispatch({ type: 'config/fetch/shipping'
+          , shipping, query: { length, weight, from } });
       });
   },
-  fetchCurrency(options) {
-    return AppApiClient.fetchCurrency(options)
+  fetchCurrency({ usd, jpy }) {
+    return AppApiClient.fetchCurrency({ usd, jpy })
       .then(currency => {
-        dispatch({ type: 'config/fetch/currency', currency });
+        dispatch({ type: 'config/fetch/currency'
+          , currency , query: { usd, jpy }});
       });
   }
 }

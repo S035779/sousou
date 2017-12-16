@@ -1,5 +1,7 @@
 import React from 'react';
+import ReactDOM from 'react-dom'
 import Radio from '../../components/Radio/Radio';
+import AppAction from '../../actions/AppAction';
 import { log } from '../../utils/webutils';
 
 const pspid = 'AppBodyView';
@@ -12,16 +14,18 @@ class AppBody extends React.Component {
     const details = options.details;
     const item = options.item;
     const shipping_address = options.shipping_address;
-    this.state = {
+    this.payment = {
       total: options.total
       , total_currency: options.currency
       , subtotal: details.subtotal
       , shipping: details.shipping
       , name: item.name
       , description: item.description
-      , quantity: item.quantity
       , price: item.price
       , currency: item.currency
+    };
+    this.state = {
+      quantity: item.quantity
       , recipient_name: shipping_address.recipient_name
       , line1: shipping_address.line1
       , line2: shipping_address.line2
@@ -74,37 +78,68 @@ class AppBody extends React.Component {
   submitHandler(e) {
     e.preventDefault();
     if(!this.isValid(this.state)) return;
-    this.logTrace(state);
+    this.logTrace(this.state);
+    this.logTrace(this.payment);
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    if(!this.isValid(this.state)) return;
-    const state = this.state;
-    const curr = prevProps.currency;
-    const ship = prevProps.shipping;
+  componentDidMount() {
+    const buttonNode = ReactDOM.findDOMNode(this.refs.signup_next);
+    const el = this.el = document.createElement('div');
+    el.setAttribute('id','paypal-button');
+    buttonNode.appendChild(el);
+  }
+
+  componentWillUnmount() {
+    const buttonNode = ReactDOM.findDOMNode(this.refs.signup_next);
+    buttonNode.removeChild(this.el);
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return !this.isNotChanged(nextState, this.state);
+  }
+
+  componentWillUpdate(nextProps, nextState) {
+    const state = nextState;
+    const props = nextProps;
+    if(!this.isValid(state)) return;
+
+    const curr = props.currency;
+    const ship = props.shipping;
     const isJP = obj => obj.country_code.join() === 'JP';
     const isCty = obj => ship.jpp.filter(jpp =>
-      jpp.city === obj.city).join();
+      jpp.city === obj.city)[0];
     const isEms = obj => ship.ems.filter(ems =>
-      ems.code_2 === state.country_code.join()).join();
-    const isPay = obj => true;
-    const price = isJP(state) ? curr.JPY : Math.ceil(curr.USD);
-    const shipping = isJP(state)
-      ? isCty(state) ? isCty(state).price : 0
-      : isEms(state) && isPay(state) ? isEms(state).price : 0;
-    const subtotal = Number(price) * Number(state.quantity);
-    const total = Number(subtotal) + Number(shipping);
+      ems.code_2 === state.country_code.join())[0];
+    const isPay = obj => ship.ems.filter(ems =>
+      ems.code_2 === state.country_code.join())[0].paypal === 'OK';
+    const isMail = state.payment.join() !== 'paypal';
+    const price = isJP(state) ? Number(curr.JPY) : Math.ceil(curr.USD);
+    const shipping = !isMail
+      ? (isJP(state)
+        ? (isCty(state) ? Number(isCty(state).price) : 0) 
+        : (isEms(state) && isPay(state) ? Number(isEms(state).price) : 0))
+      : 0;
+    const subtotal = price * state.quantity;
+    const total = subtotal + shipping;
     const total_currency = 'JPY';
     const name = 'Myanmar Companies YearBook Vol.1';
     const description = 'Myanmar Companies Yearbook';
     const currency = 'JPY';
+
     this.payment = { price, shipping, subtotal, total, total_currency
-      , name, description,currency };
+      , name, description, currency };
     this.logTrace(this.payment);
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    const state = this.state;
+    const props = this.props;
+    if(!this.isValid(state) || !this.payment.shipping) return;
+    AppAction.fetchPayment();
+  }
+
   isValid(state) {
-    const isValid = (
+    return (
       state.country_code  && (state.country_code.join() !== '')
       && state.city
       && state.quantity   && (state.quantity.join() !== '')
@@ -117,14 +152,10 @@ class AppBody extends React.Component {
       && state.line1
       && state.agreement
     );
-    if(isValid) return true;
-    return false;
   }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    const next = nextState;
-    const prev = this.state;
-    const isNotChanged = (
+  
+  isNotChanged(next, prev) {
+    return (
       next.country_code     === prev.country_code
       && next.gender        === prev.gender
       && next.year          === prev.year
@@ -142,36 +173,61 @@ class AppBody extends React.Component {
       && next.line1         === prev.line1       
       && next.agreement     === prev.agreement   
     );
-    if(!isNotChanged) return true;
-    return false;
+  }
+
+  checkConfirmEmail(string) {
+    return this.state.email !== string
+      ? 'メールアドレスを再入力してください。'
+      : '';
+  }
+
+  checkEmail(string) {
+    return !/^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i.test(string)
+      ? '正しいメールアドレスを入力してください。'
+      : '';
+  }
+  
+  checkNumber(string) {
+    return !/^[\d,-]+$/.test(string)
+      ? "数字を入力して下さい。"
+      : '';
   }
 
   logTrace(message) {
     log.trace(`${pspid}>`, 'Trace:', message);
   }
 
-  renderOption(objs, prop1, prop2) {
+  renderOption(objs, key, val) {
     if(!objs) return null;
-    const len = arguments.length;
-    const items = objs.map(obj => {
-      if(!obj.Item.hasOwnProperty('ResultSet')) return null;
-      return (len === 2)
-        ? obj.Item.ResultSet.Result[prop1]
-        : obj.Item.ResultSet.Result[prop1][prop2];
-    })
-    const opts = std.dst(items);
+    const opts = objs.map(obj => ({ key: obj[key], val: obj[val] }));
     return opts.map((opt, idx) => (<option
-      key={"choice-" + idx} value={opt} >{opt}</option>));
+      key={"choice-" + idx} value={opt.val} >{opt.key}</option>));
+  }
+
+  renderButton() {
+    return this.payment.shipping 
+      ? <div id="paypal-button"></div>
+      : <input type="submit" value="ご購入" className="button-primary"/>;
   }
 
   render() {
     this.logTrace(this.state);
-    //const language = this.props.language;
-    //const shipping = this.props.shipping;
-    //const country = language === 'jp' 
-    //  ? renderOption(shipping, 'name_jp') 
-    //  : renderOption(shipping, 'name_en');
-    //
+    const shipping = this.props.shipping;
+    const language = this.props.language;
+    const country = language === 'jp' 
+      ? this.renderOption(shipping.ems, 'name_jp', 'code_2') 
+      : this.renderOption(shipping.ems, 'name_en', 'code_2');
+
+    const usd = Number(this.props.query.usd).toLocaleString();
+    const jpy = Number(this.props.query.jpy).toLocaleString();
+    const check_email = this.checkEmail(this.state.email);
+    const check_confirm_email
+      = this.checkConfirmEmail(this.state.confirm_email);
+    const check_phone = this.checkNumber(this.state.phone);
+    const check_postal_code = this.checkNumber(this.state.postal_code);
+    const check_birthday = this.checkNumber(this.state.year);
+    const check_day = this.checkNumber(this.state.day);
+    const toggleButton = this.renderButton(); 
     return <form id="user-sign-up"
       onSubmit={this.submitHandler.bind(this)}>
       {/* Your Informatin */}
@@ -262,6 +318,7 @@ class AppBody extends React.Component {
             onChange={this.handleChangeText.bind(this, 'phone')}
             className=" add-placeholder required"
             placeholder="010-0000-0000"/>
+          <span className="notes">{check_phone}</span>
           </td>
         </tr>
         <tr>
@@ -275,19 +332,20 @@ class AppBody extends React.Component {
             onChange={this.handleChangeText.bind(this, 'email')}
             className="add-placeholder required"
             placeholder="example@example.com"/>
+          <span className="notes">{check_email}</span>
           </td>
         </tr>
         <tr>
           <th>
           <label htmlFor="confirm-email">
-          確認 メールアドレス <span className="required-mark">required</span>
+          メールアドレス 確認 <span className="required-mark">required</span>
           </label>
           </th>
           <td>
           <input type="text" name="confirm_email" id="confirm_email"
             onChange={this.handleChangeText.bind(this, 'confirm_email')}
             className="required"/>
-          <span className="notes">メールアドレスを再入力して下さい。</span>
+          <span className="notes">{check_confirm_email}</span>
           </td>
         </tr>
         </tbody></table>
@@ -311,14 +369,15 @@ class AppBody extends React.Component {
           <option value=""></option>
           <option value="JP">日本</option>
           <option value="MM">ミャンマー</option>
-          <option value="BB">タイ</option>
-          <option value="CC">中国</option>
-          <option value="DD">シンガポール</option>
-          <option value="EE">マレーシア</option>
-          <option value="FF">台湾</option>
-          <option value="GG">香港</option>
-          <option value="HH">ベトナム</option>
-          <option value="II">韓国</option>
+          <option value="TH">タイ</option>
+          <option value="CN">中華人民共和国 (中国)</option>
+          <option value="SG">シンガポール</option>
+          <option value="MY">マレーシア</option>
+          <option value="TW">台湾</option>
+          <option value="HK">香港</option>
+          <option value="VN">ベトナム</option>
+          <option value="KR">大韓民国 (韓国)</option>
+          {country}
           </select>
           </td>
         </tr>
@@ -342,6 +401,7 @@ class AppBody extends React.Component {
             onChange={this.handleChangeText.bind(this, 'postal_code')}
             className=" add-placeholder required"
             placeholder="100-0000"/>
+          <span className="notes">{check_postal_code}</span>
           </td>
         </tr>
         <tr>
@@ -359,7 +419,7 @@ class AppBody extends React.Component {
         <tr>
           <th>
           <label htmlFor="line1">
-          住所１ <span className="required-mark">required</span>
+          市区町村 <span className="required-mark">required</span>
           </label>
           </th>
           <td>
@@ -370,7 +430,9 @@ class AppBody extends React.Component {
         </tr>
         <tr>
           <th>
-          <label htmlFor="line2">住所２</label>
+          <label htmlFor="line2">
+          地番・部屋番号 <span className="required-mark">required</span>
+          </label>
           </th>
           <td>
           <input type="text" name="line2" id="line2"
@@ -380,7 +442,9 @@ class AppBody extends React.Component {
         </tr>
         <tr>
           <th>
-          <label htmlFor="recipient_name">受取人</label>
+          <label htmlFor="recipient_name">
+          受取人名義
+          </label>
           </th>
           <td>
           <input type="text" name="recipient_name" id="recipient_name"
@@ -422,11 +486,11 @@ class AppBody extends React.Component {
           </select>
           </span>
           <label htmlFor="quantity">
-          冊 x 72,000円（税込／送料別）
+          冊 x {jpy}円（税込／送料別）
           </label>
           <span className="notes">
           日本国外への配送は
-          US $600
+          US ${usd}
           を当日レートで日本円に換算した金額のご請求となります。
           </span>
           </td>
@@ -468,9 +532,8 @@ class AppBody extends React.Component {
       </div>
 
       {/* Confirm */}
-      <div id="signup-next">
-      <input type="submit"
-         value="ご購入" className="button-primary"/>
+      <div id="signup-next" ref="signup_next">
+      {toggleButton}
       </div>
       </form>;
   }

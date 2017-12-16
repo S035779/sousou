@@ -226,6 +226,11 @@ input.button-primary:active {
 	border-top: 3px solid #eaa500;
 }
 
+#paypal-button {
+  width: 400px;
+  margin: auto;
+}
+
 /* plug-in style overwreite */
 /* Minimalect */
 .minict-short .minict_wrapper {

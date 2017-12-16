@@ -31,7 +31,7 @@ class App extends React.Component {
     const { usd, jpy } = std.decodeFormData(search[1]);
     const options = {};
     // Create options object...
-    AppAction.fetchPayment(options);
+    AppAction.fetchPayment();
   }
 
   render() {
@@ -40,6 +40,7 @@ class App extends React.Component {
       <AppHeader />
       <AppBody
         language={language}
+        query={this.state.query}
         options={this.state.options}
         currency={this.state.currency}
         shipping={this.state.shipping}

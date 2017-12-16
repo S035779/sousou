@@ -13,7 +13,8 @@ jQuery(function($) {
 			usersname: 'first-name last-name'
 		},
 		errorPlacement: function(error, element) {
-			if (element.attr('name') == 'first-name' || element.attr('name') == 'last-name' ) {
+			if (element.attr('name') == 'first-name'
+      || element.attr('name') == 'last-name' ) {
 				error.appendTo('.multi-field');
 			} else {
 				error.insertAfter(element);
