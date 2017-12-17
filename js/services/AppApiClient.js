@@ -54,7 +54,7 @@ export default {
               resolve('Buyer cancelled the payment.');
             }
             , onError: function(err) {
-              reject(err.message);
+              reject(err);
             }
           }, '#paypal-button');
         });
@@ -85,30 +85,39 @@ export default {
               resolve('Buyer cancelled the payment.');
             }
             , onError: function(err) {
-              reject(err.message);
+              reject(err);
             }
           }, '#paypal-button');
         });
+      case '/sendmail':
+        return new Promise((resolve, reject) => {
+          xhr.post(uri, options
+            , obj => { resolve(obj); }
+            , err => { reject(err);});
+          });
       case '/shipping':
         return new Promise((resolve, reject) => {
           xhr.get(uri, options
             , obj => { resolve(obj); }
-            , err => { reject(err.message);});
+            , err => { reject(err);});
           });
       case '/currency':
         return new Promise((resolve, reject) => {
           xhr.get(uri, options
             , obj => { resolve(obj); }
-            , err => { reject(err.message);});
+            , err => { reject(err);});
           });
       default:
         return new Promise((resolve, reject) => {
-            reject('Unknown Operation.');
+            reject(new Error('Unknown Operation.'));
           });
     }
   },
-  getPayment(options) {
+  postPayment(options) {
     return this.request('/payment', options);
+  },
+  postSendmail(options) {
+    return this.request('/sendmail', options);
   },
   getShipping(options) {
     return this.request('/shipping', options);
@@ -116,9 +125,14 @@ export default {
   getCurrency(options) {
     return this.request('/currency', options);
   },
-  fetchPayment(options) {
-    return this.getPayment(options)
-      //.then(R.tap(this.logTrace.bind(this)))
+  createPayment(options) {
+    return this.postPayment(options)
+      .then(R.tap(this.logTrace.bind(this)))
+      .catch(this.logError);
+  },
+  createSendmail(options) {
+    return this.postSendmail(options)
+      .then(R.tap(this.logTrace.bind(this)))
       .catch(this.logError);
   },
   fetchShipping(options) {
@@ -134,7 +148,7 @@ export default {
   logTrace(message) {
     log.trace(`${pspid}>`, 'Response:', message)
   },
-  logError(message) {
-    log.error(`${pspid}>`, 'Error   :', message)
+  logError(err) {
+    log.error(`${pspid}>`, 'Error:', err.name, err.message)
   },
 }

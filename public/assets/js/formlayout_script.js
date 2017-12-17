@@ -16,9 +16,10 @@ jQuery(function($) {
 			if (element.attr('name') == 'first-name'
       || element.attr('name') == 'last-name' ) {
 				error.appendTo('.multi-field');
-			} else {
-				error.insertAfter(element);
-			}
+			} else 
+			if (element.attr('name') == 'quantity') {
+				error.appendTo('.milti-field');
+			} else error.insertAfter(element);
 		}
 	});
 	

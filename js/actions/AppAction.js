@@ -2,10 +2,16 @@ import { dispatch } from '../dispatcher';
 import AppApiClient from '../services/AppApiClient';
 
 export default {
-  fetchPayment() {
-    return AppApiClient.fetchPayment()
+  createPayment(options) {
+    return AppApiClient.createPayment(options)
       .then(items => {
-        dispatch({ type: 'item/fetch/payment', items });
+        dispatch({ type: 'item/create/payment', items, options });
+      });
+  },
+  createSendmail(options) {
+    return AppApiClient.createSendmail(options)
+      .then(items => {
+        dispatch({ type: 'item/create/payment', items, options });
       });
   },
   fetchShipping({ length, weight, from }) {

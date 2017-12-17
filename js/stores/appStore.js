@@ -53,19 +53,24 @@ class AppStore extends ReduceStore<number> {
   
   reduce(state, action) {
     switch (action.type) { 
-      case 'item/fetch/payment':
+      case 'item/create/payment':
         return Object.assign({}, state, {
-          items:    action.items
+          items:      action.items
+          , options:  action.options
+        });
+      case 'item/create/sendmail':
+        return Object.assign({}, state, {
+          items:      action.items
           , options:  action.options
         });
       case 'config/fetch/shipping':
         return Object.assign({}, state, {
-          query: action.query
+          query:      action.query
           , shipping: action.shipping
         });
       case 'config/fetch/currency':
         return Object.assign({}, state, {
-          query: action.query
+          query:      action.query
           , currency: action.currency
         });
       default: 
