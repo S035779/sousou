@@ -11,11 +11,21 @@ const router = express.Router();
 const port = process.env.PORT || 8081
 
 const paypal_keyset = {
-  access_key:   process.env.PAYPAL_ACCESS_KEY
-  , secret_key: process.env.PAYPAL_SECRET_KEY
+  access_key:         process.env.PAYPAL_ACCESS_KEY
+  , secret_key:       process.env.PAYPAL_SECRET_KEY
 };
 const currency_keyset = {
-  access_key:   process.env.CURRENCY_ACCESS_KEY
+  access_key:         process.env.CURRENCY_ACCESS_KEY
+};
+
+const mail_keyset = {
+  host:               process.env.SENDMAIL_HOST
+  , secureConnection: process.env.SENDMAIL_SSL
+  , port:             process.env.SENDMAIL_PORT
+  , auth: {
+    , user:           process.env.SENDMAIL_USER
+    , pass:           process.env.SENDMAIL_PASS
+  }
 };
 
 log.config('console', 'color', 'webpay-app', 'ALL');
@@ -54,6 +64,20 @@ router.route('/payment/execute-payment')
     data  => { res.json({ data }); }
     , err => { log.error(`${pspid}>`, err); }
     , ()  => { log.info(`${pspid}>`, 'Completed to execute payment.'); }
+  );
+})
+.delete((req, res, next)  => { next(new Error('not implemented')); });
+
+router.route('/sendmail')
+.get((req, res, next)     => { next(new Error('not implemented')); })
+.put((req, res, next)     => { next(new Error('not implemented')); })
+.post((req, res, next)    => {
+  const { message } = req.body;
+  Sendmail.of(mail_keyset).createMessage(message)
+  .subscribe(
+    data  => { res.json(data); }
+    , err => { log.error(`${pspid}>`, err); }
+    , ()  => { log.info(`${pspid}>`, 'Completed to create message.'); }
   );
 })
 .delete((req, res, next)  => { next(new Error('not implemented')); });

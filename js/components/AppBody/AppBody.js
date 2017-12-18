@@ -10,50 +10,46 @@ class AppBody extends React.Component {
   constructor(props) {
     super(props);
     const options = props.options;
+    const items =   props.items;
 
-    const infomation = options.infomation;
-    const details = options.details;
-    const item = options.item;
-    const shipping_address = options.shipping_address;
+    const infomation =        options.infomation;
+    const details =           options.details;
+    const item =              options.item;
+    const shipping_address =  options.shipping_address;
 
     this.payment = {
-      total: options.total
+      total:            options.total
       , total_currency: options.currency
-      , subtotal: details.subtotal
-      , shipping: details.shipping
-      , name: item.name
-      , description: item.description
-      , price: item.price
-      , currency: item.currency
+      , subtotal:       details.subtotal
+      , shipping:       details.shipping
+      , name:           item.name
+      , description:    item.description
+      , price:          item.price
+      , currency:       item.currency
     };
 
     this.state = {
-      quantity: item.quantity
+      quantity:         item.quantity
       , recipient_name: shipping_address.recipient_name
-      , line1: shipping_address.line1
-      , line2: shipping_address.line2
-      , city: shipping_address.city
-      , country_code: shipping_address.country_code
-      , postal_code: shipping_address.postal_code
-      , phone: shipping_address.phone
-      , state: shipping_address.state
-      , first_name: infomation.first_name
-      , last_name: infomation.last_name
-      , gender: infomation.gender
-      , year: infomation.year
-      , month: infomation.month
-      , day: infomation.day
-      , email: infomation.email
-      , confirm_email: infomation.confirm_email
-      , agreement: infomation.agreement
-      , items: null
+      , line1:          shipping_address.line1
+      , line2:          shipping_address.line2
+      , city:           shipping_address.city
+      , country_code:   shipping_address.country_code
+      , postal_code:    shipping_address.postal_code
+      , phone:          shipping_address.phone
+      , state:          shipping_address.state
+      , first_name:     infomation.first_name
+      , last_name:      infomation.last_name
+      , gender:         infomation.gender
+      , year:           infomation.year
+      , month:          infomation.month
+      , day:            infomation.day
+      , email:          infomation.email
+      , confirm_email:  infomation.confirm_email
+      , payment:        infomation.payment
+      , agreement:      infomation.agreement
+      , items:          items
     };
-  }
-
-  componentWillReceiveProps(nextProps) {
-    const items = nextProps.items;
-    console.log(items)
-    if(items.state === 'approved') this.setState(items)
   }
 
   handleChangeText(name, e) {
@@ -85,6 +81,61 @@ class AppBody extends React.Component {
     this.setState(newState);
   }
 
+  handleSubmit(e) {
+    e.preventDefault();
+    if(!this.isValid(this.state)) return;
+    const options = this.setOptions(this.state, this.payment);
+    AppAction.createSendmail(options);
+    //this.logTrace(this.state);
+    //this.logTrace(this.payment);
+  }
+
+  setOptions(state, pay) {
+    return {
+      total: pay.total
+      , currency: pay.currency
+      , details: {
+        subtotal: pay.subtotal
+        , shipping: pay.shipping
+      }
+      , item: {
+        name: pay.name
+        , description: pay.description
+        , quantity: state.quantity ? state.quantity.join() : ''
+        , price: pay.price
+        , currency: pay.currency
+      }
+      , shipping_address: {
+        recipient_name: state.recipient_name
+        , line1: state.line1
+        , line2: state.line2
+        , city: state.city
+        , country_code: state.country_code
+          ? state.country_code.join() : ''
+        , postal_code: state.postal_code
+        , phone: state.phone
+        , state: state.state
+      }
+      , infomation: {
+        first_name: state.first_name
+        , last_name: state.last_name
+        , gender: state.gender
+        , year: state.year
+        , month: state.month ? state.month.join() : ''
+        , day: state.day
+        , email: state.email
+        , confirm_email: state.confirm_email
+        , payment: state.payment ? state.payment.join() : ''
+        , agreement: state.agreement
+      }
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const items = nextProps.items;
+    if(items && items.state === 'approved') this.setState({ items });
+  }
+
   componentDidMount() {
     const buttonNode = ReactDOM.findDOMNode(this.refs.signup_next);
     const el = this.el = document.createElement('div');
@@ -97,10 +148,10 @@ class AppBody extends React.Component {
   }
 
   componentWillUpdate(nextProps, nextState) {
+    if(!this.isValid(nextState)) return;
+
     const state = nextState;
     const props = nextProps;
-    if(!this.isValid(state)) return;
-
     const curr = props.currency;
     const ship = props.shipping;
     const isJP = obj => obj.country_code.join() === 'JP';
@@ -128,58 +179,20 @@ class AppBody extends React.Component {
     this.logTrace(this.payment);
   }
 
-  componentWillUnmount() {
-    const buttonNode = ReactDOM.findDOMNode(this.refs.signup_next);
-    buttonNode.removeChild(this.el);
-  }
-
   componentDidUpdate(prevProps, prevState) {
     this.componentWillUnmount();
     this.componentDidMount();
 
-    const state = this.state;
-    const props = this.props;
-    const pay = this.payment;
-    if(!this.isValid(state) || !pay.shipping) return;
-    AppAction.createPayment({
-      total: pay.total
-      , currency: pay.currency
-      , details: {
-        subtotal: pay.subtotal
-        , shipping: pay.shipping
-      }
-      , item: {
-        name: pay.name
-        , description: pay.description
-        , quantity: Number(state.quantity.join())
-        , price: pay.price
-        , currency: pay.currency
-      }
-      , shipping_address: {
-        recipient_name: state.recipient_name
-        , line1: state.line1
-        , line2: state.line2
-        , city: state.city
-        , country_code: state.country_code.join()
-        , postal_code: state.postal_code
-        , phone: state.phone
-        , state: state.state
-      }
-      , infomation: {
-        first_name: state.first_name
-        , last_name: state.last_name
-        , gender: state.gender
-        , year: Number(state.year)
-        , month: Number(state.month.join())
-        , day: Number(state.day)
-        , email: state.email
-        , confirm_email: state.confirm_email
-        , payment: state.payment.join()
-        , agreement: state.agreement
-      }
-    });
-    //this.logTrace(state);
-    //this.logTrace(pay);
+    if(!this.isValid(this.state) || !this.payment.shipping) return;
+    const options = this.setOptions(this.state, this.payment);
+    AppAction.createPayment(options);
+    //this.logTrace(this.state);
+    //this.logTrace(this.payment);
+  }
+
+  componentWillUnmount() {
+    const buttonNode = ReactDOM.findDOMNode(this.refs.signup_next);
+    buttonNode.removeChild(this.el);
   }
 
   isMail(state) {
@@ -188,16 +201,19 @@ class AppBody extends React.Component {
 
   isValid(state) {
     return (
-      state.country_code  && (state.country_code.join() !== '')
+      state.country_code      && (state.country_code.join() !== '')
+      && state.state
       && state.city
-      && state.quantity   && (state.quantity.join() !== '')
-      && state.payment    && (state.payment.join() !== '')
+      && state.quantity       && (state.quantity.join() !== '')
+      && state.payment        && (state.payment.join() !== '')
       && state.first_name
       && state.last_name
-      && state.phone
-      && state.email      && (state.email === state.confirm_email)
-      && state.postal_code
+      && state.phone          && !this.isNotNumber(state.phone)
+      && state.email          && !this.isNotEmail(state.email)
+      && state.confirm_email  && (state.email === state.confirm_email)
+      && state.postal_code    && !this.isNotNumber(state.postal_code)
       && state.line1
+      && state.line2
       && state.agreement
     );
   }
@@ -223,6 +239,34 @@ class AppBody extends React.Component {
     );
   }
 
+  isNotEmail(val) {
+    return !/^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i.test(val);
+  }
+
+  isNotNumber(val) {
+    return !/^[\d,-]+$/.test(val);
+  }
+
+  checkConfirmEmail(string) {
+    return this.state.email !== string
+      ? 'メールアドレスを再入力してください。'
+      : '';
+  }
+
+  checkEmail(val) {
+    return this.isNotEmail(val)
+      ? '正しいメールアドレスを入力してください。'
+      : '';
+  }
+  
+  checkNumber(val1, val2) {
+    return val2 != null
+      ? ( this.isNotNumber(val1) || this.isNotNumber(val2)
+        ? '半角数字を入力して下さい。' : '')
+      : ( this.isNotNumber(val1)
+        ? '半角数字を入力して下さい。' : '');
+  }
+
   renderOption(objs, key, val) {
     if(!objs) return null;
     const opts = objs.map(obj => ({ key: obj[key], val: obj[val] }));
@@ -242,81 +286,11 @@ class AppBody extends React.Component {
       ? <div className="modalDialog">
         <div>
           <h3>ご利用有難うございました！</h3>
-          <p>{state.items.transactions[0].item_list.items[0]}</p>
+          <p>ご依頼の商品の詳細は別途メールにてご連絡させて頂きます。</p>
         </div>
         </div>
       : <div></div>;
    }
-
-  checkConfirmEmail(string) {
-    return this.state.email !== string
-      ? 'メールアドレスを再入力してください。'
-      : '';
-  }
-
-  checkEmail(val) {
-    return !/^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i.test(val)
-      ? '正しいメールアドレスを入力してください。'
-      : '';
-  }
-  
-  checkNumber(val1, val2) {
-    return val2 != null
-      ? ( !/^[\d,-]+$/.test(val1) || !/^[\d,-]+$/.test(val2)
-        ? "数字を入力して下さい。" : '')
-      : ( !/^[\d,-]+$/.test(val1)
-        ? "数字を入力して下さい。" : '');
-  }
-
-  logTrace(message) {
-    log.trace(`${pspid}>`, 'Trace:', message);
-  }
-
-  submitHandler(e) {
-    e.preventDefault();
-    const state = this.state;
-    const pay = this.payment;
-    if(!this.isValid(state)) return;
-    AppAction.createSendmail({
-      total: pay.total
-      , currency: pay.currency
-      , details: {
-        subtotal: pay.subtotal
-        , shipping: pay.shipping
-      }
-      , item: {
-        name: pay.name
-        , description: pay.description
-        , quantity: Number(state.quantity.join())
-        , price: pay.price
-        , currency: pay.currency
-      }
-      , shipping_address: {
-        recipient_name: state.recipient_name
-        , line1: state.line1
-        , line2: state.line2
-        , city: state.city
-        , country_code: state.country_code.join()
-        , postal_code: state.postal_code
-        , phone: state.phone
-        , state: state.state
-      }
-      , infomation: {
-        first_name: state.first_name
-        , last_name: state.last_name
-        , gender: state.gender
-        , year: Number(state.year)
-        , month: Number(state.month.join())
-        , day: Number(state.day)
-        , email: state.email
-        , confirm_email: state.confirm_email
-        , payment: state.payment.join()
-        , agreement: state.agreement
-      }
-    });
-    this.logTrace(state);
-    this.logTrace(pay);
-  }
 
   render() {
     const state = this.state;
@@ -339,7 +313,7 @@ class AppBody extends React.Component {
     const toggledButton = this.renderButton(state);
     const popupModal = this.renderModal(state);
     return <form id="user-sign-up"
-      onSubmit={this.submitHandler.bind(this)}>
+      onSubmit={this.handleSubmit.bind(this)}>
       {/* Your Informatin */}
       <fieldset className="category-group">
         <legend>お客様の情報</legend>
@@ -393,7 +367,7 @@ class AppBody extends React.Component {
           <select name="month" id="month" className="short-field"
             value={this.state.month}
             onChange={this.handleChangeSelect.bind(this, 'month')}>
-          <option value=""></option>
+          <option value></option>
           <option value="1">1</option>
           <option value="2">2</option>
           <option value="3">3</option>
@@ -477,7 +451,7 @@ class AppBody extends React.Component {
             value={this.state.country_code}
             onChange={this.handleChangeSelect.bind(this, 'country_code')}
             className="required">
-          <option value=""></option>
+          <option value></option>
           <option value="JP">日本</option>
           <option value="MM">ミャンマー</option>
           <option value="TH">タイ</option>
@@ -587,7 +561,7 @@ class AppBody extends React.Component {
             value={this.state.quantity}
             onChange={this.handleChangeSelect.bind(this, 'quantity')}
             className="short-field required">
-          <option value=""></option>
+          <option value></option>
           <option value="1">1</option>
           <option value="2">2</option>
           <option value="3">3</option>
@@ -624,7 +598,7 @@ class AppBody extends React.Component {
             value={this.state.payment}
             onChange={this.handleChangeSelect.bind(this, 'payment')}
             className="middle-field required">
-          <option value=""></option>
+          <option value></option>
           <option value="paypal">クレジットカード（PayPal）</option>
           <option value="deposit">銀行振り込み（前払い）</option>
           <option value="other">その他</option>
@@ -656,6 +630,10 @@ class AppBody extends React.Component {
       </div>
       {popupModal}
       </form>;
+  }
+
+  logTrace(message) {
+    log.trace(`${pspid}>`, 'Trace:', message);
   }
 };
 export default AppBody;

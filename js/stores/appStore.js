@@ -18,11 +18,15 @@ class AppStore extends ReduceStore<number> {
       , options:  {
         total:  0
         , currency: ''
-        , details:  { subtotal: 0, shipping: 0 }
+        , details:
+          {
+            subtotal: 0
+            , shipping: 0
+          }
         , item: { 
           name: ''
           , description: ''
-          , quantity: 0
+          , quantity: ''
           , price: 0
           , currency: ''
         }
