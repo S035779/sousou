@@ -10,10 +10,12 @@ class AppBody extends React.Component {
   constructor(props) {
     super(props);
     const options = props.options;
+
     const infomation = options.infomation;
     const details = options.details;
     const item = options.item;
     const shipping_address = options.shipping_address;
+
     this.payment = {
       total: options.total
       , total_currency: options.currency
@@ -24,6 +26,7 @@ class AppBody extends React.Component {
       , price: item.price
       , currency: item.currency
     };
+
     this.state = {
       quantity: item.quantity
       , recipient_name: shipping_address.recipient_name
@@ -43,14 +46,14 @@ class AppBody extends React.Component {
       , email: infomation.email
       , confirm_email: infomation.confirm_email
       , agreement: infomation.agreement
-      , items: {}
+      , items: null
     };
   }
 
-  componentWillReciveProps(nextProps) {
+  componentWillReceiveProps(nextProps) {
     const items = nextProps.items;
-    const result = items.transactions[0].related_resouces[0];
-    if(result.sale.state === 'completed') this.setState({ items })
+    console.log(items)
+    if(items.state === 'approved') this.setState(items)
   }
 
   handleChangeText(name, e) {
@@ -234,36 +237,13 @@ class AppBody extends React.Component {
       : <div></div>;
   }
 
-  renderModal(items) {
-    const background = {
-      position: 'absolute'
-      , left: '0', top: '0', width: '100%', height: '100%'
-      , zIndex: '1'
-      , background: '#000'
-      , opacity: '.6'
-    };
-
-    const window = {
-      position: 'absolute'
-      , left: '25%', bottom: '25%', width: '50%', height: '10%'
-      , padding: '5px'
-      , border: '2px outset gray'
-      , zIndex: '2'
-      , overFlow: 'auto'
-      , background: '#FFF'
-    };
-    const content = {
-      textAlign: 'center'
-      , fontSize: '15pt'
-      , fontWeight: 'bold'
-      , padding: '25% 5% 25% 5%'
-    };
-    return items 
-      ? <div id="modal-window">
-        <div style={window}>
-          <div style={content}>ご利用有難うございました！</div>
+  renderModal(state) {
+    return state.items 
+      ? <div className="modalDialog">
+        <div>
+          <h3>ご利用有難うございました！</h3>
+          <p>{state.items.transactions[0].item_list.items[0]}</p>
         </div>
-        <div style={background}></div>
         </div>
       : <div></div>;
    }
@@ -357,7 +337,7 @@ class AppBody extends React.Component {
     const check_postal_code = this.checkNumber(state.postal_code);
     const check_birthday = this.checkNumber(state.year, state.day);
     const toggledButton = this.renderButton(state);
-    const popupModal = this.renderModal(state.items);
+    const popupModal = this.renderModal(state);
     return <form id="user-sign-up"
       onSubmit={this.submitHandler.bind(this)}>
       {/* Your Informatin */}

@@ -127,22 +127,18 @@ export default {
   },
   createPayment(options) {
     return this.postPayment(options)
-      .then(R.tap(this.logTrace.bind(this)))
       .catch(this.logError);
   },
   createSendmail(options) {
     return this.postSendmail(options)
-      .then(R.tap(this.logTrace.bind(this)))
       .catch(this.logError);
   },
   fetchShipping(options) {
     return this.getShipping(options)
-      //.then(R.tap(this.logTrace.bind(this)))
       .catch(this.logError);
   },
   fetchCurrency(options) {
     return this.getCurrency(options)
-      .then(R.tap(this.logTrace.bind(this)))
       .catch(this.logError);
   },
   logTrace(message) {

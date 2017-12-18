@@ -36,7 +36,7 @@ class App extends React.Component {
 
   render() {
     const { language } = this.props.match.params;
-    return <div id="cb">
+    return <div>
       <AppHeader />
       <AppBody
         language={language}
@@ -44,6 +44,7 @@ class App extends React.Component {
         options={this.state.options}
         currency={this.state.currency}
         shipping={this.state.shipping}
+        items={this.state.items}
         onChangePayment={this.handleChangePayment.bind(this)} />
       <AppFooter />
       </div>;

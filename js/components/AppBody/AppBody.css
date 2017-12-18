@@ -110,6 +110,26 @@ input.button-primary:active {
   margin: auto;
 }
 
+.modalDialog {
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  z-index: 99999;
+  background: rgba(0,0,0,0.8);
+  opacity: 1;
+}
+
+.modalDialog > div {
+  width: 400px;
+  position: relative;
+  margin: 1150px auto;
+  padding: 5px 20px 13px 20px;
+  border-radius: 10px;
+  background: #fff;
+  background: -moz-linear-gradient(#fff, #999);
+  background: -webkit-linear-gradient(#fff, #999);
+  background: -o-linear-gradient(#fff, #999);
+}
+
 /* plug-in style overwreite */
 /* Validate */
 input[type=text].error,

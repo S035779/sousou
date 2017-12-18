@@ -10,6 +10,8 @@ const config = {
     common:   [
       'react',
       'react-dom',
+      'react-router-dom',
+      'flux',
       './main.css'
     ]
   },

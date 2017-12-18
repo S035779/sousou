@@ -12,9 +12,9 @@ class AppStore extends ReduceStore<number> {
         , usd: 0
         , jpy: 0
       }
-      , shipping:   {}
+      , shipping: {}
       , currency: {}
-      , items:    {}
+      , items:    null
       , options:  {
         total:  0
         , currency: ''
