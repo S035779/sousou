@@ -197,6 +197,10 @@ input.button-primary:active {
 	border: none;
 	border-top: 3px solid #eaa500;
 }
+#paypal-button {
+  width: 400px;
+  margin: auto;
+}
 /* plug-in style overwreite */
 /* Minimalect */
 .minict-short .minict_wrapper {
@@ -352,6 +356,22 @@ p#copyright {
 	padding: 0.5em 0;
 	text-align: center;
 	font-size: 75%;
+}
+#modal-window.background {
+  position: absolute;
+  left: 0; top: 0; width: 100%; height: 10%;
+  z-index: '1';
+  background: #000;
+  opacity: .6;
+}
+#modal-window.window {
+  position: absolute;
+  left: 25%; bottom: 25%; width: 50%; height: 50%;
+  padding: 5px;
+  border: 2px outset gray;
+  z-index: '2';
+  overFlow: auto;
+  background: #FFF;
 }
 
 /*# sourceMappingURL=common.css.map*/

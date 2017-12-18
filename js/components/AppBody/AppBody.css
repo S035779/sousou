@@ -1,0 +1,191 @@
+/* form container */
+#user-sign-up {
+	margin: 2em auto;
+	padding-top: 0.5em;
+	background-color: #F2F2F2;
+}
+
+.category-group,
+#signup-agreement,
+#signup-next {
+	margin: 0;
+	padding: 2em 1.5em 0.5em;
+	border: none;
+	border-bottom: 0.5em solid #FFF;
+}
+
+.category-group {
+	margin-top: 1em;
+}
+
+#signup-agreement,
+#signup-next {
+	padding-bottom: 2em;
+	text-align: center;
+}
+
+.category-group legend {
+	margin: 0;
+	padding: 0;
+	font-weight: bold;
+	font-size: 150%;
+}
+
+/* table layout */
+.category-group table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.category-group th,
+.category-group td {
+	vertical-align: top;
+	padding-bottom: 1em;
+}
+
+.category-group th {
+	padding-top: 0.5em;
+	padding-right: 0.5em;
+	width: 13em;
+	text-align: right;
+}
+
+/* form items */
+input[type=text],
+input[type=password] {
+	width: 100%;
+	padding: 0.375em 0.5em;
+	border: 1px solid #CCC;
+	border-top-width: 2px;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	border-radius: 3px;
+	font-size: 100%;
+}
+
+input:focus {
+	background-color: #FFF8F0;
+}
+
+input.middle-field {
+	width: 8em;
+}
+
+input.short-field {
+	width: 4em;
+}
+
+select {
+	width: 100%;
+  height: 2em;
+  font-size: 100%;
+}
+
+select.middle-field {
+	width: 15em;
+}
+
+select.short-field {
+	width: 4em;
+}
+
+input.button-primary {
+  width: 400px;
+	padding: 1em 1.5em;
+	border: none;
+	border-bottom: 3px solid #eaa500;
+	border-radius: 5px;
+	color: #FFF;
+	font-size: 100%;
+	background-color: #ffb401;
+}
+
+input.button-primary:active {
+	border: none;
+	border-top: 3px solid #eaa500;
+}
+
+#paypal-button {
+  width: 400px;
+  margin: auto;
+}
+
+/* plug-in style overwreite */
+/* Validate */
+input[type=text].error,
+input[type=password].error {
+	border: 1px solid #C66;
+	border-top-width: 2px;
+	background-color: #FDD;
+}
+
+label.error {
+	display: block;
+	line-height: 1.2;
+	margin-top: 0.5em;
+	color: #C00;
+	font-weight: bold;
+	font-size: 87.5%;
+}
+
+label.error:before {
+	display: inline-block;
+	content: '!';
+	margin-right: 0.25em;
+	padding: 0 0.45em;
+	border-radius: 3px;
+	color: #FFF;
+	background-color: #C00;
+}
+
+/* other items */
+.required-mark {
+	position: relative;
+	top: -0.2em;
+	left: 0;
+	line-height: 1;
+	padding: 0.25em 0.375em;
+	border-radius: 2px;
+	color: #FFF;
+	font-weight: normal;
+	font-size: 62.5%;
+	background-color: #C00;
+}
+
+.notes {
+	display: block;
+	line-height: 1.2;
+	margin-top: 0.5em;
+	font-size: 75%;
+}
+
+/* multi field */
+input.name-field {
+	width: 33.5%;
+}
+
+.last-name {
+	margin-right: 1em;
+}
+
+.gender-field {
+	padding: 0.375em;
+}
+
+.birthday-field {
+	display: inline-block;
+	margin-right: 0.5em;
+}
+
+.quantity-field {
+	display: inline-block;
+	margin-right: 0.5em;
+}
+
+.interests-field label {
+	display: inline-block;
+	width: 7em;
+	padding: 0.375em 0;
+}
+
+

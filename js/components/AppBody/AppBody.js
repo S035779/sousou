@@ -43,7 +43,14 @@ class AppBody extends React.Component {
       , email: infomation.email
       , confirm_email: infomation.confirm_email
       , agreement: infomation.agreement
+      , items: {}
     };
+  }
+
+  componentWillReciveProps(nextProps) {
+    const items = nextProps.items;
+    const result = items.transactions[0].related_resouces[0];
+    if(result.sale.state === 'completed') this.setState({ items })
   }
 
   handleChangeText(name, e) {
@@ -118,6 +125,11 @@ class AppBody extends React.Component {
     this.logTrace(this.payment);
   }
 
+  componentWillUnmount() {
+    const buttonNode = ReactDOM.findDOMNode(this.refs.signup_next);
+    buttonNode.removeChild(this.el);
+  }
+
   componentDidUpdate(prevProps, prevState) {
     this.componentWillUnmount();
     this.componentDidMount();
@@ -125,7 +137,7 @@ class AppBody extends React.Component {
     const state = this.state;
     const props = this.props;
     const pay = this.payment;
-    if(!this.isValid(this.state) || !this.payment.shipping) return;
+    if(!this.isValid(state) || !pay.shipping) return;
     AppAction.createPayment({
       total: pay.total
       , currency: pay.currency
@@ -163,13 +175,8 @@ class AppBody extends React.Component {
         , agreement: state.agreement
       }
     });
-    this.logTrace(this.state);
-    this.logTrace(this.payment);
-  }
-
-  componentWillUnmount() {
-    const buttonNode = ReactDOM.findDOMNode(this.refs.signup_next);
-    buttonNode.removeChild(this.el);
+    //this.logTrace(state);
+    //this.logTrace(pay);
   }
 
   isMail(state) {
@@ -213,6 +220,54 @@ class AppBody extends React.Component {
     );
   }
 
+  renderOption(objs, key, val) {
+    if(!objs) return null;
+    const opts = objs.map(obj => ({ key: obj[key], val: obj[val] }));
+    return opts.map((opt, idx) => (<option
+      key={"choice-" + idx} value={opt.val} >{opt.key}</option>));
+  }
+
+  renderButton(state) {
+    return !this.payment.shipping || this.isMail(state)
+      || !this.isValid(state)
+      ? <input type="submit" value="ご購入" className="button-primary"/>
+      : <div></div>;
+  }
+
+  renderModal(items) {
+    const background = {
+      position: 'absolute'
+      , left: '0', top: '0', width: '100%', height: '100%'
+      , zIndex: '1'
+      , background: '#000'
+      , opacity: '.6'
+    };
+
+    const window = {
+      position: 'absolute'
+      , left: '25%', bottom: '25%', width: '50%', height: '10%'
+      , padding: '5px'
+      , border: '2px outset gray'
+      , zIndex: '2'
+      , overFlow: 'auto'
+      , background: '#FFF'
+    };
+    const content = {
+      textAlign: 'center'
+      , fontSize: '15pt'
+      , fontWeight: 'bold'
+      , padding: '25% 5% 25% 5%'
+    };
+    return items 
+      ? <div id="modal-window">
+        <div style={window}>
+          <div style={content}>ご利用有難うございました！</div>
+        </div>
+        <div style={background}></div>
+        </div>
+      : <div></div>;
+   }
+
   checkConfirmEmail(string) {
     return this.state.email !== string
       ? 'メールアドレスを再入力してください。'
@@ -237,31 +292,22 @@ class AppBody extends React.Component {
     log.trace(`${pspid}>`, 'Trace:', message);
   }
 
-  renderOption(objs, key, val) {
-    if(!objs) return null;
-    const opts = objs.map(obj => ({ key: obj[key], val: obj[val] }));
-    return opts.map((opt, idx) => (<option
-      key={"choice-" + idx} value={opt.val} >{opt.key}</option>));
-  }
-
-  renderButton(state) {
-    return !this.payment.shipping || this.isMail(state)
-      || !this.isValid(state)
-      ? <input type="submit" value="ご購入" className="button-primary"/>
-      : <div></div>;
-  }
-
   submitHandler(e) {
     e.preventDefault();
-    if(!this.isValid(this.state)) return;
+    const state = this.state;
+    const pay = this.payment;
+    if(!this.isValid(state)) return;
     AppAction.createSendmail({
       total: pay.total
       , currency: pay.currency
-      , details: { subtotal: pay.subtotal, shipping: pay.shipping }
+      , details: {
+        subtotal: pay.subtotal
+        , shipping: pay.shipping
+      }
       , item: {
         name: pay.name
-        , desctiption: pay.description
-        , quantity: state.quantity
+        , description: pay.description
+        , quantity: Number(state.quantity.join())
         , price: pay.price
         , currency: pay.currency
       }
@@ -270,7 +316,7 @@ class AppBody extends React.Component {
         , line1: state.line1
         , line2: state.line2
         , city: state.city
-        , country_name: state.country_name
+        , country_code: state.country_code.join()
         , postal_code: state.postal_code
         , phone: state.phone
         , state: state.state
@@ -279,17 +325,17 @@ class AppBody extends React.Component {
         first_name: state.first_name
         , last_name: state.last_name
         , gender: state.gender
-        , year: state.year
-        , month: state.month
-        , day: state.day
+        , year: Number(state.year)
+        , month: Number(state.month.join())
+        , day: Number(state.day)
         , email: state.email
         , confirm_email: state.confirm_email
-        , payment: state.payment
+        , payment: state.payment.join()
         , agreement: state.agreement
       }
     });
-    this.logTrace(this.state);
-    this.logTrace(this.payment);
+    this.logTrace(state);
+    this.logTrace(pay);
   }
 
   render() {
@@ -311,6 +357,7 @@ class AppBody extends React.Component {
     const check_postal_code = this.checkNumber(state.postal_code);
     const check_birthday = this.checkNumber(state.year, state.day);
     const toggledButton = this.renderButton(state);
+    const popupModal = this.renderModal(state.items);
     return <form id="user-sign-up"
       onSubmit={this.submitHandler.bind(this)}>
       {/* Your Informatin */}
@@ -627,6 +674,7 @@ class AppBody extends React.Component {
       {toggledButton}
       <div ref="signup_next"></div>
       </div>
+      {popupModal}
       </form>;
   }
 };
