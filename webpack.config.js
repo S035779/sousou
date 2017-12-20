@@ -2,6 +2,7 @@ const webpack = require('webpack');
 const path = require('path');
 const Dotenv = require('dotenv-webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const fs = require('fs');
 
 const config = {
   context: path.resolve(__dirname, 'js'),
@@ -38,12 +39,16 @@ const config = {
     contentBase: path.join(__dirname, 'public'),
     inline: true,
     host: '0.0.0.0',
-    port: 8080,
+    port: 4443,
     historyApiFallback: true,
     watchContentBase: true,
     stats: {colors: true},
     proxy: {
-      '/api': 'http://localhost:8081'
+      '/api': 'http://localhost:8080'
+    },
+    https: {
+      key: fs.readFileSync(path.join(__dirname, 'ssl/server.key')),
+      cert: fs.readFileSync(path.join(__dirname, 'ssl/server.crt'))
     }
   },
   performance: {

@@ -59,7 +59,7 @@ class Shipping {
     const file = path + operation;
     return new Promise((resolve, reject) => {
       fs.readFile(file, { encoding: 'utf-8' }, (err, data) => {
-        if(err) reject(err.message);
+        if(err) reject(err);
         resolve(data);
       });
     });

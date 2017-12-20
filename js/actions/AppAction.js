@@ -8,10 +8,10 @@ export default {
         dispatch({ type: 'item/create/payment', items, options });
       });
   },
-  createSendmail(options) {
-    return AppApiClient.createSendmail(options)
+  createMessage(options) {
+    return AppApiClient.createMessage(options)
       .then(items => {
-        dispatch({ type: 'item/create/payment', items, options });
+        dispatch({ type: 'item/create/message', items, options });
       });
   },
   fetchShipping({ length, weight, from }) {

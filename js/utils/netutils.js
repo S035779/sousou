@@ -1,25 +1,29 @@
-var log = require('./logutils').logs;
-var std = require('./stdutils');
+import std from './stdutils';
+import { logs as log }  from './logutils';
 
 /*
  * Simple HTTP GET request
+ *
+ * @param {string} url - 
+ * @param {object} query -
+ * @param {function} callback -
  */
-var get = function(url, query, callback) {  
+const get = function(url, query, callback) {  
   url = require('url').parse(url);
-  var hostname  = url.hostname
+  let hostname  = url.hostname
     , port      = url.port || 80
     , path      = url.pathname;
   if (query) path += '?' + require('querystring').stringify(query);
-  var client = require('http');
-  var req = client.get({
+  const client = require('http');
+  const req = client.get({
     host: hostname
     , port: port
     , path: path
   }, function(res) {
-    var stat = res.statusCode;
-    var head = res.headers;
+    const stat = res.statusCode;
+    const head = res.headers;
     res.setEncoding('utf8');
-    var body = '';
+    let body = '';
     res.on('data', function(chunk) { body += chunk; });
     res.on('end', function() {
       switch (stat) {
@@ -56,30 +60,34 @@ var get = function(url, query, callback) {
     log.error(`Problem with HTTP Request: ${err.code}`);
     log.trace(`${err.message}`);
     log.trace(`${err.stack}`);
-    if (callback) callback(new Error(body));
+    if (callback) callback(err);
   });
 };
 module.exports.get = get;
 
 /*
  * HTTPS GET request
+ *
+ * @param {string} url - 
+ * @param {object} query -
+ * @param {function} callback -
  */
-var get2 = function(url, query, callback) {  
+const get2 = function(url, query, callback) {  
   url = require('url').parse(url);
-  var hostname  = url.hostname
+  let hostname  = url.hostname
     , port      = url.port || 443
     , path      = url.pathname;
   if (query) path += '?' + require('querystring').stringify(query);
-  var client = require('https');
-  var req = client.get({
+  const client = require('https');
+  const req = client.get({
     host: hostname
     , port: port
     , path: path
   }, function(res) {
-    var stat = res.statusCode;
-    var head = res.headers;
+    const stat = res.statusCode;
+    const head = res.headers;
     res.setEncoding('utf8');
-    var body = '';
+    let body = '';
     res.on('data', function(chunk) { body += chunk; });
     res.on('end', function() {
       switch (stat) {
@@ -116,22 +124,26 @@ var get2 = function(url, query, callback) {
     log.error(`Problem with HTTP Request: ${err.code}`);
     log.trace(`${err.message}`);
     log.trace(`${err.stack}`);
-    if (callback) callback(new Error(body));
+    if (callback) callback(err);
   });
 };
 module.exports.get2 = get2;
 
 /*
  * Simple HTTP POST request with data as the request body
+ *
+ * @param {string} url - 
+ * @param {object} body -
+ * @param {function} callback -
  */
-var postData = function(url, body, callback) {
+const postData = function(url, body, callback) {
   url = require('url').parse(url);
-  var hostname  = url.hostname
+  let hostname  = url.hostname
     , port      = url.port || 80
     , path      = url.pathname
     , query     = url.query;
   if (query) path += '?' + query;
-  var type;
+  let type = '';
   if (body == null) body = '';
   if (body instanceof Buffer)          type = 'application/octet-stream';
   else if (typeof body === 'string')   type = 'text/plain; charset=UTF-8';
@@ -139,8 +151,8 @@ var postData = function(url, body, callback) {
     body = require('querystring').stringify(body);
     type = 'application/x-www-form-urlencoded';
   }
-  var client = require('http');
-  var req = client.request({
+  const client = require('http');
+  const req = client.request({
     hostname: hostname,
     port: port,
     path: path,
@@ -150,10 +162,10 @@ var postData = function(url, body, callback) {
       'Content-Length': Buffer.byteLength(body)
     }
   }, function(res) {
-    var stat = res.statusCode;
-    var head = res.headers;
+    const stat = res.statusCode;
+    const head = res.headers;
     res.setEncoding('utf8');
-    var body = '';
+    let body = '';
     res.on('data', function(chunk) { body += chunk; });
     res.on('end', function() {
       switch (stat) {
@@ -190,7 +202,7 @@ var postData = function(url, body, callback) {
     log.error(`Problem with HTTP Request: ${err.code}`);
     log.trace(`${err.message}`);
     log.trace(`${err.stack}`);
-    if (callback) callback(new Error(body));
+    if (callback) callback(err);
   });
   req.write(body);
   req.end();
@@ -199,15 +211,20 @@ module.exports.postData = postData;
 
 /*
  * HTTPS POST request with urlencoded data as the request body
+ *
+ * @param {string} url - 
+ * @param {object} auth -
+ * @param {object} body -
+ * @param {function} callback -
  */
-var postData2 = function(url, auth, body, callback) {
+const postData2 = function(url, auth, body, callback) {
   url = require('url').parse(url);
-  var hostname  = url.hostname
+  let hostname  = url.hostname
     , port      = url.port || 443
     , path      = url.pathname
     , query     = url.query;
   if (query) path += '?' + query;
-  var type;
+  let type = '';
   if (body == null) body = '';
   if (body instanceof Buffer)         type = 'application/octet-stream';
   else if (typeof body === 'string')  type = 'text/plain; charset=UTF-8';
@@ -215,7 +232,7 @@ var postData2 = function(url, auth, body, callback) {
     body = require('querystring').stringify(body);
     type = 'application/x-www-form-urlencoded';
   }
-  var headers = {
+  const headers = {
     'Accept':             'application/json'
     , 'Accept-Language':  'ja_JP'
     , 'Content-Length':   Buffer.byteLength(body)
@@ -228,18 +245,18 @@ var postData2 = function(url, auth, body, callback) {
     headers['Authorization'] =' Bearer ' 
       + auth.bearer;
   }
-  var client = require('https');
-  var req = client.request({
+  const client = require('https');
+  const req = client.request({
     hostname: hostname,
     port: port,
     path: path,
     method: 'POST',
     headers: headers
   }, function(res) {
-    var stat = res.statusCode;
-    var head = res.headers;
+    const stat = res.statusCode;
+    const head = res.headers;
     res.setEncoding('utf8');
-    var body = '';
+    let body = '';
     res.on('data', function(chunk) { body += chunk; });
     res.on('end', function() {
       switch (stat) {
@@ -278,7 +295,7 @@ var postData2 = function(url, auth, body, callback) {
     log.error(`Problem with HTTP Request: ${err.code}`);
     log.trace(`${err.message}`);
     log.trace(`${err.stack}`);
-    if (callback) callback(new Error(body));
+    if (callback) callback(err);
   });
   req.write(body);
   req.end();
@@ -287,15 +304,20 @@ module.exports.postData2 = postData2;
 
 /*
  * HTTPS POST request with json as the request body
+ *
+ * @param {string} url - 
+ * @param {object} auth -
+ * @param {object} body -
+ * @param {function} callback -
  */
-var postJson2 = function(url, auth, body, callback) {
+const postJson2 = function(url, auth, body, callback) {
   url = require('url').parse(url);
-  var hostname  = url.hostname
+  let hostname  = url.hostname
     , port      = url.port || 443
     , path      = url.pathname
     , query     = url.query;
   if (query) path += '?' + query;
-  var type;
+  let type = '';
   if (body == null) body = '';
   if (body instanceof Buffer)          type = 'application/octet-stream';
   else if (typeof body === 'string')   type = 'text/plain; charset=UTF-8';
@@ -303,7 +325,7 @@ var postJson2 = function(url, auth, body, callback) {
     body = JSON.stringify(body);
     type = 'application/json';
   }
-  var headers = {
+  const headers = {
     'Accept':             'application/json'
     , 'Accept-Language':  'ja_JP'
     , 'Content-Length':   Buffer.byteLength(body)
@@ -316,18 +338,18 @@ var postJson2 = function(url, auth, body, callback) {
     headers['Authorization'] =
       'Bearer ' + auth.bearer;
   }
-  var client = require('https');
-  var req = client.request({
+  const client = require('https');
+  const req = client.request({
     hostname: hostname,
     port: port,
     path: path,
     method: 'POST',
     headers: headers 
   }, function(res) {
-    var stat = res.statusCode;
-    var head = res.headers;
+    const stat = res.statusCode;
+    const head = res.headers;
     res.setEncoding('utf8');
-    var body = '';
+    let body = '';
     res.on('data', function(chunk) { body += chunk; });
     res.on('end', function() {
       switch (stat) {
@@ -366,7 +388,7 @@ var postJson2 = function(url, auth, body, callback) {
     log.error(`Problem with HTTP Request: ${err.code}`);
     log.trace(`${err.message}`);
     log.trace(`${err.stack}`);
-    if (callback) callback(new Error(body));
+    if (callback) callback(err);
   });
   req.write(body);
   req.end();

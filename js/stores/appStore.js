@@ -62,7 +62,7 @@ class AppStore extends ReduceStore<number> {
           items:      action.items
           , options:  action.options
         });
-      case 'item/create/sendmail':
+      case 'item/create/message':
         return Object.assign({}, state, {
           items:      action.items
           , options:  action.options

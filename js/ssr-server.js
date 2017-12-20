@@ -1,15 +1,23 @@
-require('dotenv').config()
+import dotenv from 'dotenv';
+import http from 'http';
+import fs from 'fs';
 import express from 'express';
 import bodyParser from 'body-parser';
 import PayPalPayment from './utils/PayPalPayment';
 import CurrencyLayer from './utils/CurrencyLayer';
 import Shipping from './utils/Shipping';
+import Sendmail from './utils/Sendmail';
 import { logs as log } from './utils/logutils';
 
 const app = express();
 const router = express.Router();
-const port = process.env.PORT || 8081
 
+dotenv.config()
+const port = process.env.SSR_PORT || 8080
+const options = {
+  key: fs.readFileSync(__dirname + '/../ssl/server.key')
+  , cert: fs.readFileSync(__dirname + '/../ssl/server.crt')
+};
 const paypal_keyset = {
   access_key:         process.env.PAYPAL_ACCESS_KEY
   , secret_key:       process.env.PAYPAL_SECRET_KEY
@@ -17,19 +25,17 @@ const paypal_keyset = {
 const currency_keyset = {
   access_key:         process.env.CURRENCY_ACCESS_KEY
 };
-
 const mail_keyset = {
-  host:               process.env.SENDMAIL_HOST
-  , secureConnection: process.env.SENDMAIL_SSL
-  , port:             process.env.SENDMAIL_PORT
+  host:     process.env.SENDMAIL_HOST
+  , secure: process.env.SENDMAIL_SSL
+  , port:   process.env.SENDMAIL_PORT
   , auth: {
-    , user:           process.env.SENDMAIL_USER
-    , pass:           process.env.SENDMAIL_PASS
+    user:   process.env.SENDMAIL_USER
+    , pass: process.env.SENDMAIL_PASS
   }
 };
 
 log.config('console', 'color', 'webpay-app', 'ALL');
-
 const pspid = 'ssr-server';
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -48,7 +54,7 @@ router.route('/payment/create-payment')
   PayPalPayment.of(paypal_keyset).createPayment()
   .subscribe(
     data  => { res.json({ id: data.id }); }
-    , err => { log.error(`${pspid}>`, err); }
+    , err => { log.error(`${pspid}>`, err.message); }
     , ()  => { log.info(`${pspid}>`, 'Completed to create payment.'); }
   );
 })
@@ -62,7 +68,7 @@ router.route('/payment/execute-payment')
   PayPalPayment.of(paypal_keyset).executePayment({ paymentID, payerID })
   .subscribe(
     data  => { res.json({ data }); }
-    , err => { log.error(`${pspid}>`, err); }
+    , err => { log.error(`${pspid}>`, err.message); }
     , ()  => { log.info(`${pspid}>`, 'Completed to execute payment.'); }
   );
 })
@@ -76,8 +82,8 @@ router.route('/sendmail')
   Sendmail.of(mail_keyset).createMessage(message)
   .subscribe(
     data  => { res.json(data); }
-    , err => { log.error(`${pspid}>`, err); }
-    , ()  => { log.info(`${pspid}>`, 'Completed to create message.'); }
+    //, err => { log.error(`${pspid}>`, err.message); }
+    //, ()  => { log.info(`${pspid}>`, 'Completed to create message.'); }
   );
 })
 .delete((req, res, next)  => { next(new Error('not implemented')); });
@@ -88,7 +94,7 @@ router.route('/shipping')
   Shipping.of({ length, weight, from }).fetchShipping()
   .subscribe(
     data  => { res.json(data); }
-    , err => { log.error(`${pspid}>`, err); }
+    , err => { log.error(`${pspid}>`, err.message); }
     , ()  => { log.info(`${pspid}>`, 'Completed to response shipping.'); }
   );
 })
@@ -102,7 +108,7 @@ router.route('/currency')
   CurrencyLayer.of(currency_keyset).fetchCurrency({ usd, jpy })
   .subscribe(
     data  => { res.json(data); }
-    , err => { log.error(`${pspid}>`, err); }
+    , err => { log.error(`${pspid}>`, err.message); }
     , ()  => { log.info(`${pspid}>`, 'Completed to responce currency.'); }
   );
 })
@@ -111,4 +117,6 @@ router.route('/currency')
 .delete((req, res, next)  => { next(new Error('not implemented')); });
 
 app.use('/api', router);
-app.listen(port);
+http.createServer(app).listen(port, () => {
+  log.info(`${pspid}>`, 'HTTP Server listening on localhost:', port);
+});

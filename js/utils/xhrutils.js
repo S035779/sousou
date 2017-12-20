@@ -41,7 +41,7 @@ var get = function(url, data, success, error) {
       }
     }
   };
-  request.error = function() {
+  request.onerror = function(e) {
     if(error) error(new Error(req.statusText));
   };
   request.send(null);
@@ -63,7 +63,7 @@ var getData = function(url, data, success, error) {
     if (request.readyState === 4 && request.status === 200)
       success(request);
   };
-  request.error = function() {
+  request.onerror = function(e) {
     if(error) error(new Error(req.statusText));
   };
   request.send(null);
@@ -85,7 +85,7 @@ var postData = function(url, data, success, error) {
     if (request.readyState === 4 && request.status === 200)
         success(request);
   };
-  request.error = function() {
+  request.onerror = function(e) {
     if(error) error(new Error(req.statusText));
   };
   request.setRequestHeader("Content-Type"
@@ -117,7 +117,7 @@ var postXML = function(url, data, success, error) {
       }
     }
   };
-  request.error = function() {
+  request.onerror = function(e) {
     if(error) error(new Error(req.statusText));
   };
   request.setRequestHeader("Content-Type", "text/xml; charset=UTF-8");
@@ -144,7 +144,7 @@ var postJSON = function(url, data, success, error) {
     if (request.readyState === 4 && request.status === 200)
         success(request);
   };
-  request.error = function() {
+  request.onerror = function(e) {
     if(error) error(new Error(req.statusText));
   };
   request.setRequestHeader("Content-Type", "application/json");
@@ -167,7 +167,7 @@ var putJSON = function(url, data, success, error) {
     if (request.readyState === 4 && request.status === 200)
         success(request);
   };
-  request.error = function() {
+  request.onerror = function(e) {
     if(error) error(new Error(req.statusText));
   };
   request.setRequestHeader("Content-Type", "application/json");

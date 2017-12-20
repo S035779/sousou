@@ -85,7 +85,7 @@ class AppBody extends React.Component {
     e.preventDefault();
     if(!this.isValid(this.state)) return;
     const options = this.setOptions(this.state, this.payment);
-    AppAction.createSendmail(options);
+    AppAction.createMessage(options);
     //this.logTrace(this.state);
     //this.logTrace(this.payment);
   }

@@ -1,13 +1,14 @@
 import xhr from '../utils/xhrutils';
-import { M, log } from '../utils/webutils';
+import { log } from '../utils/webutils';
 
 log.config('console', 'basic', 'ALL', 'webpay-renderer');
-
 const pspid = 'AppApiClient';
-const path = '/api';
 
 const productions_access_key = process.env.PAYPAL_ACCESS_KEY;
 const development_access_key = process.env.PAYPAL_ACCESS_KEY;
+const sender = process.env.SENDMAIL_SENDER;
+
+const path = '/api';
 
 export default {
   request(operation, options) {
@@ -91,21 +92,21 @@ export default {
         });
       case '/sendmail':
         return new Promise((resolve, reject) => {
-          xhr.post(uri, options
+          xhr.postJSON(uri, options
             , obj => { resolve(obj); }
-            , err => { reject(err);});
+            , err => { reject(err); });
           });
       case '/shipping':
         return new Promise((resolve, reject) => {
           xhr.get(uri, options
             , obj => { resolve(obj); }
-            , err => { reject(err);});
+            , err => { reject(err); });
           });
       case '/currency':
         return new Promise((resolve, reject) => {
           xhr.get(uri, options
             , obj => { resolve(obj); }
-            , err => { reject(err);});
+            , err => { reject(err); });
           });
       default:
         return new Promise((resolve, reject) => {
@@ -116,7 +117,7 @@ export default {
   postPayment(options) {
     return this.request('/payment', options);
   },
-  postSendmail(options) {
+  postMessage(options) {
     return this.request('/sendmail', options);
   },
   getShipping(options) {
@@ -129,8 +130,9 @@ export default {
     return this.postPayment(options)
       .catch(this.logError);
   },
-  createSendmail(options) {
-    return this.postSendmail(options)
+  createMessage(options) {
+    const message = this.setMessage(options);
+    return this.postMessage(message)
       .catch(this.logError);
   },
   fetchShipping(options) {
@@ -140,6 +142,34 @@ export default {
   fetchCurrency(options) {
     return this.getCurrency(options)
       .catch(this.logError);
+  },
+  setMessage(obj) {
+    console.log(obj);
+    const message = {
+      from: sender
+      , to: obj.infomation.email
+      , subject: 'ご購入有難うございました。'
+      , text: ` お客様は以下の商品をご購入しました。\n\n`
+        + ` お客様：${obj.infomation.first_name}`
+          + ` ${obj.infomation.last_name}\n`
+        + ` 商品名：${obj.item.name}\n`
+        + ` 概　要：${obj.item.description}\n`
+        + ` 単　価：${obj.item.price} ${obj.item.currency}\n`
+        + ` 数　量：${obj.item.quantity}\n`
+        + ` 小　計：${obj.details.subtotal} ${obj.item.currency}\n`
+        + ` 配送料：${obj.details.shipping} ${obj.currency}\n`
+        + ` 合　計：${obj.total} ${obj.currency}\n`
+        + ` 配送先：${obj.shipping_address.postal_code}\n`
+        + `         ${obj.shipping_address.state}\n`
+        + `         ${obj.shipping_address.city}\n`
+        + `         ${obj.shipping_address.line1}\n`
+        + `         ${obj.shipping_address.line2}\n`
+        + `         ${obj.shipping_address.recipient_name}\n`
+        + `         ${obj.shipping_address.phone}\n`
+        + `         ${obj.shipping_address.country_code}\n\n`
+        + ` ご利用有難うございました。\n`
+    };
+    return { message };
   },
   logTrace(message) {
     log.trace(`${pspid}>`, 'Response:', message)
