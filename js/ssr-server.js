@@ -1,6 +1,8 @@
 import dotenv from 'dotenv';
 import http from 'http';
+import https from 'https';
 import fs from 'fs';
+import path from 'path';
 import express from 'express';
 import bodyParser from 'body-parser';
 import PayPalPayment from './utils/PayPalPayment';
@@ -13,10 +15,11 @@ const app = express();
 const router = express.Router();
 
 dotenv.config()
-const port = process.env.SSR_PORT || 8080
-const options = {
-  key: fs.readFileSync(__dirname + '/../ssl/server.key')
-  , cert: fs.readFileSync(__dirname + '/../ssl/server.crt')
+const http_port = process.env.SSR_PORT || 8080;
+const https_port = process.env.SSR_SSL || 4443;
+const ssl_keyset = {
+  key: fs.readFileSync(path.join(__dirname, '../ssl/server.key'))
+  , cert: fs.readFileSync(path.join(__dirname, '../ssl/server.crt'))
 };
 const paypal_keyset = {
   access_key:         process.env.PAYPAL_ACCESS_KEY
@@ -25,13 +28,16 @@ const paypal_keyset = {
 const currency_keyset = {
   access_key:         process.env.CURRENCY_ACCESS_KEY
 };
+const smtp_port = process.env.MMS_PORT || 2525;
+const ssmtp_port = process.env.MMS_SSL;
+const isSSL = ssmtp_port ? true : false;
 const mail_keyset = {
-  host:     process.env.SENDMAIL_HOST
-  , secure: process.env.SENDMAIL_SSL
-  , port:   process.env.SENDMAIL_PORT
+  host:     process.env.MMS_HOST
+  , secure: isSSL
+  , port:   isSSL ? ssmtp_port : smtp_port
   , auth: {
-    user:   process.env.SENDMAIL_USER
-    , pass: process.env.SENDMAIL_PASS
+    user:   process.env.MMS_USER
+    , pass: process.env.MMS_PASS
   }
 };
 
@@ -82,8 +88,8 @@ router.route('/sendmail')
   Sendmail.of(mail_keyset).createMessage(message)
   .subscribe(
     data  => { res.json(data); }
-    //, err => { log.error(`${pspid}>`, err.message); }
-    //, ()  => { log.info(`${pspid}>`, 'Completed to create message.'); }
+    , err => { log.error(`${pspid}>`, err.message); }
+    , ()  => { log.info(`${pspid}>`, 'Completed to create message.'); }
   );
 })
 .delete((req, res, next)  => { next(new Error('not implemented')); });
@@ -117,6 +123,11 @@ router.route('/currency')
 .delete((req, res, next)  => { next(new Error('not implemented')); });
 
 app.use('/api', router);
-http.createServer(app).listen(port, () => {
-  log.info(`${pspid}>`, 'HTTP Server listening on localhost:', port);
+http.createServer(app).listen(http_port, () => {
+  log.info(`${pspid}>`
+    , `HTTP Server listening on 127.0.0.1:${http_port}`);
+});
+https.createServer(ssl_keyset, app).listen(https_port, () => {
+  log.info(`${pspid}>`
+    , `Secure HTTP Server listening on 127.0.0.1:${https_port}`);
 });

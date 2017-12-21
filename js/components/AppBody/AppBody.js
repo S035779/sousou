@@ -10,7 +10,7 @@ class AppBody extends React.Component {
   constructor(props) {
     super(props);
     const options = props.options;
-    const items =   props.items;
+    const message = props.message;
 
     const infomation =        options.infomation;
     const details =           options.details;
@@ -48,7 +48,7 @@ class AppBody extends React.Component {
       , confirm_email:  infomation.confirm_email
       , payment:        infomation.payment
       , agreement:      infomation.agreement
-      , items:          items
+      , message:        message
     };
   }
 
@@ -132,8 +132,10 @@ class AppBody extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const items = nextProps.items;
-    if(items && items.state === 'approved') this.setState({ items });
+    const state = this.state;
+    const message = nextProps.message;
+    if(message && message.accepted && message.accepted[0] === state.email)
+      this.setState({ message });
   }
 
   componentDidMount() {
@@ -162,11 +164,9 @@ class AppBody extends React.Component {
     const isPay = obj => ship.ems.filter(ems =>
       ems.code_2 === state.country_code.join())[0].paypal === 'OK';
     const price = isJP(state) ? Number(curr.JPY) : Math.ceil(curr.USD);
-    const shipping = !this.isMail(state)
-      ? (isJP(state)
-        ? (isCty(state) ? Number(isCty(state).price) : 0) 
-        : (isEms(state) && isPay(state) ? Number(isEms(state).price) : 0))
-      : 0;
+    const shipping = isJP(state)
+      ? (isCty(state) ? Number(isCty(state).price) : 0) 
+      : (isEms(state) && isPay(state) ? Number(isEms(state).price) : 0);
     const subtotal = price * state.quantity;
     const total = subtotal + shipping;
     const total_currency = 'JPY';
@@ -183,7 +183,8 @@ class AppBody extends React.Component {
     this.componentWillUnmount();
     this.componentDidMount();
 
-    if(!this.isValid(this.state) || !this.payment.shipping) return;
+    if(!this.isValid(this.state)
+      || this.isMail(this.state) || !this.payment.shipping) return;
     const options = this.setOptions(this.state, this.payment);
     AppAction.createPayment(options);
     //this.logTrace(this.state);
@@ -196,7 +197,7 @@ class AppBody extends React.Component {
   }
 
   isMail(state) {
-    return state.payment.join() !== 'paypal';
+    return state.payment && state.payment.join() !== 'paypal';
   }
 
   isValid(state) {
@@ -275,14 +276,15 @@ class AppBody extends React.Component {
   }
 
   renderButton(state) {
-    return !this.payment.shipping || this.isMail(state)
+    return (this.isMail(state)
       || !this.isValid(state)
+      || !this.payment.shipping)
       ? <input type="submit" value="ご購入" className="button-primary"/>
       : <div></div>;
   }
 
   renderModal(state) {
-    return state.items 
+    return state.message
       ? <div className="modalDialog">
         <div>
           <h3>ご利用有難うございました！</h3>

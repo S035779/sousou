@@ -44,7 +44,7 @@ const config = {
     watchContentBase: true,
     stats: {colors: true},
     proxy: {
-      '/api': 'http://localhost:8080'
+      '/api': 'http://localhost:8081'
     },
     https: {
       key: fs.readFileSync(path.join(__dirname, 'ssl/server.key')),

@@ -6,7 +6,7 @@ const pspid = 'AppApiClient';
 
 const productions_access_key = process.env.PAYPAL_ACCESS_KEY;
 const development_access_key = process.env.PAYPAL_ACCESS_KEY;
-const sender = process.env.SENDMAIL_SENDER;
+const sender = process.env.MMS_FROM;
 
 const path = '/api';
 
@@ -127,12 +127,18 @@ export default {
     return this.request('/currency', options);
   },
   createPayment(options) {
+    const buyer = this.setCustomer(options);
+    const seler  = this.setManager(options);
     return this.postPayment(options)
+      .then(() => this.postMessage(seler))
+      .then(() => this.postMessage(buyer))
       .catch(this.logError);
   },
   createMessage(options) {
-    const message = this.setMessage(options);
-    return this.postMessage(message)
+    const buyer = this.setCustomer(options);
+    const seler  = this.setManager(options);
+    return this.postMessage(seler)
+      .then(() => this.postMessage(buyer))
       .catch(this.logError);
   },
   fetchShipping(options) {
@@ -143,13 +149,12 @@ export default {
     return this.getCurrency(options)
       .catch(this.logError);
   },
-  setMessage(obj) {
-    console.log(obj);
+  setManager(obj) {
     const message = {
       from: sender
-      , to: obj.infomation.email
-      , subject: 'ご購入有難うございました。'
-      , text: ` お客様は以下の商品をご購入しました。\n\n`
+      , to: sender
+      , subject: '購入を受付ました。'
+      , text: `お客様は以下の商品を購入しました。\n\n`
         + ` お客様：${obj.infomation.first_name}`
           + ` ${obj.infomation.last_name}\n`
         + ` 商品名：${obj.item.name}\n`
@@ -167,7 +172,39 @@ export default {
         + `         ${obj.shipping_address.recipient_name}\n`
         + `         ${obj.shipping_address.phone}\n`
         + `         ${obj.shipping_address.country_code}\n\n`
-        + ` ご利用有難うございました。\n`
+        + ` 方　法：${obj.infomation.payment}\n`
+        + `銀行振込(deposit）、その他(other)の場合は、\n`
+        + `以降、お客様対応をお願いします。\n`
+    };
+    return { message };
+  },
+  setCustomer(obj) {
+    const message = {
+      from: sender
+      , to: obj.infomation.email
+      , subject: 'ご購入有難うございました。'
+      , text: `お客様は以下の商品を購入しました。\n\n`
+        + ` お客様：${obj.infomation.first_name}`
+          + ` ${obj.infomation.last_name}\n`
+        + ` 商品名：${obj.item.name}\n`
+        + ` 概　要：${obj.item.description}\n`
+        + ` 単　価：${obj.item.price} ${obj.item.currency}\n`
+        + ` 数　量：${obj.item.quantity}\n`
+        + ` 小　計：${obj.details.subtotal} ${obj.item.currency}\n`
+        + ` 配送料：${obj.details.shipping} ${obj.currency}\n`
+        + ` 合　計：${obj.total} ${obj.currency}\n`
+        + ` 配送先：${obj.shipping_address.postal_code}\n`
+        + `         ${obj.shipping_address.state}\n`
+        + `         ${obj.shipping_address.city}\n`
+        + `         ${obj.shipping_address.line1}\n`
+        + `         ${obj.shipping_address.line2}\n`
+        + `         ${obj.shipping_address.recipient_name}\n`
+        + `         ${obj.shipping_address.phone}\n`
+        + `         ${obj.shipping_address.country_code}\n\n`
+        + ` 方　法：${obj.infomation.payment}\n`
+        + `銀行振込(deposit）、その他(other)の場合は、\n`
+        + `以降、メールにてご連絡差し上げます。\n`
+        + `ご利用有難うございました。\n`
     };
     return { message };
   },

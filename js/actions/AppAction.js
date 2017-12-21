@@ -4,14 +4,14 @@ import AppApiClient from '../services/AppApiClient';
 export default {
   createPayment(options) {
     return AppApiClient.createPayment(options)
-      .then(items => {
-        dispatch({ type: 'item/create/payment', items, options });
+      .then(message => {
+        dispatch({ type: 'item/create/payment', message, options });
       });
   },
   createMessage(options) {
     return AppApiClient.createMessage(options)
-      .then(items => {
-        dispatch({ type: 'item/create/message', items, options });
+      .then(message => {
+        dispatch({ type: 'item/create/message', message, options });
       });
   },
   fetchShipping({ length, weight, from }) {

@@ -19,19 +19,9 @@ class App extends React.Component {
   componentDidMount() {
     const search = this.props.location.search.split('?');
     const query = std.decodeFormData(search[1]);
-    console.log(query);
     const { length, weight, from, usd, jpy } = query;
     AppAction.fetchShipping({ length, weight, from });
     AppAction.fetchCurrency({ usd, jpy });
-  }
-
-  handleChangePayment(event) {
-    const { language } = this.props.match.params;
-    const search = this.props.location.search.split('?');
-    const { usd, jpy } = std.decodeFormData(search[1]);
-    const options = {};
-    // Create options object...
-    AppAction.fetchPayment();
   }
 
   render() {
@@ -45,7 +35,7 @@ class App extends React.Component {
         currency={this.state.currency}
         shipping={this.state.shipping}
         items={this.state.items}
-        onChangePayment={this.handleChangePayment.bind(this)} />
+        message={this.state.message} />
       <AppFooter />
       </div>;
   }

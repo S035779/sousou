@@ -14,7 +14,7 @@ class AppStore extends ReduceStore<number> {
       }
       , shipping: {}
       , currency: {}
-      , items:    null
+      , message:  null
       , options:  {
         total:  0
         , currency: ''
@@ -59,12 +59,12 @@ class AppStore extends ReduceStore<number> {
     switch (action.type) { 
       case 'item/create/payment':
         return Object.assign({}, state, {
-          items:      action.items
+          message:    action.message
           , options:  action.options
         });
       case 'item/create/message':
         return Object.assign({}, state, {
-          items:      action.items
+          message:    action.message
           , options:  action.options
         });
       case 'config/fetch/shipping':

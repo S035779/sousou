@@ -42,11 +42,43 @@ var get = function(url, data, success, error) {
     }
   };
   request.onerror = function(e) {
-    if(error) error(new Error(req.statusText));
+    if(error) error(new Error(request.statusText));
   };
   request.send(null);
 };
 module.exports.get = get;
+
+/**
+ * post
+ *
+ * @param {string} url 
+ * @param {object} data 
+ * @param {function} success 
+ * @param {function} error 
+*/
+var post = function(url, data, success, error) {
+  var request = new XMLHttpRequest();
+  request.open("POST", url);
+  request.onreadystatechange = function() {
+    if (request.readyState === 4 && request.status === 200) {
+      var type = request.getResponseHeader("Content-Type");
+      if (type.indexOf("xml") !== -1 && request.responseXML) {
+        success(request.responseXML);
+      } else if (type === "application/json; charset=utf-8") {
+        success(JSON.parse(request.responseText));
+      } else {
+        success(request.responseText);
+      }
+    }
+  };
+  request.onerror = function(e) {
+    if(error) error(new Error(request.statusText));
+  };
+  request.setRequestHeader("Content-Type"
+    , "application/x-www-form-urlencoded");
+  request.send(encodeFormData(data));
+};
+module.exports.post = post;
 
 /**
  * getData
@@ -60,11 +92,19 @@ var getData = function(url, data, success, error) {
   var request = new XMLHttpRequest();
   request.open("GET", url + "?" + encodeFormData(data));
   request.onreadystatechange = function() {
-    if (request.readyState === 4 && request.status === 200)
-      success(request);
+    if (request.readyState === 4 && request.status === 200) {
+      var type = request.getResponseHeader("Content-Type");
+      if (type === "text/xml; charset=utf-8") {
+        success(request.responseXML);
+      } else if (type === "application/json; charset=utf-8") {
+        success(JSON.parse(request.responseText));
+      } else {
+        success(request.responseText);
+      }
+    }
   };
   request.onerror = function(e) {
-    if(error) error(new Error(req.statusText));
+    if(error) error(new Error(request.statusText));
   };
   request.send(null);
 };
@@ -82,11 +122,19 @@ var postData = function(url, data, success, error) {
   var request = new XMLHttpRequest();
   request.open("POST", url);
   request.onreadystatechange = function() {
-    if (request.readyState === 4 && request.status === 200)
-        success(request);
+    if (request.readyState === 4 && request.status === 200) {
+      var type = request.getResponseHeader("Content-Type");
+      if (type === "text/xml; charset=utf-8") {
+        success(request.responseXML);
+      } else if (type === "application/json; charset=utf-8") {
+        success(JSON.parse(request.responseText));
+      } else {
+        success(request.responseText);
+      }
+    }
   };
   request.onerror = function(e) {
-    if(error) error(new Error(req.statusText));
+    if(error) error(new Error(request.statusText));
   };
   request.setRequestHeader("Content-Type"
     , "application/x-www-form-urlencoded");
@@ -118,7 +166,7 @@ var postXML = function(url, data, success, error) {
     }
   };
   request.onerror = function(e) {
-    if(error) error(new Error(req.statusText));
+    if(error) error(new Error(request.statusText));
   };
   request.setRequestHeader("Content-Type", "text/xml; charset=UTF-8");
   for(var key in data.head) {
@@ -137,15 +185,22 @@ module.exports.postXML = postXML;
  * @param {function} error 
  */
 var postJSON = function(url, data, success, error) {
-  console.log(data);
   var request = new XMLHttpRequest();
   request.open("POST", url);
   request.onreadystatechange = function() {
-    if (request.readyState === 4 && request.status === 200)
-        success(request);
+    if (request.readyState === 4 && request.status === 200) {
+      var type = request.getResponseHeader("Content-Type");
+      if (type === "text/xml; charset=utf-8") {
+        success(request.responseXML);
+      } else if (type === "application/json; charset=utf-8") {
+        success(JSON.parse(request.responseText));
+      } else {
+        success(request.responseText);
+      }
+    }
   };
   request.onerror = function(e) {
-    if(error) error(new Error(req.statusText));
+    if(error) error(new Error(request.statusText));
   };
   request.setRequestHeader("Content-Type", "application/json");
   request.send(JSON.stringify(data));
@@ -153,7 +208,7 @@ var postJSON = function(url, data, success, error) {
 module.exports.postJSON = postJSON;
 
 /**
- * postJSON
+ * putJSON
  *
  * @param {string} url
  * @param {object} data 
@@ -168,7 +223,7 @@ var putJSON = function(url, data, success, error) {
         success(request);
   };
   request.onerror = function(e) {
-    if(error) error(new Error(req.statusText));
+    if(error) error(new Error(request.statusText));
   };
   request.setRequestHeader("Content-Type", "application/json");
   request.send(JSON.stringify(data));
