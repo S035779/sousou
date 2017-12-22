@@ -5,6 +5,7 @@ import path from 'path';
 import { logs as log } from './utils/logutils';
 
 dotenv.config();
+const host = '127.0.0.1';
 const user = process.env.MMS_USER;
 const pass = process.env.MMS_PASS;
 const smtp_port = process.env.MMS_PORT || 2525;
@@ -75,7 +76,7 @@ const option = {
 };
 const smtp = new SMTPServer(option);
 smtp.on('error', err => { log.error(`${pspid}>`, err.message); });
-smtp.listen(smtp_port, () => {
+smtp.listen(smtp_port, host, () => {
   log.info(`${pspid}>`
     , `SMTP Server listening on 127.0.0.1:${smtp_port}`);
 });
@@ -96,7 +97,7 @@ const ssl_option = {
 };
 const ssmtp = new SMTPServer(ssl_option);
 ssmtp.on('error', err => { log.error(`${pspid}>`, err.message); });
-ssmtp.listen(ssmtp_port, () => {
+ssmtp.listen(ssmtp_port, host, () => {
   log.info(`${pspid}>`
     , `Secure SMTP Server listening on 127.0.0.1:${ssmtp_port}`);
 });

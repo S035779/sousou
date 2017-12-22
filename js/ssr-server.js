@@ -60,7 +60,7 @@ router.route('/payment/create-payment')
   PayPalPayment.of(paypal_keyset).createPayment()
   .subscribe(
     data  => { res.json({ id: data.id }); }
-    , err => { log.error(`${pspid}>`, err.message); }
+    , err => { log.error(`${pspid}>`, err.name, err.message); }
     , ()  => { log.info(`${pspid}>`, 'Completed to create payment.'); }
   );
 })
@@ -74,7 +74,7 @@ router.route('/payment/execute-payment')
   PayPalPayment.of(paypal_keyset).executePayment({ paymentID, payerID })
   .subscribe(
     data  => { res.json({ data }); }
-    , err => { log.error(`${pspid}>`, err.message); }
+    , err => { log.error(`${pspid}>`, err.name, err.message); }
     , ()  => { log.info(`${pspid}>`, 'Completed to execute payment.'); }
   );
 })
@@ -88,7 +88,7 @@ router.route('/sendmail')
   Sendmail.of(mail_keyset).createMessage(message)
   .subscribe(
     data  => { res.json(data); }
-    , err => { log.error(`${pspid}>`, err.message); }
+    , err => { log.error(`${pspid}>`, err.name, err.message); }
     , ()  => { log.info(`${pspid}>`, 'Completed to create message.'); }
   );
 })
@@ -100,7 +100,7 @@ router.route('/shipping')
   Shipping.of({ length, weight, from }).fetchShipping()
   .subscribe(
     data  => { res.json(data); }
-    , err => { log.error(`${pspid}>`, err.message); }
+    , err => { log.error(`${pspid}>`, err.name, err.message); }
     , ()  => { log.info(`${pspid}>`, 'Completed to response shipping.'); }
   );
 })
@@ -114,7 +114,7 @@ router.route('/currency')
   CurrencyLayer.of(currency_keyset).fetchCurrency({ usd, jpy })
   .subscribe(
     data  => { res.json(data); }
-    , err => { log.error(`${pspid}>`, err.message); }
+    , err => { log.error(`${pspid}>`, err.name, err.message); }
     , ()  => { log.info(`${pspid}>`, 'Completed to responce currency.'); }
   );
 })

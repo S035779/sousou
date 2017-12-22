@@ -86,7 +86,7 @@ class Shipping {
     log.trace(`${pspid}>`, 'Trace:', message);
   }
 
-  setFiles(objs) {
+  setEmsFiles(objs) {
     const tmp_1 = R.map(R.split(','),objs[0]);
     const country_code = R.map(this.setCode, tmp_1)
     const ems_1 = objs[1]
@@ -97,13 +97,23 @@ class Shipping {
     const ems_price = R.map(this.setEmsPrice, tmp_2)
     const paypal_area = R.flatten(R.slice(9,14, objs))
 
-    let ems = this.setPaypal(country_code, paypal_area);
-    ems = this.setEms1(ems_1, ems)
-    ems = this.setEms2_1(ems_2_1, ems)
-    ems = this.setEms2_2(ems_2_2, ems)
-    ems = this.setEms3(ems_3, ems)
-    ems = this.setEmsPrices(ems_price, ems)
+    const Paypal = R.curry(this.setPaypal.bind(this));
+    const Ems1 = R.curry(this.setEms1.bind(this));
+    const Ems2_1 = R.curry(this.setEms2_1.bind(this));
+    const Ems2_2 = R.curry(this.setEms2_2.bind(this));
+    const Ems3 = R.curry(this.setEms3.bind(this));
+    const EmsPrices = R.curry(this.setEmsPrices.bind(this));
+    return  R.compose(
+      EmsPrices(ems_price),
+      Ems3(ems_3),
+      Ems2_2(ems_2_2),
+      Ems2_1(ems_2_1),
+      Ems1(ems_1),
+      Paypal(country_code)
+    )(paypal_area);
+  }
 
+  setJppFiles(objs) {
     const jpp_hokkaido = objs[13];
     const jpp_touhoku = objs[14];
     const jpp_kantou = objs[15];
@@ -120,21 +130,39 @@ class Shipping {
     const tmp_4 = R.map(R.split(','),objs[25]);
     const jpp_price = R.map(this.setJppPrice, tmp_4);
 
-    let jpp = [];
-    jpp = this.setHokkaido(jpp_hokkaido, jpp)
-    jpp = this.setTouhoku(jpp_touhoku, jpp)
-    jpp = this.setKantou(jpp_kantou, jpp)
-    jpp = this.setShinetsu(jpp_shinetsu, jpp)
-    jpp = this.setHokuriku(jpp_hokuriku, jpp)
-    jpp = this.setToukai(jpp_toukai, jpp)
-    jpp = this.setKinki(jpp_kinki, jpp)
-    jpp = this.setChuugoku(jpp_chuugoku, jpp)
-    jpp = this.setShikoku(jpp_shikoku, jpp)
-    jpp = this.setKyuusyuu(jpp_kyuusyuu, jpp)
-    jpp = this.setOkinawa(jpp_okinawa, jpp)
-    jpp = this.setJppAreas(jpp_area, jpp)
-    jpp = this.setJppPrices(jpp_price, jpp)
+    const Hokkaido = R.curry(this.setHokkaido.bind(this));
+    const Touhoku = R.curry(this.setTouhoku.bind(this));
+    const Kantou = R.curry(this.setKantou.bind(this));
+    const Shinetsu = R.curry(this.setShinetsu.bind(this));
+    const Hokuriku = R.curry(this.setHokuriku.bind(this));
+    const Toukai = R.curry(this.setToukai.bind(this));
+    const Kinki = R.curry(this.setKinki.bind(this));
+    const Chuugoku = R.curry(this.setChuugoku.bind(this));
+    const Shikoku = R.curry(this.setShikoku.bind(this));
+    const Kyuusyuu = R.curry(this.setKyuusyuu.bind(this));
+    const Okinawa = R.curry(this.setOkinawa.bind(this));
+    const JppAreas = R.curry(this.setJppAreas.bind(this));
+    const JppPrices = R.curry(this.setJppPrices.bind(this));
+    return R.compose(
+      JppPrices(jpp_price),
+      JppAreas(jpp_area),
+      Okinawa(jpp_okinawa),
+      Kyuusyuu(jpp_kyuusyuu),
+      Shikoku(jpp_shikoku),
+      Chuugoku(jpp_chuugoku),
+      Kinki(jpp_kinki),
+      Toukai(jpp_toukai),
+      Hokuriku(jpp_hokuriku),
+      Shinetsu(jpp_shinetsu),
+      Kantou(jpp_kantou),
+      Touhoku(jpp_touhoku),
+      Hokkaido(jpp_hokkaido)
+    )([]);
+  }
 
+  setFiles(objs) {
+    const ems = this.setEmsFiles(objs);
+    const jpp = this.setJppFiles(objs);
     return { ems, jpp };
   }
 
