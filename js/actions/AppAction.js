@@ -18,14 +18,14 @@ export default {
     return AppApiClient.fetchShipping({ length, weight, from })
       .then(shipping => {
         dispatch({ type: 'config/fetch/shipping'
-          , shipping, query: { length, weight, from } });
+          , shipping, length, weight, from });
       });
   },
   fetchCurrency({ usd, jpy }) {
     return AppApiClient.fetchCurrency({ usd, jpy })
       .then(currency => {
         dispatch({ type: 'config/fetch/currency'
-          , currency , query: { usd, jpy }});
+          , currency, usd, jpy });
       });
   }
 }

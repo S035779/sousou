@@ -9,6 +9,8 @@ const pspid = 'AppBodyView';
 class AppBody extends React.Component {
   constructor(props) {
     super(props);
+    const usd = props.usd;
+    const jpy = props.jpy;
     const options = props.options;
     const message = props.message;
 
@@ -48,6 +50,8 @@ class AppBody extends React.Component {
       , confirm_email:  infomation.confirm_email
       , payment:        infomation.payment
       , agreement:      infomation.agreement
+      , usd:            usd
+      , jpy:            jpy
       , message:        message
     };
   }
@@ -132,10 +136,12 @@ class AppBody extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const state = this.state;
-    const message = nextProps.message;
-    if(message && message.accepted && message.accepted[0] === state.email)
-      this.setState({ message });
+    if(nextProps.message && nextProps.message.accepted
+      && nextProps.message.accepted[0] === this.state.email)
+      this.setState({ message: nextProps.message });
+    if(nextProps.jpy || nextProps.usd) 
+      console.log(nextProps);
+      this.setState({ usd: nextProps.usd, jpy: nextProps.jpy });
   }
 
   componentDidMount() {
@@ -236,7 +242,11 @@ class AppBody extends React.Component {
       && next.confirm_email === prev.confirm_email
       && next.postal_code   === prev.postal_code
       && next.line1         === prev.line1       
+      && next.line2         === prev.line2      
+      && next.recipient_name=== prev.recipient_nama
       && next.agreement     === prev.agreement   
+      && next.jpy           === prev.jpy
+      && next.usd           === prev.usd
     );
   }
 
@@ -248,72 +258,161 @@ class AppBody extends React.Component {
     return !/^[\d,-]+$/.test(val);
   }
 
-  checkConfirmEmail(string) {
+  checkConfirmEmail(string, isJP) {
     return this.state.email !== string
-      ? 'メールアドレスを再入力してください。'
-      : '';
+        ? isJP
+          ? 'メールアドレスを再入力してください。'
+          : 'Type password again.'
+        : '';
   }
 
-  checkEmail(val) {
-    return this.isNotEmail(val)
-      ? '正しいメールアドレスを入力してください。'
+  checkEmail(value, isJP) {
+    return this.isNotEmail(value)
+      ? isJP
+        ? '正しいメールアドレスを入力してください。'
+        : 'Please enter the correct e-mail address.'
       : '';
   }
   
-  checkNumber(val1, val2) {
-    return val2 != null
-      ? ( this.isNotNumber(val1) || this.isNotNumber(val2)
-        ? '半角数字を入力して下さい。' : '')
-      : ( this.isNotNumber(val1)
-        ? '半角数字を入力して下さい。' : '');
+  checkNumber(value1, value2, isJP) {
+    return value2 != null
+      ? ( this.isNotNumber(value1) || this.isNotNumber(value2) )
+        ? isJP
+          ? '半角数字を入力して下さい。' 
+          : 'Please enter a number.'
+        : ''
+      : ( this.isNotNumber(value1) )
+        ? isJP
+          ? '半角数字を入力して下さい。'
+          : 'Please enter a number.'
+        : '';
   }
 
-  renderOption(objs, key, val) {
+  renderSelect(objs, key, value, isJP) {
     if(!objs) return null;
-    const opts = objs.map(obj => ({ key: obj[key], val: obj[val] }));
+    const opts_jp = [
+      { key: '', val: '' },
+      { key: '日本', val: 'JP' },
+      { key: 'ミャンマー', val: 'MM' },
+      { key: 'タイ', val: 'TH' },
+      { key: '中華人民共和国 (中国)', val: 'CN' },
+      { key: 'シンガポール', val: 'SG' },
+      { key: 'マレーシア', val: 'MY' },
+      { key: '台湾', val: 'TW' },
+      { key: '香港', val: 'HK' },
+      { key: 'ベトナム', val: 'VN' },
+      { key: '大韓民国 (韓国)', val: 'KR' },
+    ];
+    const opts_en = [
+      { key: '', val: '' },
+      { key: 'Japan', val: 'JP' },
+      { key: 'Myanmar', val: 'MM' },
+      { key: 'Tai', val: 'TH' },
+      { key: 'China', val: 'CN' },
+      { key: 'Singapore', val: 'SG' },
+      { key: 'Malaysia', val: 'MY' },
+      { key: 'Taiwan', val: 'TW' },
+      { key: 'Hong Kong', val: 'HK' },
+      { key: 'Vietnam', val: 'VN' },
+      { key: 'Korea', val: 'KR' },
+    ];
+    const tmps = objs.map(obj => ({ key: obj[key], val: obj[value] }))
+    const opts = (isJP ? opts_jp : opts_en).concat(tmps);
     return opts.map((opt, idx) => (<option
       key={"choice-" + idx} value={opt.val} >{opt.key}</option>));
   }
 
-  renderButton(state) {
-    return (this.isMail(state)
-      || !this.isValid(state)
+  renderButton(state, isJP) {
+    return (this.isMail(state) || !this.isValid(state)
       || !this.payment.shipping)
-      ? <input type="submit" value="ご購入" className="button-primary"/>
+      ? isJP 
+        ? <input type="submit" value="ご購入" className="button-primary"/>
+        : <input type="submit" value="Purchase" className="button-primary"/>
       : <div></div>;
   }
 
-  renderModal(state) {
+  renderModal(state, isJP) {
     return state.message
-      ? <div className="modalDialog">
-        <div>
-          <h3>ご利用有難うございました！</h3>
-          <p>ご依頼の商品の詳細は別途メールにてご連絡させて頂きます。</p>
-        </div>
-        </div>
+      ? isJP
+        ? <div className="modalDialog">
+          <div>
+            <h3>ご利用ありがとうございました！</h3>
+            <p>ご依頼の商品の詳細は別途メールにてご連絡させて頂きます。</p>
+          </div>
+          </div>
+        : <div className="modalDialog">
+          <div>
+            <h3>Thank you for using!</h3>
+            <p>Details of the requested item will be notified separately
+              by e-mail.</p>
+          </div>
+          </div>
       : <div></div>;
    }
 
   render() {
-    const state = this.state;
-    const props = this.props;
-    this.logTrace(state);
-    const shipping = props.shipping;
-    const language = props.language;
-    const country = language === 'jp' 
-      ? this.renderOption(shipping.ems, 'name_jp', 'code_2') 
-      : this.renderOption(shipping.ems, 'name_en', 'code_2');
+    //this.logTrace(state);
+    const shipping = this.props.shipping;
+    const language = this.props.language;
 
-    const usd = Number(props.query.usd).toLocaleString();
-    const jpy = Number(props.query.jpy).toLocaleString();
-    const check_email = this.checkEmail(state.email);
+    const isJP = language === 'jp' ? true : false;
+    const name = isJP ? 'お名前' : 'Name';
+    const gender = isJP ? '性別' : 'Gender';
+    const birthday = isJP ? '誕生日' : 'Birthday';
+    const phone = isJP ? '電話番号' : 'Phone';
+    const email = isJP ? 'メールアドレス' : 'E-Mail';
+    const confirm_email = isJP ? 'メールアドレス 確認' : 'Confirm E-Mail';
+    const country_code = isJP ? '国名' : 'Country';
+    const state = isJP ? '州名' : 'State';
+    const postal_code = isJP ? '郵便番号' : 'Zip Code';
+    const city = isJP ? '都市名' : 'City';
+    const line1 = isJP ? '市区町村名' : 'Municipality';
+    const line2 = isJP ? '地番・部屋番号' : 'A lot / Room Number';
+    const recipient_name = isJP ? '受取人名義' : 'Recipient Name';
+    const quantity = isJP ? 'ご購入数' : 'Quantity';
+    const payment = isJP ? 'お支払い方法' : 'Payment';
+
+    const first_name = isJP ? '名字' : 'First';
+    const last_name = isJP ? '名前' : 'Last';
+    const gender_male = isJP ? '男性' : 'Male';
+    const gender_female = isJP ? '女性' : 'Female';
+    const year = isJP ? '年' : 'Year';
+    const month = isJP ? '月' : 'Month';
+    const day = isJP ? '日' : 'Day';
+
+    const usd = Number(this.state.usd).toLocaleString();
+    const jpy = Number(this.state.jpy).toLocaleString();
+    const label_quantity = isJP
+      ? '冊 x ' + jpy + '円（税込／送料別）'
+      : 'book(s) x ' + jpy
+        + ' yen (tax included / shipping fee is separately)';
+    const notes_quantity = isJP
+      ? '日本国外への配送はUS $ ' + usd
+        + 'を当日レートで日本円に換算した金額のご請求となります。'
+      : 'Shipping outside of Japan will be charged for US $ ' + usd
+        + 'into Japanese yen at the current rate.';
+    const notes_payment = isJP
+      ? 'クレジット決済の場合は PayPalアカウント が必要となります。'
+      : 'For credit card transactions, you need a PayPal account.';
+
+    const country = isJP
+      ? this.renderSelect(shipping.ems, 'name_jp', 'code_2', isJP) 
+      : this.renderSelect(shipping.ems, 'name_en', 'code_2', isJ, isJP);
+
+    const check_email
+      = this.checkEmail(this.state.email, isJP);
     const check_confirm_email
-      = this.checkConfirmEmail(state.confirm_email);
-    const check_phone = this.checkNumber(state.phone);
-    const check_postal_code = this.checkNumber(state.postal_code);
-    const check_birthday = this.checkNumber(state.year, state.day);
-    const toggledButton = this.renderButton(state);
-    const popupModal = this.renderModal(state);
+      = this.checkConfirmEmail(this.state.confirm_email, isJP);
+    const check_phone
+      = this.checkNumber(this.state.phone, null, isJP);
+    const check_postal_code
+      = this.checkNumber(this.state.postal_code, null, isJP);
+    const check_birthday
+      = this.checkNumber(this.state.year, this.state.day, isJP);
+
+    const toggledButton = this.renderButton(this.state, isJP);
+    const popupModal = this.renderModal(this.state, isJP);
+
     return <form id="user-sign-up"
       onSubmit={this.handleSubmit.bind(this)}>
       {/* Your Informatin */}
@@ -323,16 +422,16 @@ class AppBody extends React.Component {
         <tr>
           <th>
           <label>
-          お名前 <span className="required-mark">required</span>
+          {name} <span className="required-mark">required</span>
           </label>
           </th>
           <td>
           <div className="multi-field">
-          <label htmlFor="first-name">名字 </label>
+          <label htmlFor="first-name">{first_name} </label>
           <input type="text" name="first-name" id="first-name"
             onChange={this.handleChangeText.bind(this, 'first_name')}
             className="name-field last-name required"/>
-          <label htmlFor="last-name">名前 </label>
+          <label htmlFor="last-name">{last_name} </label>
           <input type="text" name="last-name" id="last-name"
             onChange={this.handleChangeText.bind(this, 'last_name')}
             className="name-field required"/>
@@ -340,31 +439,31 @@ class AppBody extends React.Component {
           </td>
         </tr>
         <tr>
-          <th>性別</th>
+          <th>{gender}</th>
           <td>
           <div className="gender-field">
           <Radio name="gender"
             value={this.state.gender}
             onChange={this.handleChangeRadio.bind(this, 'gender')} >
-            <option value="male" id="gender-male"> 男性 </option>
-            <option value="female" id="gender-female"> 女性 </option>
+            <option value="male" id="gender-male"> {gender_male} </option>
+            <option value="female" id="gender-female"> {gender_female} </option>
           </Radio>
           </div>
           </td>
         </tr>
         <tr>
           <th>
-          <label>誕生日</label>
+          <label>{birthday}</label>
           </th>
           <td>
-          <label htmlFor="year">年 </label>
+          <label htmlFor="year">{year} </label>
           <span className="birthday-field">
           <input type="text" name="year" id="year" 
             onChange={this.handleChangeText.bind(this, 'year')}
             className="short-field add-placeholder"
             placeholder="1970"/>
           </span>
-          <label htmlFor="month">月 </label>
+          <label htmlFor="month">{month} </label>
           <span className="birthday-field">
           <select name="month" id="month" className="short-field"
             value={this.state.month}
@@ -384,7 +483,7 @@ class AppBody extends React.Component {
           <option value="12">12</option>
           </select>
           </span>
-          <label htmlFor="day">日 </label>
+          <label htmlFor="day">{day} </label>
           <span className="birthday-field">
           <input type="text" name="day" id="day"
             onChange={this.handleChangeText.bind(this, 'day')}
@@ -397,7 +496,7 @@ class AppBody extends React.Component {
         <tr>
           <th>
           <label htmlFor="phone">
-          電話番号 <span className="required-mark">required</span>
+          {phone} <span className="required-mark">required</span>
           </label>
           </th>
           <td>
@@ -411,7 +510,7 @@ class AppBody extends React.Component {
         <tr>
           <th>
           <label htmlFor="email">
-          メールアドレス <span className="required-mark">required</span>
+          {email} <span className="required-mark">required</span>
           </label>
           </th>
           <td>
@@ -424,8 +523,8 @@ class AppBody extends React.Component {
         </tr>
         <tr>
           <th>
-          <label htmlFor="confirm-email">
-          メールアドレス 確認 <span className="required-mark">required</span>
+          <label htmlFor="confirm_email">
+          {confirm_email} <span className="required-mark">required</span>
           </label>
           </th>
           <td>
@@ -445,7 +544,7 @@ class AppBody extends React.Component {
         <tr>
           <th>
           <label htmlFor="country_code">
-          国名 <span className="required-mark">required</span>
+          {country_code} <span className="required-mark">required</span>
           </label>
           </th>
           <td>
@@ -453,17 +552,6 @@ class AppBody extends React.Component {
             value={this.state.country_code}
             onChange={this.handleChangeSelect.bind(this, 'country_code')}
             className="required">
-          <option value></option>
-          <option value="JP">日本</option>
-          <option value="MM">ミャンマー</option>
-          <option value="TH">タイ</option>
-          <option value="CN">中華人民共和国 (中国)</option>
-          <option value="SG">シンガポール</option>
-          <option value="MY">マレーシア</option>
-          <option value="TW">台湾</option>
-          <option value="HK">香港</option>
-          <option value="VN">ベトナム</option>
-          <option value="KR">大韓民国 (韓国)</option>
           {country}
           </select>
           </td>
@@ -471,7 +559,7 @@ class AppBody extends React.Component {
         <tr>
           <th>
           <label htmlFor="state">
-          州 <span className="required-mark">required</span>
+          {state} <span className="required-mark">required</span>
           </label>
           </th>
           <td>
@@ -483,7 +571,7 @@ class AppBody extends React.Component {
         <tr>
           <th>
           <label htmlFor="postal_code">
-          郵便番号 <span className="required-mark">required</span>
+          {postal_code} <span className="required-mark">required</span>
           </label>
           </th>
           <td>
@@ -497,7 +585,7 @@ class AppBody extends React.Component {
         <tr>
           <th>
           <label htmlFor="city">
-          都市 <span className="required-mark">required</span>
+          {city} <span className="required-mark">required</span>
           </label>
           </th>
           <td>
@@ -509,7 +597,7 @@ class AppBody extends React.Component {
         <tr>
           <th>
           <label htmlFor="line1">
-          市区町村 <span className="required-mark">required</span>
+          {line1} <span className="required-mark">required</span>
           </label>
           </th>
           <td>
@@ -521,7 +609,7 @@ class AppBody extends React.Component {
         <tr>
           <th>
           <label htmlFor="line2">
-          地番・部屋番号 <span className="required-mark">required</span>
+          {line2} <span className="required-mark">required</span>
           </label>
           </th>
           <td>
@@ -533,7 +621,7 @@ class AppBody extends React.Component {
         <tr>
           <th>
           <label htmlFor="recipient_name">
-          受取人名義
+          {recipient_name}
           </label>
           </th>
           <td>
@@ -552,8 +640,8 @@ class AppBody extends React.Component {
         <table><tbody>
         <tr>
           <th>
-          <label>
-          ご購入数 <span className="required-mark">required</span>
+          <label htmlFor="quantity">
+          {quantity} <span className="required-mark">required</span>
           </label>
           </th>
           <td>
@@ -577,22 +665,16 @@ class AppBody extends React.Component {
           </select>
           </span>
           <span className="quantity-field">
-          <label htmlFor="quantity">
-          冊 x {jpy}円（税込／送料別）
-          </label>
+          <label>{label_quantity}</label>
           </span>
           </div>
-          <span className="notes">
-          日本国外への配送は
-          US ${usd}
-          を当日レートで日本円に換算した金額のご請求となります。
-          </span>
+          <span className="notes">{notes_quantity}</span>
           </td>
         </tr>
         <tr>
           <th>
-          <label>
-          お支払い方法 <span className="required-mark">required</span>
+          <label htmlFor="payment">
+          {payment} <span className="required-mark">required</span>
           </label>
           </th>
           <td>
@@ -605,11 +687,7 @@ class AppBody extends React.Component {
           <option value="deposit">銀行振り込み（前払い）</option>
           <option value="other">その他</option>
           </select>
-          <span className="notes">
-          クレジット決済の場合は
-          PayPalアカウント
-          が必要となります。
-          </span>
+          <span className="notes">{notes_payment}</span>
           </td>
         </tr>
         </tbody></table>

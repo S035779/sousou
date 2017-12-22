@@ -5,13 +5,11 @@ import AppAction from '../actions/AppAction';
 class AppStore extends ReduceStore<number> {
   getInitialState() {
     return { 
-      query: {
-        length: 0
-        , weigth: 0
-        , from: ''
-        , usd: 0
-        , jpy: 0
-      }
+      length: 0
+      , weigth: 0
+      , from: ''
+      , usd: 0
+      , jpy: 0
       , shipping: {}
       , currency: {}
       , message:  null
@@ -69,12 +67,15 @@ class AppStore extends ReduceStore<number> {
         });
       case 'config/fetch/shipping':
         return Object.assign({}, state, {
-          query:      action.query
+          length:     action.length
+          , weight:   action.weight
+          , from:     action.from
           , shipping: action.shipping
         });
       case 'config/fetch/currency':
         return Object.assign({}, state, {
-          query:      action.query
+          usd:      action.usd
+          , jpy:    action.jpy
           , currency: action.currency
         });
       default: 

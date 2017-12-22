@@ -52,7 +52,7 @@ export default {
                 });
             }
             , onCancel: function() {
-              resolve('Buyer cancelled the payment.');
+              reject(new Error('Buyer cancelled the payment.'));
             }
             , onError: function(err) {
               reject(err);
@@ -83,7 +83,7 @@ export default {
               });
             }
             , onCancel: function() {
-              resolve('Buyer cancelled the payment.');
+              reject(new Error('Buyer cancelled the payment.'));
             }
             , onError: function(err) {
               reject(err);
@@ -212,6 +212,6 @@ export default {
     log.trace(`${pspid}>`, 'Response:', message)
   },
   logError(err) {
-    log.error(`${pspid}>`, 'Error:', err.name, err.message)
+    log.error(`${pspid}>`, err.name, err.message)
   },
 }
