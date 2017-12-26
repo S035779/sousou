@@ -397,7 +397,7 @@ class AppBody extends React.Component {
 
     const country = isJP
       ? this.renderSelect(shipping.ems, 'name_jp', 'code_2', isJP) 
-      : this.renderSelect(shipping.ems, 'name_en', 'code_2', isJ, isJP);
+      : this.renderSelect(shipping.ems, 'name_en', 'code_2', isJP);
 
     const check_email
       = this.checkEmail(this.state.email, isJP);
