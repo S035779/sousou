@@ -45,7 +45,7 @@ const config = {
     disableHostCheck: true,
     stats: {colors: true},
     proxy: {
-      '/api/*': 'http://localhost:8081'
+      '/api': 'http://localhost:8081'
     },
     https: {
       key: fs.readFileSync(path.join(__dirname, 'ssl/server.key')),
