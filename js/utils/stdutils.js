@@ -217,7 +217,7 @@ const dup = function(o, p) {
 module.exports.dup = dup;
 
 /**
- * dst
+ * dst.
  *
  * @param {array} o
  * @returns {array}
@@ -239,6 +239,76 @@ const dst = function(o) {
   return result;
 };
 module.exports.dst = dst;
+
+/**
+ * oder by string.
+ *
+ * @param {array} o
+ * @returns {array}
+ */
+const sortStr = function(o) { 
+  if (!Array.isArray(o)) throw TypeError();
+  const _o = o.filter(function(x){ return x });
+  return _o.sort(function(s, t){
+    const a=s.toString().toLowerCase();
+    const b=t.toString().toLowerCase();
+    if(a<b) return -1;
+    if(a>b) return 1;
+    return 0;
+  });
+};
+module.exports.sortStr = sortStr;
+
+/**
+ * sort by number,
+ *
+ * @param {array} o
+ * @returns {array}
+ */
+const sortNum = function(o) { 
+  if (!Array.isArray(o)) throw TypeError();
+  const _o = o.filter(function(x){ return x });
+  return _o.sort(function(a, b){
+    if(a<b) return -1;
+    if(a>b) return 1;
+    return 0;
+  });
+};
+module.exports.sortNum = sortNum;
+
+/**
+ * sort value by object key string,
+ *
+ * @param {array} o
+ * @param {string} k
+ * @returns {array}
+ */
+const sortObjStr = function(o, k) { 
+  if (!Array.isArray(o)) throw TypeError();
+  const _o = o.filter(function(x){ return x });
+  return _o.sort(function(s, t){
+    const a=s[k].toString().toLowerCase();
+    const b=t[k].toString().toLowerCase();
+    if(a<b) return -1;
+    if(a>b) return 1;
+    return 0;
+  });
+};
+module.exports.sortObjStr = sortObjStr;
+
+/**
+ * sort value by object key unicode.,
+ *
+ * @param {array} o
+ * @param {string} k
+ * @returns {array}
+ */
+const sortObjUni = function(o, k) {
+  if (!Array.isArray(o)) throw TypeError();
+  const _o = o.filter(function(x){ return x });
+  return _o.sort();
+};
+module.exports.sortObjUni = sortObjUni;
 
 /**
  * getTimeStamp

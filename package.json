@@ -37,6 +37,7 @@
     "react-dom": "16.2.0",
     "react-router-dom": "4.2.2",
     "rx": "4.1.0",
+    "serve-static": "1.13.1",
     "smtp-server": "3.4.1",
     "xml2js": "0.4.19",
     "xmlbuilder": "9.0.4"
