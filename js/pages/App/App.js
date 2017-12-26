@@ -28,7 +28,7 @@ class App extends React.Component {
     const language = document
       .getElementById('app').getAttribute('data-language');
     return <div>
-      <AppHeader />
+      <AppHeader language={language} />
       <AppBody
         language={language}
         usd={this.state.usd}
@@ -37,7 +37,7 @@ class App extends React.Component {
         currency={this.state.currency}
         shipping={this.state.shipping}
         message={this.state.message} />
-      <AppFooter />
+      <AppFooter language={language} />
       </div>;
   }
 }
