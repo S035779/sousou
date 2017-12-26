@@ -4,7 +4,7 @@
   "description": "Paypal Extension Tool.",
   "scripts": {
     "build": "webpack",
-    "dev-server": "webpack-dev-server",
+    "dev-server": "webpack-dev-server --inline",
     "ssr-server": "node --require ./js/hook/babel-register.js js/ssr-server.js",
     "mms-server": "node --require ./js/hook/babel-register.js js/mms-server.js",
     "start": "npm-run-all --parallel dev-server ssr-server mms-server"

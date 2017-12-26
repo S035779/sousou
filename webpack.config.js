@@ -37,7 +37,6 @@ const config = {
   },
   devServer: {
     contentBase: path.join(__dirname, 'public'),
-    inline: true,
     host: '0.0.0.0',
     port: 4443,
     historyApiFallback: true,
