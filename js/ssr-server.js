@@ -51,7 +51,7 @@ const pspid = 'ssr-server';
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(log.connect());
-app.use(serveStatic(path.join(__dirname, 'public')));
+app.use('/api', serveStatic(path.join(__dirname, '../public')));
 
 router.use((req, res, next) => {
   log.trace(`${pspid}>`, req.method, req.url, req.path);
