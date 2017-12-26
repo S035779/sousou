@@ -42,6 +42,7 @@ const config = {
     port: 4443,
     historyApiFallback: true,
     watchContentBase: true,
+    disableHostCheck: true,
     stats: {colors: true},
     proxy: {
       '/api/*': 'http://localhost:8081'
