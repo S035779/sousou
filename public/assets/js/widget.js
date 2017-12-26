@@ -24,8 +24,8 @@ var encodeFormData = function(data) {
 
   // 目印のaタグからパラメータとってきたら消す
   var atag = document.getElementsByClassName('paypal-widget');
-  var language = atag[0].dataset.language;
   var option = {};
+  option['language'] = atag[0].dataset.language;
   option['usd']  = atag[0].dataset.usd;
   option['jpy']  = atag[0].dataset.jpy;
   option['length']  = atag[0].dataset.length;
@@ -34,7 +34,7 @@ var encodeFormData = function(data) {
   atag[0].style.display = 'none';
 
   var iframe = document.createElement('iframe');
-  iframe.src = '/' + language + '?' + encodeFormData(option);
+  iframe.src = '/api' + '?' + encodeFormData(option);
   iframe.width = '640px';
   iframe.height = '1920px';
   iframe.scrolling = 'no';

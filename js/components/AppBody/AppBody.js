@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom'
 import Radio from '../../components/Radio/Radio';
 import AppAction from '../../actions/AppAction';
+import std from '../../utils/stdutils';
 import { log } from '../../utils/webutils';
 
 const pspid = 'AppBodyView';
@@ -290,34 +291,7 @@ class AppBody extends React.Component {
 
   renderSelect(objs, key, value, isJP) {
     if(!objs) return null;
-    const opts_jp = [
-      { key: '', val: '' },
-      { key: '日本', val: 'JP' },
-      { key: 'ミャンマー', val: 'MM' },
-      { key: 'タイ', val: 'TH' },
-      { key: '中華人民共和国 (中国)', val: 'CN' },
-      { key: 'シンガポール', val: 'SG' },
-      { key: 'マレーシア', val: 'MY' },
-      { key: '台湾', val: 'TW' },
-      { key: '香港', val: 'HK' },
-      { key: 'ベトナム', val: 'VN' },
-      { key: '大韓民国 (韓国)', val: 'KR' },
-    ];
-    const opts_en = [
-      { key: '', val: '' },
-      { key: 'Japan', val: 'JP' },
-      { key: 'Myanmar', val: 'MM' },
-      { key: 'Tai', val: 'TH' },
-      { key: 'China', val: 'CN' },
-      { key: 'Singapore', val: 'SG' },
-      { key: 'Malaysia', val: 'MY' },
-      { key: 'Taiwan', val: 'TW' },
-      { key: 'Hong Kong', val: 'HK' },
-      { key: 'Vietnam', val: 'VN' },
-      { key: 'Korea', val: 'KR' },
-    ];
-    const tmps = objs.map(obj => ({ key: obj[key], val: obj[value] }))
-    const opts = (isJP ? opts_jp : opts_en).concat(tmps);
+    const opts = objs.map(obj => ({ key: obj[key], val: obj[value] }))
     return opts.map((opt, idx) => (<option
       key={"choice-" + idx} value={opt.val} >{opt.key}</option>));
   }
@@ -325,10 +299,10 @@ class AppBody extends React.Component {
   renderButton(state, isJP) {
     return (this.isMail(state) || !this.isValid(state)
       || !this.payment.shipping)
-      ? isJP 
-        ? <input type="submit" value="ご購入" className="button-primary"/>
-        : <input type="submit" value="Purchase" className="button-primary"/>
-      : <div></div>;
+    ? isJP 
+      ? <input type="submit" value="ご購入" className="button-primary"/>
+      : <input type="submit" value="Purchase" className="button-primary"/>
+    : <div></div>;
   }
 
   renderModal(state, isJP) {
@@ -356,6 +330,11 @@ class AppBody extends React.Component {
     const language = this.props.language;
 
     const isJP = language === 'jp' ? true : false;
+    
+    const Information = isJP ? 'お客様の情報' : 'Your Information';
+    const Shipping = isJP ? 'ご購入品の配送先' : 'Your Shipping Address';
+    const HowToBuy = isJP ? 'ご購入方法' : 'How to Buy'; 
+
     const name = isJP ? 'お名前' : 'Name';
     const gender = isJP ? '性別' : 'Gender';
     const birthday = isJP ? '誕生日' : 'Birthday';
@@ -380,24 +359,65 @@ class AppBody extends React.Component {
     const month = isJP ? '月' : 'Month';
     const day = isJP ? '日' : 'Day';
 
-    const usd = Number(this.state.usd).toLocaleString();
-    const jpy = Number(this.state.jpy).toLocaleString();
     const label_quantity = isJP
-      ? '冊 x ' + jpy + '円（税込／送料別）'
-      : 'book(s) x ' + jpy
-        + ' yen (tax included / shipping fee is separately)';
+      ? '冊 x '
+        + Number(this.state.jpy)
+          .toLocaleString('ja-JP', { style: 'currency', currency: 'JPY' })
+        + '（税込／送料別）'
+      : 'book(s) x '
+        + Number(this.state.jpy)
+          .toLocaleString('ja-JP', { style: 'currency', currency: 'JPY' })
+        + ' (tax included / shipping fee is separately)';
     const notes_quantity = isJP
-      ? '日本国外への配送はUS $ ' + usd
-        + 'を当日レートで日本円に換算した金額のご請求となります。'
-      : 'Shipping outside of Japan will be charged for US $ ' + usd
-        + 'into Japanese yen at the current rate.';
+      ? '日本国外への配送はUS '
+        + Number(this.state.usd)
+          .toLocaleString('en-US', { style: 'currency', currency: 'USD' })
+        + ' を当日レートで日本円に換算した金額のご請求となります。'
+      : 'Shipping outside of Japan will be charged for US '
+        + Number(this.state.usd)
+          .toLocaleString('en-US', { style: 'currency', currency: 'USD' })
+        + ' into Japanese yen at the current rate.';
     const notes_payment = isJP
       ? 'クレジット決済の場合は PayPalアカウント が必要となります。'
       : 'For credit card transactions, you need a PayPal account.';
 
-    const country = isJP
-      ? this.renderSelect(shipping.ems, 'name_jp', 'code_2', isJP) 
-      : this.renderSelect(shipping.ems, 'name_en', 'code_2', isJ, isJP);
+    const opts_country = [
+      {   name_en: ''         , name_jp: ''               , code_2: ''   }
+      , { name_en: 'Japan'    , name_jp: '日本'           , code_2: 'JP' }
+      , { name_en: 'Myanmar'  , name_jp: 'ミャンマー'     , code_2: 'MM' }
+      , { name_en: 'Tai'      , name_jp: 'タイ'           , code_2: 'TH' }
+      , { name_en: 'China'    , name_jp: '中華人民共和国 (中国)'
+                                                          , code_2: 'CN' }
+      , { name_en: 'Singapore', name_jp: 'シンガポール'   , code_2: 'SG' }
+      , { name_en: 'Malaysia' , name_jp: 'マレーシア'     , code_2: 'MY' }
+      , { name_en: 'Taiwan'   , name_jp: '台湾'           , code_2: 'TW' }
+      , { name_en: 'Hong Kong', name_jp: '香港'           , code_2: 'HK' }
+      , { name_en: 'Vietnam'  , name_jp: 'ベトナム'       , code_2: 'VN' }
+      , { name_en: 'Korea'    , name_jp: '大韓民国 (韓国)', code_2: 'KR' }
+    ];
+    const select_country = shipping.ems
+      ? isJP
+        ? this.renderSelect(opts_country
+          .concat(std.sortObjUni(shipping.ems, 'name_jp'))
+          , 'name_jp', 'code_2', isJP) 
+        : this.renderSelect(opts_country
+          .concat(std.sortObjStr(shipping.ems, 'name_en'))
+          , 'name_en', 'code_2', isJP)
+      : null;
+
+    const opts_payment = [
+      {   name_en: ''
+        , name_jp: ''                          , value: ''        }
+      , { name_en: 'Credit card (Paypal)'
+        , name_jp: 'クレジットカード（PayPal）', value: 'paypal'  }
+      , { name_en: 'Bank transfer (prepayment)'
+        , name_jp: '銀行振り込み（前払い）'    , value: 'deposit' }
+      , { name_en: 'Other'
+        , name_jp: 'その他'                    , value: 'other'   }
+    ];
+    const select_payment = isJP
+      ? this.renderSelect(opts_payment, 'name_jp', 'value', isJP)
+      : this.renderSelect(opts_payment, 'name_en', 'value', isJP)
 
     const check_email
       = this.checkEmail(this.state.email, isJP);
@@ -417,7 +437,7 @@ class AppBody extends React.Component {
       onSubmit={this.handleSubmit.bind(this)}>
       {/* Your Informatin */}
       <fieldset className="category-group">
-        <legend>お客様の情報</legend>
+        <legend>{Information}</legend>
         <table><tbody>
         <tr>
           <th>
@@ -539,7 +559,7 @@ class AppBody extends React.Component {
 
       {/* Your Shipping Address */}
       <fieldset className="category-group">
-        <legend>ご購入品の配送先</legend>
+        <legend>{Shipping}</legend>
         <table><tbody>
         <tr>
           <th>
@@ -552,7 +572,7 @@ class AppBody extends React.Component {
             value={this.state.country_code}
             onChange={this.handleChangeSelect.bind(this, 'country_code')}
             className="required">
-          {country}
+          {select_country}
           </select>
           </td>
         </tr>
@@ -634,9 +654,9 @@ class AppBody extends React.Component {
       </fieldset>
       {/* Your Shipping Address */}
 
-      {/* How to buy */}
+      {/* How to Buy */}
       <fieldset className="category-group">
-        <legend>ご購入方法</legend>
+        <legend>{HowToBuy}</legend>
         <table><tbody>
         <tr>
           <th>
@@ -682,10 +702,7 @@ class AppBody extends React.Component {
             value={this.state.payment}
             onChange={this.handleChangeSelect.bind(this, 'payment')}
             className="middle-field required">
-          <option value></option>
-          <option value="paypal">クレジットカード（PayPal）</option>
-          <option value="deposit">銀行振り込み（前払い）</option>
-          <option value="other">その他</option>
+          {select_payment}
           </select>
           <span className="notes">{notes_payment}</span>
           </td>

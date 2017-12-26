@@ -5,10 +5,14 @@ import fs from 'fs';
 import path from 'path';
 import express from 'express';
 import bodyParser from 'body-parser';
+import serveStatic from 'serve-static';
+import React from 'react';
+import ReactDOMServer from 'react-dom/server';
 import PayPalPayment from './utils/PayPalPayment';
 import CurrencyLayer from './utils/CurrencyLayer';
 import Shipping from './utils/Shipping';
 import Sendmail from './utils/Sendmail';
+import Home from './pages/Home/Home';
 import { logs as log } from './utils/logutils';
 
 const app = express();
@@ -47,11 +51,22 @@ const pspid = 'ssr-server';
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(log.connect());
+app.use(serveStatic(path.join(__dirname, 'public')));
 
 router.use((req, res, next) => {
   log.trace(`${pspid}>`, req.method, req.url, req.path);
   next();
 });
+
+router.route('/')
+.get((req, res, next)     => {
+  const { language } = req.query;
+  res.send('<!doctype html>\n'
+    + ReactDOMServer.renderToStaticMarkup(<Home language={language} />));
+})
+.put((req, res, next)     => { next(new Error('not implemented')); })
+.post((req, res, next)    => { next(new Error('not implemented')); })
+.delete((req, res, next)  => { next(new Error('not implemented')); });
 
 router.route('/payment/create-payment')
 .get((req, res, next)     => { next(new Error('not implemented')); })
