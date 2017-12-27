@@ -1,7 +1,7 @@
 {
   "name": "WebPay",
   "version": "1.0.0",
-  "description": "Paypal Extension Tool.",
+  "description": "Paypal WordPress Extension Tool.",
   "scripts": {
     "build": "webpack",
     "dev-server": "webpack-dev-server --inline --hot",
