@@ -1,0 +1,16 @@
+[Unit]
+Description=sousou server
+After=syslog.target network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/node --require /home/app/work/sousou/js/hook/babel-register.js /home/app/work/sousou/js/ssr-server.js
+WorkingDirectory=/home/app/work/sousou
+KillMode=process
+Restart=always
+User=app
+Group=wheel
+
+[Install]
+WantedBy=multi-user.target
+
