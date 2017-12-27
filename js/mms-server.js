@@ -15,7 +15,14 @@ const ssl_keyset = {
   cert: fs.readFileSync(path.join(__dirname, '../ssl/server.crt'))
 };
 
-log.config('console', 'color', 'webpay-app', 'ALL');
+const env = process.env.NODE_ENV || 'development';
+if (env === 'development') 
+  log.config('console', 'color', 'webpay-mms', 'TRACE');
+if (env === 'staging') 
+  log.config('file', 'basic', 'webpay-mms', 'DEBUG');
+if (env === 'production') 
+  log.config('file', 'json', 'webpay-mms', 'INFO');
+
 const pspid = 'mms-server';
 
 const onAuth = (auth, session, callback) => {

@@ -6,7 +6,7 @@ class Home extends React.Component {
       <head>
       <meta charSet="utf-8" />
       <title>PayPalPayment</title>
-      <link rel="shortcut icon" href="/api/favicon.ico" />
+      <link rel="shortcut icon" href="/api/assets/image/favicon.ico" />
       <link rel="stylesheet" href="/api/common.css" />
       <script src="/api/assets/js/jquery-1.10.1.min.js"></script>
       <script src="/api/assets/js/jquery.validate.min.js"></script>

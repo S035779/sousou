@@ -6,7 +6,7 @@ let target = null;
 
 export const log = {
   Logger,
-  config(apd, lyt, flv, nam) {
+  config(apd, lyt, nam, flv) {
     const apds = {
       'alert':      new Log4js.JSAlertAppender()
       , 'console':  new Log4js.BrowserConsoleAppender()

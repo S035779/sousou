@@ -45,7 +45,14 @@ const mail_keyset = {
   }
 };
 
-log.config('console', 'color', 'webpay-app', 'ALL');
+const env = process.env.NODE_ENV || 'development';
+if (env === 'development') 
+  log.config('console', 'color', 'webpay-web', 'TRACE');
+if (env === 'staging') 
+  log.config('file', 'basic', 'webpay-web', 'DEBUG');
+if (env === 'production') 
+  log.config('file', 'json', 'webpay-web', 'INFO');
+
 const pspid = 'ssr-server';
 
 app.use(bodyParser.urlencoded({ extended: true }));

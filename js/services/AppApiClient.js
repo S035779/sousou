@@ -1,7 +1,14 @@
 import xhr from '../utils/xhrutils';
 import { log } from '../utils/webutils';
 
-log.config('console', 'basic', 'ALL', 'webpay-renderer');
+const env = process.env.NODE_ENV || 'development';
+if (env === 'development') 
+  log.config('alert', 'basic', 'webpay-renderer', 'TRACE');
+if (env === 'staging') 
+  log.config('console', 'basic', 'webpay-renderer', 'DEBUG');
+if (env === 'production') 
+  log.config('console', 'json', 'webpay-renderer', 'INFO');
+
 const pspid = 'AppApiClient';
 
 const productions_access_key = process.env.PAYPAL_ACCESS_KEY;

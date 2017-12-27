@@ -141,7 +141,7 @@ class AppBody extends React.Component {
       && nextProps.message.accepted[0] === this.state.email)
       this.setState({ message: nextProps.message });
     if(nextProps.jpy || nextProps.usd) 
-      console.log(nextProps);
+      //console.log(nextProps);
       this.setState({ usd: nextProps.usd, jpy: nextProps.jpy });
   }
 
@@ -446,7 +446,7 @@ class AppBody extends React.Component {
           </label>
           </th>
           <td>
-          <div className="multi-field">
+          <div className="multi-name-field">
           <label htmlFor="first-name">{first_name} </label>
           <input type="text" name="first-name" id="first-name"
             onChange={this.handleChangeText.bind(this, 'first_name')}
@@ -488,7 +488,7 @@ class AppBody extends React.Component {
           <select name="month" id="month" className="short-field"
             value={this.state.month}
             onChange={this.handleChangeSelect.bind(this, 'month')}>
-          <option value></option>
+          <option value=""></option>
           <option value="1">1</option>
           <option value="2">2</option>
           <option value="3">3</option>
@@ -665,13 +665,13 @@ class AppBody extends React.Component {
           </label>
           </th>
           <td>
-          <div className="multi-field">
+          <div className="multi-quantity-field">
           <span className="quantity-field">
           <select name="quantity" id="quantity"
             value={this.state.quantity}
             onChange={this.handleChangeSelect.bind(this, 'quantity')}
             className="short-field required">
-          <option value></option>
+          <option value=""></option>
           <option value="1">1</option>
           <option value="2">2</option>
           <option value="3">3</option>
