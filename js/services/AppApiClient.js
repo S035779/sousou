@@ -2,20 +2,24 @@ import xhr from '../utils/xhrutils';
 import { log } from '../utils/webutils';
 
 const env = process.env.NODE_ENV || 'development';
-if (env === 'development') 
-  log.config('alert', 'basic', 'webpay-renderer', 'TRACE');
-if (env === 'staging') 
-  log.config('console', 'basic', 'webpay-renderer', 'DEBUG');
-if (env === 'production') 
-  log.config('console', 'json', 'webpay-renderer', 'INFO');
-
-const pspid = 'AppApiClient';
-
 const productions_access_key = process.env.PAYPAL_ACCESS_KEY;
 const development_access_key = process.env.PAYPAL_ACCESS_KEY;
 const sender = process.env.MMS_FROM;
-
 const path = '/api';
+const pspid = 'AppApiClient';
+
+let paypal_env = '';
+if (env === 'development') {
+  log.config('console', 'basic', 'webpay-renderer', 'TRACE');
+  paypal_env = 'sandbox';
+} else if (env === 'staging') {
+  log.config('console', 'basic', 'webpay-renderer', 'DEBUG');
+  paypal_env = 'sandbox';
+} else if (env === 'production') {
+  log.config('console', 'json', 'webpay-renderer', 'INFO');
+  paypal_env = 'production';
+}
+log.info(`${pspid}>`, 'Paypal Environment:', paypal_env)
 
 export default {
   request(operation, options) {
@@ -24,7 +28,7 @@ export default {
       case '/payment':
         return new Promise((resolve, reject) => {
           paypal.Button.render({
-            env: 'sandbox'
+            env: paypal_env
             , locale: 'ja_JP'
             , commit: true
             , style: {
