@@ -5,7 +5,8 @@ const env = process.env.NODE_ENV || 'development';
 const productions_access_key = process.env.PAYPAL_ACCESS_KEY;
 const development_access_key = process.env.PAYPAL_ACCESS_KEY;
 const sender = process.env.MMS_FROM;
-const path = '/api';
+const ssl_host = process.env.SSR_URL;
+const path = ssl_host + '/api';
 const pspid = 'AppApiClient';
 
 let paypal_env = '';

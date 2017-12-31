@@ -34,7 +34,7 @@ var encodeFormData = function(data) {
   atag[0].style.display = 'none';
 
   var iframe = document.createElement('iframe');
-  iframe.src = '/api' + '?' + encodeFormData(option);
+  iframe.src = 'https://localhost:4443/api' + '?' + encodeFormData(option);
   iframe.width = '100%';
   iframe.height = '100%';
   iframe.scrolling = 'no';
