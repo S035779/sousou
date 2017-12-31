@@ -1,0 +1,6 @@
+[2017-12-30T02:08:31.876] [INFO] webpay-mms - mms-server> SMTP Server listening on 127.0.0.1:2525
+[2017-12-30T02:08:31.877] [INFO] webpay-mms - mms-server> Secure SMTP Server listening on 127.0.0.1:4465
+[2017-12-30T03:01:32.879] [INFO] webpay-mms - mms-server> SMTP Server listening on 127.0.0.1:2525
+[2017-12-30T03:01:32.880] [INFO] webpay-mms - mms-server> Secure SMTP Server listening on 127.0.0.1:4465
+[2017-12-30T05:41:35.687] [ERROR] webpay-mms - mms-server> listen EACCES 127.0.0.1:25
+[2017-12-30T05:41:35.689] [ERROR] webpay-mms - mms-server> listen EACCES 127.0.0.1:465
