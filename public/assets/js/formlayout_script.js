@@ -23,4 +23,14 @@ jQuery(function($) {
 		}
 	});
 	
+  $(document).ready(function() {
+    $("#paypal-widget", window.parent.document)
+      .height(document.body.scrollHeight);
+  });
+
+  $(document).exResize(function(){
+    $("#paypal-widget", window.parent.document)
+      .height(document.body.scrollHeight);
+  });
+
 });

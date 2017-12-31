@@ -73,13 +73,13 @@ img {
 .category-group th {
 	padding-top: 0.5em;
 	padding-right: 0.5em;
-	width: 13em;
+	width: 1em;
 	text-align: right;
 }
 /* form items */
 input[type=text],
 input[type=password] {
-	width: 100%;
+	width: 90%;
 	padding: 0.375em 0.5em;
 	border: 1px solid #CCC;
 	border-top-width: 2px;
@@ -92,13 +92,13 @@ input:focus {
 	background-color: #FFF8F0;
 }
 input.middle-field {
-	width: 8em;
+	width: 16em;
 }
 input.short-field {
 	width: 4em;
 }
 select {
-	width: 100%;
+	width: 90%;
   height: 2em;
   font-size: 100%;
 }
@@ -106,7 +106,7 @@ select.middle-field {
 	width: 15em;
 }
 select.short-field {
-	width: 4em;
+	width: 6em;
 }
 input.button-primary {
   width: 400px;
@@ -136,7 +136,7 @@ input.button-primary:active {
 .modalDialog > div {
   width: 400px;
   position: relative;
-  margin: 1150px auto;
+  margin: 100% auto;
   padding: 5px 20px 13px 20px;
   border-radius: 10px;
   background: #fff;
@@ -190,7 +190,7 @@ label.error:before {
 }
 /* multi field */
 input.name-field {
-	width: 33.5%;
+	width: 43.5%;
 }
 .last-name {
 	margin-right: 1em;

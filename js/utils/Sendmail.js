@@ -18,7 +18,8 @@ const pspid = 'Sendmail';
  */
 class Sendmail {
   constructor(host, secure, port, auth) {
-    const options = { host, secure, port, auth };
+    const options = Object.assign({}, { host, secure, port, auth }
+      , { tls: { rejectUnauthorized: false } });
     this.transporter = nodemailer.createTransport(options);
   }
 
