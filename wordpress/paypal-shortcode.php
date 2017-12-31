@@ -25,6 +25,7 @@ function display_paypal_payment($arr, $content="") {
 
   ob_start();
 ?>
+<div class="buynow">
   <a href="/" target="blank" class="paypal-widget"
     data-language="<?php echo $opt['language']; ?>"
     data-usd="<?php echo $opt['usd']; ?>"
@@ -34,6 +35,7 @@ function display_paypal_payment($arr, $content="") {
     data-from="<?php echo $opt['from']; ?>"
   >This site is here!</a>
   <script src="/assets/js/widget.js"></script>
+</div>
 <?php  
   return ob_get_clean();
 }

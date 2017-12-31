@@ -25,8 +25,9 @@ class App extends React.Component {
   }
 
   render() {
-    const language = document
-      .getElementById('app').getAttribute('data-language');
+    //const language = this.props.match.params.language;
+    const language = document.getElementById('app')
+      .dataset.language;
     return <div>
       <AppHeader language={language} />
       <AppBody

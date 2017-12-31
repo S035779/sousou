@@ -1,0 +1,83 @@
+[2017-12-30T04:09:06.205] [INFO] webpay-web - ssr-server> HTTP Server listening on 127.0.0.1:8081
+[2017-12-30T04:09:06.207] [INFO] webpay-web - ssr-server> Secure HTTP Server listening on 127.0.0.1:4444
+[2017-12-30T04:09:44.290] [INFO] webpay-web - GET /api/?language=jp&usd=600&jpy=57000&length=60&weight=30&from=%E6%9D%B1%E4%BA%AC%E9%83%BD
+[2017-12-30T04:09:44.339] [INFO] webpay-web - GET /api/common.css
+[2017-12-30T04:09:44.340] [INFO] webpay-web - GET /api/assets/js/jquery.ah-placeholder.min.js
+[2017-12-30T04:09:44.340] [INFO] webpay-web - GET /api/assets/js/formlayout_script.js
+[2017-12-30T04:09:44.341] [INFO] webpay-web - GET /api/assets/js/jquery.validate.min.js
+[2017-12-30T04:09:44.342] [INFO] webpay-web - GET /api/assets/js/log4js.min.js
+[2017-12-30T04:09:44.343] [INFO] webpay-web - GET /api/assets/js/jquery-1.10.1.min.js
+[2017-12-30T04:09:44.351] [INFO] webpay-web - GET /api/common.js
+[2017-12-30T04:09:44.384] [INFO] webpay-web - GET /api/app.bundle.js
+[2017-12-30T04:09:44.416] [INFO] webpay-web - GET /api/assets/js/checkout.js
+[2017-12-30T04:09:44.474] [INFO] webpay-web - GET /api/common.css.map
+[2017-12-30T04:09:44.529] [ERROR] webpay-web - GET /api/assets/js/checkout.js.map
+[2017-12-30T04:09:44.633] [INFO] webpay-web - GET /api/common.js.map
+[2017-12-30T04:09:44.981] [INFO] webpay-web - ssr-server> Completed to response shipping.
+[2017-12-30T04:09:44.982] [INFO] webpay-web - GET /api/shipping?length=60&weight=30&from=%E6%9D%B1%E4%BA%AC%E9%83%BD
+[2017-12-30T04:09:45.033] [INFO] webpay-web - GET /api/app.bundle.js.map
+[2017-12-30T04:09:45.241] [INFO] webpay-web - ssr-server> Completed to responce currency.
+[2017-12-30T04:09:45.241] [INFO] webpay-web - GET /api/currency?usd=600&jpy=57000
+[2017-12-30T04:12:29.596] [INFO] webpay-web - GET /api/?language=jp&usd=600&jpy=57000&length=60&weight=30&from=%E6%9D%B1%E4%BA%AC%E9%83%BD
+[2017-12-30T04:12:29.638] [WARN] webpay-web - GET /api/assets/js/jquery-1.10.1.min.js
+[2017-12-30T04:12:29.638] [WARN] webpay-web - GET /api/assets/js/jquery.validate.min.js
+[2017-12-30T04:12:29.639] [WARN] webpay-web - GET /api/assets/js/jquery.ah-placeholder.min.js
+[2017-12-30T04:12:29.639] [WARN] webpay-web - GET /api/assets/js/formlayout_script.js
+[2017-12-30T04:12:29.640] [WARN] webpay-web - GET /api/assets/js/checkout.js
+[2017-12-30T04:12:29.641] [WARN] webpay-web - GET /api/assets/js/log4js.min.js
+[2017-12-30T04:12:29.641] [WARN] webpay-web - GET /api/common.js
+[2017-12-30T04:12:29.642] [WARN] webpay-web - GET /api/app.bundle.js
+[2017-12-30T04:12:29.642] [INFO] webpay-web - GET /api/common.css
+[2017-12-30T04:12:29.749] [ERROR] webpay-web - GET /api/assets/js/checkout.js.map
+[2017-12-30T04:12:29.953] [INFO] webpay-web - GET /api/common.css.map
+[2017-12-30T04:12:29.968] [INFO] webpay-web - ssr-server> Completed to response shipping.
+[2017-12-30T04:12:29.969] [INFO] webpay-web - GET /api/shipping?length=60&weight=30&from=%E6%9D%B1%E4%BA%AC%E9%83%BD
+[2017-12-30T04:12:29.996] [INFO] webpay-web - GET /api/common.js.map
+[2017-12-30T04:12:30.008] [INFO] webpay-web - GET /api/app.bundle.js.map
+[2017-12-30T04:12:30.213] [INFO] webpay-web - ssr-server> Completed to responce currency.
+[2017-12-30T04:12:30.213] [INFO] webpay-web - GET /api/currency?usd=600&jpy=57000
+[2017-12-30T05:09:07.332] [INFO] webpay-web - ssr-server> HTTP Server listening on 127.0.0.1:8081
+[2017-12-30T05:09:07.334] [INFO] webpay-web - ssr-server> Secure HTTP Server listening on 127.0.0.1:4444
+[2017-12-30T05:09:35.655] [INFO] webpay-web - GET /api/?language=jp&usd=600&jpy=57000&length=60&weight=30&from=%E6%9D%B1%E4%BA%AC%E9%83%BD
+[2017-12-30T05:09:35.722] [WARN] webpay-web - GET /api/assets/js/jquery-1.10.1.min.js
+[2017-12-30T05:09:35.723] [WARN] webpay-web - GET /api/assets/js/jquery.validate.min.js
+[2017-12-30T05:09:35.723] [WARN] webpay-web - GET /api/assets/js/jquery.ah-placeholder.min.js
+[2017-12-30T05:09:35.724] [WARN] webpay-web - GET /api/assets/js/formlayout_script.js
+[2017-12-30T05:09:35.727] [WARN] webpay-web - GET /api/assets/js/checkout.js
+[2017-12-30T05:09:35.727] [WARN] webpay-web - GET /api/assets/js/log4js.min.js
+[2017-12-30T05:09:35.728] [WARN] webpay-web - GET /api/common.js
+[2017-12-30T05:09:35.729] [WARN] webpay-web - GET /api/app.bundle.js
+[2017-12-30T05:09:35.732] [INFO] webpay-web - GET /api/common.css
+[2017-12-30T05:09:35.888] [ERROR] webpay-web - GET /api/assets/js/checkout.js.map
+[2017-12-30T05:09:36.072] [INFO] webpay-web - ssr-server> Completed to response shipping.
+[2017-12-30T05:09:36.072] [INFO] webpay-web - GET /api/shipping?length=60&weight=30&from=%E6%9D%B1%E4%BA%AC%E9%83%BD
+[2017-12-30T05:09:36.079] [INFO] webpay-web - GET /api/common.css.map
+[2017-12-30T05:09:36.102] [INFO] webpay-web - GET /api/app.bundle.js.map
+[2017-12-30T05:09:36.123] [INFO] webpay-web - GET /api/common.js.map
+[2017-12-30T05:09:36.480] [INFO] webpay-web - ssr-server> Completed to responce currency.
+[2017-12-30T05:09:36.480] [INFO] webpay-web - GET /api/currency?usd=600&jpy=57000
+[2017-12-30T05:10:27.465] [ERROR] webpay-web - ssr-server> Error self signed certificate
+[2017-12-30T05:10:43.978] [ERROR] webpay-web - ssr-server> Error self signed certificate
+[2017-12-30T05:11:19.076] [ERROR] webpay-web - ssr-server> Error self signed certificate
+[2017-12-30T05:13:25.653] [INFO] webpay-web - ssr-server> HTTP Server listening on 127.0.0.1:8081
+[2017-12-30T05:13:25.655] [INFO] webpay-web - ssr-server> Secure HTTP Server listening on 127.0.0.1:4444
+[2017-12-30T05:13:53.672] [INFO] webpay-web - GET /api/?language=jp&usd=600&jpy=57000&length=60&weight=30&from=%E6%9D%B1%E4%BA%AC%E9%83%BD
+[2017-12-30T05:13:53.782] [WARN] webpay-web - GET /api/assets/js/jquery-1.10.1.min.js
+[2017-12-30T05:13:53.783] [WARN] webpay-web - GET /api/assets/js/jquery.validate.min.js
+[2017-12-30T05:13:53.783] [WARN] webpay-web - GET /api/assets/js/jquery.ah-placeholder.min.js
+[2017-12-30T05:13:53.784] [WARN] webpay-web - GET /api/assets/js/formlayout_script.js
+[2017-12-30T05:13:53.784] [WARN] webpay-web - GET /api/assets/js/checkout.js
+[2017-12-30T05:13:53.784] [WARN] webpay-web - GET /api/assets/js/log4js.min.js
+[2017-12-30T05:13:53.789] [INFO] webpay-web - GET /api/common.css
+[2017-12-30T05:13:53.791] [INFO] webpay-web - GET /api/common.js
+[2017-12-30T05:13:53.792] [INFO] webpay-web - GET /api/app.bundle.js
+[2017-12-30T05:13:53.952] [ERROR] webpay-web - GET /api/assets/js/checkout.js.map
+[2017-12-30T05:13:53.990] [INFO] webpay-web - GET /api/common.css.map
+[2017-12-30T05:13:54.059] [INFO] webpay-web - GET /api/common.js.map
+[2017-12-30T05:13:54.189] [INFO] webpay-web - ssr-server> Completed to response shipping.
+[2017-12-30T05:13:54.191] [INFO] webpay-web - GET /api/shipping?length=60&weight=30&from=%E6%9D%B1%E4%BA%AC%E9%83%BD
+[2017-12-30T05:13:54.257] [INFO] webpay-web - GET /api/app.bundle.js.map
+[2017-12-30T05:13:54.455] [INFO] webpay-web - ssr-server> Completed to responce currency.
+[2017-12-30T05:13:54.455] [INFO] webpay-web - GET /api/currency?usd=600&jpy=57000
+[2017-12-30T05:14:26.283] [ERROR] webpay-web - ssr-server> Error self signed certificate
+[2017-12-30T05:14:41.677] [ERROR] webpay-web - ssr-server> Error self signed certificate

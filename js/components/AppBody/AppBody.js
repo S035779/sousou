@@ -141,7 +141,7 @@ class AppBody extends React.Component {
       && nextProps.message.accepted[0] === this.state.email)
       this.setState({ message: nextProps.message });
     if(nextProps.jpy || nextProps.usd) 
-      console.log(nextProps);
+      //console.log(nextProps);
       this.setState({ usd: nextProps.usd, jpy: nextProps.jpy });
   }
 
@@ -210,7 +210,7 @@ class AppBody extends React.Component {
   isValid(state) {
     return (
       state.country_code      && (state.country_code.join() !== '')
-      && state.state
+      //&& state.state
       && state.city
       && state.quantity       && (state.quantity.join() !== '')
       && state.payment        && (state.payment.join() !== '')
@@ -218,21 +218,21 @@ class AppBody extends React.Component {
       && state.last_name
       && state.phone          && !this.isNotNumber(state.phone)
       && state.email          && !this.isNotEmail(state.email)
-      && state.confirm_email  && (state.email === state.confirm_email)
+      //&& state.confirm_email  && (state.email === state.confirm_email)
       && state.postal_code    && !this.isNotNumber(state.postal_code)
       && state.line1
       && state.line2
-      && state.agreement
+      //&& state.agreement
     );
   }
   
   isNotChanged(next, prev) {
     return (
       next.country_code     === prev.country_code
-      && next.gender        === prev.gender
-      && next.year          === prev.year
-      && next.month         === prev.month
-      && next.day           === prev.day
+      //&& next.gender        === prev.gender
+      //&& next.year          === prev.year
+      //&& next.month         === prev.month
+      //&& next.day           === prev.day
       && next.city          === prev.city
       && next.quantity      === prev.country_code
       && next.payment       === prev.payment
@@ -240,12 +240,12 @@ class AppBody extends React.Component {
       && next.last_name     === prev.last_name   
       && next.phone         === prev.phone       
       && next.email         === prev.email       
-      && next.confirm_email === prev.confirm_email
+      //&& next.confirm_email === prev.confirm_email
       && next.postal_code   === prev.postal_code
       && next.line1         === prev.line1       
       && next.line2         === prev.line2      
       && next.recipient_name=== prev.recipient_nama
-      && next.agreement     === prev.agreement   
+      //&& next.agreement     === prev.agreement   
       && next.jpy           === prev.jpy
       && next.usd           === prev.usd
     );
@@ -382,8 +382,7 @@ class AppBody extends React.Component {
       : 'For credit card transactions, you need a PayPal account.';
 
     const opts_country = [
-      {   name_en: ''         , name_jp: ''               , code_2: ''   }
-      , { name_en: 'Japan'    , name_jp: '日本'           , code_2: 'JP' }
+      { name_en: 'Japan'    , name_jp: '日本'           , code_2: 'JP' }
       , { name_en: 'Myanmar'  , name_jp: 'ミャンマー'     , code_2: 'MM' }
       , { name_en: 'Tai'      , name_jp: 'タイ'           , code_2: 'TH' }
       , { name_en: 'China'    , name_jp: '中華人民共和国 (中国)'
@@ -406,9 +405,7 @@ class AppBody extends React.Component {
       : null;
 
     const opts_payment = [
-      {   name_en: ''
-        , name_jp: ''                          , value: ''        }
-      , { name_en: 'Credit card (Paypal)'
+      { name_en: 'Credit card (Paypal)'
         , name_jp: 'クレジットカード（PayPal）', value: 'paypal'  }
       , { name_en: 'Bank transfer (prepayment)'
         , name_jp: '銀行振り込み（前払い）'    , value: 'deposit' }
@@ -442,22 +439,25 @@ class AppBody extends React.Component {
         <tr>
           <th>
           <label>
-          {name} <span className="required-mark">required</span>
+          <span className="required-mark">required</span>
           </label>
           </th>
           <td>
-          <div className="multi-field">
-          <label htmlFor="first-name">{first_name} </label>
+          <div className="multi-name-field">
+          <label htmlFor="first-name"></label>
           <input type="text" name="first-name" id="first-name"
             onChange={this.handleChangeText.bind(this, 'first_name')}
-            className="name-field last-name required"/>
-          <label htmlFor="last-name">{last_name} </label>
+            placeholder={first_name}
+            className="name-field last-name add-placeholder required"/>
+          <label htmlFor="last-name"></label>
           <input type="text" name="last-name" id="last-name"
             onChange={this.handleChangeText.bind(this, 'last_name')}
-            className="name-field required"/>
+            placeholder={last_name}
+            className="name-field add-placeholder required"/>
           </div>
           </td>
         </tr>
+      {/*
         <tr>
           <th>{gender}</th>
           <td>
@@ -488,7 +488,7 @@ class AppBody extends React.Component {
           <select name="month" id="month" className="short-field"
             value={this.state.month}
             onChange={this.handleChangeSelect.bind(this, 'month')}>
-          <option value></option>
+          <option value=""></option>
           <option value="1">1</option>
           <option value="2">2</option>
           <option value="3">3</option>
@@ -513,34 +513,36 @@ class AppBody extends React.Component {
           <span className="notes">{check_birthday}</span>
           </td>
         </tr>
+        */}
         <tr>
           <th>
           <label htmlFor="phone">
-          {phone} <span className="required-mark">required</span>
+           <span className="required-mark">required</span>
           </label>
           </th>
           <td>
           <input type="text" name="phone" id="phone"
             onChange={this.handleChangeText.bind(this, 'phone')}
-            className=" add-placeholder required"
-            placeholder="010-0000-0000"/>
+            placeholder={phone}
+            className=" add-placeholder required"/>
           <span className="notes">{check_phone}</span>
           </td>
         </tr>
         <tr>
           <th>
           <label htmlFor="email">
-          {email} <span className="required-mark">required</span>
+           <span className="required-mark">required</span>
           </label>
           </th>
           <td>
           <input type="text" name="email" id="email"
             onChange={this.handleChangeText.bind(this, 'email')}
             className="add-placeholder required"
-            placeholder="example@example.com"/>
+            placeholder={email}/>
           <span className="notes">{check_email}</span>
           </td>
         </tr>
+      {/*}
         <tr>
           <th>
           <label htmlFor="confirm_email">
@@ -554,6 +556,7 @@ class AppBody extends React.Component {
           <span className="notes">{check_confirm_email}</span>
           </td>
         </tr>
+        */}
         </tbody></table>
       </fieldset>
 
@@ -564,7 +567,7 @@ class AppBody extends React.Component {
         <tr>
           <th>
           <label htmlFor="country_code">
-          {country_code} <span className="required-mark">required</span>
+           <span className="required-mark">required</span>
           </label>
           </th>
           <td>
@@ -572,82 +575,92 @@ class AppBody extends React.Component {
             value={this.state.country_code}
             onChange={this.handleChangeSelect.bind(this, 'country_code')}
             className="required">
+          <option value="">{country_code}</option>
           {select_country}
           </select>
           </td>
         </tr>
+      {/*
         <tr>
           <th>
           <label htmlFor="state">
-          {state} <span className="required-mark">required</span>
+           <span className="required-mark">required</span>
           </label>
           </th>
           <td>
           <input type="text" name="state" id="state"
             onChange={this.handleChangeText.bind(this, 'state')}
-            className="required" />
+            placeholder={state}
+            className="required add-placeholder" />
           </td>
         </tr>
+        */}
         <tr>
           <th>
           <label htmlFor="postal_code">
-          {postal_code} <span className="required-mark">required</span>
+           <span className="required-mark">required</span>
           </label>
           </th>
           <td>
           <input type="text" name="postal_code" id="postal_code"
             onChange={this.handleChangeText.bind(this, 'postal_code')}
             className=" add-placeholder required"
-            placeholder="100-0000" />
+            placeholder={postal_code} />
+        {/*
           <span className="notes">{check_postal_code}</span>
+        */}
           </td>
         </tr>
         <tr>
           <th>
           <label htmlFor="city">
-          {city} <span className="required-mark">required</span>
+           <span className="required-mark">required</span>
           </label>
           </th>
           <td>
           <input type="text" name="city" id="city"
             onChange={this.handleChangeText.bind(this, 'city')}
-            className="required" />
+            placeholder={city}
+            className="required add-placeholder" />
           </td>
         </tr>
         <tr>
           <th>
           <label htmlFor="line1">
-          {line1} <span className="required-mark">required</span>
+           <span className="required-mark">required</span>
           </label>
           </th>
           <td>
           <input type="text" name="line1" id="line1"
             onChange={this.handleChangeText.bind(this, 'line1')}
-            className="required" />
+            placeholder={line1}
+            className="required add-placeholder" />
           </td>
         </tr>
         <tr>
           <th>
           <label htmlFor="line2">
-          {line2} <span className="required-mark">required</span>
+           <span className="required-mark">required</span>
           </label>
           </th>
           <td>
           <input type="text" name="line2" id="line2"
             onChange={this.handleChangeText.bind(this, 'line2')}
-            className="required" />
+            placeholder={line2}
+            className="required add-placeholder" />
           </td>
         </tr>
         <tr>
           <th>
           <label htmlFor="recipient_name">
-          {recipient_name}
+          
           </label>
           </th>
           <td>
           <input type="text" name="recipient_name" id="recipient_name"
             onChange={this.handleChangeText.bind(this, 'recipient_name')}
-          />
+            placeholder={recipient_name}
+            className="add-placeholder"/>
           </td>
         </tr>
         </tbody></table>
@@ -661,17 +674,17 @@ class AppBody extends React.Component {
         <tr>
           <th>
           <label htmlFor="quantity">
-          {quantity} <span className="required-mark">required</span>
+           <span className="required-mark">required</span>
           </label>
           </th>
           <td>
-          <div className="multi-field">
+          <div className="multi-quantity-field">
           <span className="quantity-field">
           <select name="quantity" id="quantity"
             value={this.state.quantity}
             onChange={this.handleChangeSelect.bind(this, 'quantity')}
             className="short-field required">
-          <option value></option>
+          <option value="">{quantity}</option>
           <option value="1">1</option>
           <option value="2">2</option>
           <option value="3">3</option>
@@ -694,7 +707,7 @@ class AppBody extends React.Component {
         <tr>
           <th>
           <label htmlFor="payment">
-          {payment} <span className="required-mark">required</span>
+           <span className="required-mark">required</span>
           </label>
           </th>
           <td>
@@ -702,16 +715,17 @@ class AppBody extends React.Component {
             value={this.state.payment}
             onChange={this.handleChangeSelect.bind(this, 'payment')}
             className="middle-field required">
+          <option value="">{payment}</option>
           {select_payment}
           </select>
-          <span className="notes">{notes_payment}</span>
+      {/*<span className="notes">{notes_payment}</span>*/}
           </td>
         </tr>
         </tbody></table>
       </fieldset>
       {/* How to buy */}
 
-      {/* Agreement */}
+      {/* Agreement }
       <div id="signup-agreement">
         <label>
         <span className="required-mark">required</span>  Agree to our terms of us and privacy policy. <input type="checkbox" name="agreement" id="agreement"
@@ -719,6 +733,7 @@ class AppBody extends React.Component {
           className="required"/>
         </label>
       </div>
+      { Agreement */}
 
       {/* Confirm */}
       <div id="signup-next">

@@ -34,14 +34,16 @@ var encodeFormData = function(data) {
   atag[0].style.display = 'none';
 
   var iframe = document.createElement('iframe');
-  iframe.src = '/api/' + '?' + encodeFormData(option);
-  iframe.width = '640px';
-  iframe.height = '1920px';
+  iframe.src = '/api' + '?' + encodeFormData(option);
+  iframe.width = '100%';
+  iframe.height = '100%';
   iframe.scrolling = 'no';
   iframe.frameBorder = 0;
   iframe.marginWidth = 0;
   iframe.marginHeight = 0;
   iframe.id = 'paypal-widget';
+  iframe.style.display = 'block';
+  iframe.style.margin = '0px auto';
 
   // atagの隣にiframeを挿入
   atag[0].parentNode.insertBefore(iframe,atag[0]);

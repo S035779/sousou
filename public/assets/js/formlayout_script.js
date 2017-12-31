@@ -15,12 +15,22 @@ jQuery(function($) {
 		errorPlacement: function(error, element) {
 			if (element.attr('name') == 'first-name'
       || element.attr('name') == 'last-name' ) {
-				error.appendTo('.multi-field');
+				error.appendTo('.multi-name-field');
+      } else if (element.attr('name') == 'quantity') {
+				error.appendTo('.multi-quantity-field');
 			} else 
-			if (element.attr('name') == 'quantity') {
-				error.appendTo('.milti-field');
-			} else error.insertAfter(element);
+        error.insertAfter(element);
 		}
 	});
 	
+  $(document).ready(function() {
+    $("#paypal-widget", window.parent.document)
+      .height(document.body.scrollHeight);
+  });
+
+  $(document).exResize(function(){
+    $("#paypal-widget", window.parent.document)
+      .height(document.body.scrollHeight);
+  });
+
 });
