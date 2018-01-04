@@ -1,0 +1,38 @@
+/**
+*問い合わせフォームライトボックス
+**/
+.lightbox {
+	display: none;
+	padding: 10px;
+}
+#fl1 {
+    position: relative!important;
+    line-height: normal;
+	text-align: left;
+}
+#tokyo-office{
+	overflow: hidden;
+	clear: both;
+}
+.office-name{
+	font-size: 18px;
+	font-weight: bold;
+	color: #777;
+	display: block;
+}
+.office-left{
+	width: 50%;
+	float: left;
+	background: #fff;
+	height: 350px;
+}
+.office-right{
+	width: 50%;
+	float: right;
+	background: #fff;
+	height: 350px;
+}
+.office-p-wrap{
+	margin: 24px;
+}
+
