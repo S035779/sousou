@@ -8,3 +8,9 @@
 [2018-01-05T16:55:09.578] [INFO] webpay-mms - mms-server> Secure SMTP Server listening on 127.0.0.1:4465
 [2018-01-05T17:01:00.122] [INFO] webpay-mms - mms-server> SMTP Server listening on 127.0.0.1:2525
 [2018-01-05T17:01:00.123] [INFO] webpay-mms - mms-server> Secure SMTP Server listening on 127.0.0.1:4465
+[2018-01-05T17:20:44.029] [INFO] webpay-mms - mms-server> SMTP Server listening on 127.0.0.1:2525
+[2018-01-05T17:20:44.030] [INFO] webpay-mms - mms-server> Secure SMTP Server listening on 127.0.0.1:4465
+[2018-01-05T17:22:50.106] [INFO] webpay-mms - mms-server> SMTP Server listening on 127.0.0.1:2525
+[2018-01-05T17:22:50.108] [INFO] webpay-mms - mms-server> Secure SMTP Server listening on 127.0.0.1:4465
+[2018-01-05T17:37:43.846] [INFO] webpay-mms - mms-server> SMTP Server listening on 127.0.0.1:2525
+[2018-01-05T17:37:43.847] [INFO] webpay-mms - mms-server> Secure SMTP Server listening on 127.0.0.1:4465

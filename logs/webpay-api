@@ -22,3 +22,7 @@
 [2018-01-05T17:05:11.805] [INFO] webpay-api - GET /api/shipping?length=60&weight=1.5&from=%E6%9D%B1%E4%BA%AC%E9%83%BD
 [2018-01-05T17:05:12.048] [INFO] webpay-api - Completed to responce currency.
 [2018-01-05T17:05:12.049] [INFO] webpay-api - GET /api/currency?usd=600&jpy=72000
+[2018-01-05T17:20:45.610] [INFO] webpay-api - HTTP Server listening on 127.0.0.1:8080
+[2018-01-05T17:22:53.047] [INFO] webpay-api - HTTP Server listening on 127.0.0.1:8080
+[2018-01-05T17:37:44.438] [INFO] webpay-api - HTTP Server listening on 127.0.0.1:8080
+[2018-01-05T17:43:27.031] [INFO] webpay-api - HTTP Server listening on 127.0.0.1:8080
