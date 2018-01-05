@@ -1,0 +1,252 @@
+/* form container */
+#user-sign-up {
+	margin: 0 auto;
+	padding-top: 0.5em;
+	background-color: #F2F2F2;
+	width: 80%;
+}
+
+.category-group,
+#signup-agreement,
+#signup-next {
+	margin: 0;
+	padding: 0.5em 1.5em 0.5em;
+	border: none;
+	border-bottom: 0.5em solid #FFF;
+}
+
+.category-group {
+	margin-top: 1em;
+}
+
+#signup-agreement,
+#signup-next {
+	padding-bottom: 2em;
+	text-align: center;
+}
+
+.category-group legend {
+	margin: 7px 0 2px 0;
+	padding-left: 14px;
+	font-weight: bold;
+  color: #929292;
+  border-left: solid 1px #cccccc;
+	font-size: 14px;
+}
+
+/* table layout */
+.category-group table {
+	width: 100%;
+}
+
+.category-group td {
+  width: 100%;
+	vertical-align: top;
+	padding: 0;
+}
+
+/* form items */
+.category-group
+  select {
+  vertical-align: middle;
+	width: 100%;
+  height: 2.5em;
+  font-size: 100%;
+	border: solid 1px #ccc;
+}
+
+.category-group
+  input[type="checkbox"] {
+  float: left;
+  width: 20px;
+  margin-top: 4px;
+}
+
+.category-group
+  input[type="text"]
+  , input[type="password"]
+  , textarea {
+	width: 97%;
+	font-size: 100%;
+	border: solid 1px #ccc;
+}
+
+.category-group
+  input[type="text"]
+  , input[type="password"]
+  , textarea
+  , select {
+	padding: 8px;
+	margin: 8px 0 8px 0;
+}
+
+.category-group
+  input:focus {
+	background-color: #FFF8F0;
+}
+
+.category-group
+  input.middle-field {
+	width: 16em;
+}
+
+.category-group
+  input.short-field {
+	width: 4em;
+}
+
+.category-group
+  select.middle-field {
+	width: 15em;
+}
+
+.category-group
+  select.short-field {
+	width: 6em;
+}
+
+input.button-primary {
+  width: 100%;
+  text-align: center;
+  margin: 16px auto 0 auto;
+  display: block;
+  background: #ffb401;
+  height: 60px;
+  color: #fff;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+	-moz-border-radius: 8px;
+	-webkit-border-radius: 8px;
+	cursor: pointer;
+}
+
+input.button-primary:hover {
+	background: #ef3e78;
+}
+
+#paypal-button {
+  width: 100%;
+}
+
+.modalDialog {
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  z-index: 99999;
+  background: rgba(0,0,0,0.8);
+  opacity: 1;
+}
+
+.modalDialog > div {
+  width: 400px;
+  position: relative;
+  margin: 100% auto;
+  padding: 5px 20px 13px 20px;
+  border-radius: 10px;
+  background: #fff;
+  background: -moz-linear-gradient(#fff, #999);
+  background: -webkit-linear-gradient(#fff, #999);
+  background: -o-linear-gradient(#fff, #999);
+}
+
+a.btn.btn-default {
+  color: #6d6d6d;
+  display: block;
+  float: right;
+  text-decoration: none;
+  border: solid 1px #c1c1c1;
+  padding: 4px 24px 3px;
+  border-radius: 4px;
+  box-shadow: 0px 1px 0 0 #aaaaaa;
+  background: linear-gradient(to bottom, #fafafa,#e6e6e6);
+}
+
+a.btn.btn-default:hover{
+	background: linear-gradient(to bottom, #fafafa,#d6d6d6);
+}
+
+/* plug-in style overwreite */
+/* Validate */
+input[type=text].error,
+input[type=password].error,
+select.error {
+	border: 1px solid #C66;
+	background-color: #FDD;
+}
+
+label.error {
+	display: block;
+	line-height: 1.2;
+	margin-bottom: 0.5em;
+	color: #C00;
+	font-weight: bold;
+	font-size: 87.5%;
+}
+
+label.error:before {
+	display: inline-block;
+	content: '!';
+	margin-right: 0.25em;
+	padding: 0 0.45em;
+	border-radius: 3px;
+	color: #FFF;
+	background-color: #C00;
+}
+
+/* other items */
+.required-mark {
+	position: relative;
+	top: -0.2em;
+	left: 0;
+	line-height: 1;
+	padding: 0.25em 0.375em;
+	border-radius: 2px;
+	color: #FFF;
+	font-weight: normal;
+	font-size: 62.5%;
+	background-color: #C00;
+}
+
+.notes {
+	display: block;
+	line-height: 1.2;
+	font-size: 75%;
+}
+
+/* multi field */
+.category-group input.name-field {
+	width: 45%;
+}
+
+.category-group input.last-name {
+	margin-right: 2.5%;
+}
+
+.category-group gender-field {
+	padding: 0.375em;
+}
+
+.category-group .birthday-field {
+	display: inline-block;
+	margin-right: 0.5em;
+}
+
+.category-group .quantity-field {
+	display: inline-block;
+	margin-right: 0.5em;
+}
+
+.category-group .delivery-field label {
+  display: inline-block;
+	padding: 0.375em;
+	margin-right: 0.5em;
+}
+
+/* delivery menu */
+.buynow_contactlast div.delivery {
+}
+
+.buynow_contactlast div.non-delivery {
+  display: none;
+}
+

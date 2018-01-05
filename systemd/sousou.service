@@ -4,7 +4,7 @@ After=syslog.target network.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/node --require /home/app/work/sousou/js/hook/babel-register.js /home/app/work/sousou/js/ssr-server.js
+ExecStart=/usr/bin/node --require /home/app/work/sousou/src/hook/babel-register.js /home/app/work/sousou/src/ssr-server.js
 WorkingDirectory=/home/app/work/sousou
 KillMode=process
 Restart=always
