@@ -558,3 +558,52 @@
 [2017-12-30T05:14:26.283] [ERROR] webpay-web - ssr-server> Error self signed certificate
 [2017-12-30T05:14:41.677] [ERROR] webpay-web - ssr-server> Error self signed certificate
 >>>>>>> bd1e51de4c1a57ddd68d2427039df63692ed027a
+[2017-12-31T10:21:49.931] [INFO] webpay-web - ssr-server> HTTP Server listening on 127.0.0.1:8081
+[2017-12-31T10:21:49.933] [INFO] webpay-web - ssr-server> Secure HTTP Server listening on 127.0.0.1:4444
+[2017-12-31T10:23:04.695] [INFO] webpay-web - GET /api?language=jp&usd=600&jpy=72000&length=60&weight=30&from=%E6%9D%B1%E4%BA%AC%E9%83%BD
+[2017-12-31T10:23:04.758] [INFO] webpay-web - GET /views/common.css
+[2017-12-31T10:23:04.760] [INFO] webpay-web - GET /views/assets/js/jquery.validate.min.js
+[2017-12-31T10:23:04.760] [INFO] webpay-web - GET /views/assets/js/jquery.exresize-latest.js
+[2017-12-31T10:23:04.761] [INFO] webpay-web - GET /views/assets/js/jquery.ah-placeholder.min.js
+[2017-12-31T10:23:04.762] [INFO] webpay-web - GET /views/assets/js/formlayout_script.js
+[2017-12-31T10:23:04.762] [INFO] webpay-web - GET /views/assets/js/log4js.min.js
+[2017-12-31T10:23:04.765] [INFO] webpay-web - GET /views/common.js
+[2017-12-31T10:23:04.767] [INFO] webpay-web - GET /views/app.bundle.js
+[2017-12-31T10:23:05.020] [INFO] webpay-web - GET /views/common.css.map
+[2017-12-31T10:23:05.043] [INFO] webpay-web - GET /views/common.js.map
+[2017-12-31T10:24:01.561] [INFO] webpay-web - ssr-server> HTTP Server listening on 127.0.0.1:8081
+[2017-12-31T10:24:01.564] [INFO] webpay-web - ssr-server> Secure HTTP Server listening on 127.0.0.1:4444
+[2017-12-31T10:24:55.389] [INFO] webpay-web - GET /api?language=jp&usd=600&jpy=72000&length=60&weight=30&from=%E6%9D%B1%E4%BA%AC%E9%83%BD
+[2017-12-31T10:24:55.453] [INFO] webpay-web - GET /views/common.css
+[2017-12-31T10:24:55.455] [INFO] webpay-web - GET /views/assets/js/jquery.validate.min.js
+[2017-12-31T10:24:55.456] [INFO] webpay-web - GET /views/assets/js/jquery.ah-placeholder.min.js
+[2017-12-31T10:24:55.456] [INFO] webpay-web - GET /views/assets/js/jquery.exresize-latest.js
+[2017-12-31T10:24:55.457] [INFO] webpay-web - GET /views/assets/js/formlayout_script.js
+[2017-12-31T10:24:55.457] [INFO] webpay-web - GET /views/assets/js/log4js.min.js
+[2017-12-31T10:24:55.460] [INFO] webpay-web - GET /views/common.js
+[2017-12-31T10:24:55.460] [INFO] webpay-web - GET /views/app.bundle.js
+[2017-12-31T10:24:55.716] [INFO] webpay-web - GET /views/common.js.map
+[2017-12-31T10:24:55.766] [INFO] webpay-web - GET /views/common.css.map
+[2017-12-31T10:24:55.790] [INFO] webpay-web - ssr-server> Completed to response shipping.
+[2017-12-31T10:24:55.791] [INFO] webpay-web - GET /api/shipping?length=60&weight=30&from=%E6%9D%B1%E4%BA%AC%E9%83%BD
+[2017-12-31T10:24:55.797] [INFO] webpay-web - GET /views/app.bundle.js.map
+[2017-12-31T10:24:56.015] [ERROR] webpay-web - ssr-server> TypeError Cannot read property 'USDJPY' of undefined
+[2017-12-31T10:24:56.015] [INFO] webpay-web - GET /api/currency?usd=600&jpy=72000
+[2017-12-31T10:24:57.585] [INFO] webpay-web - GET /api?language=jp&usd=600&jpy=72000&length=60&weight=30&from=%E6%9D%B1%E4%BA%AC%E9%83%BD
+[2017-12-31T10:24:57.643] [WARN] webpay-web - GET /views/assets/js/jquery.validate.min.js
+[2017-12-31T10:24:57.644] [WARN] webpay-web - GET /views/assets/js/jquery.ah-placeholder.min.js
+[2017-12-31T10:24:57.647] [WARN] webpay-web - GET /views/assets/js/jquery.exresize-latest.js
+[2017-12-31T10:24:57.648] [WARN] webpay-web - GET /views/assets/js/formlayout_script.js
+[2017-12-31T10:24:57.648] [WARN] webpay-web - GET /views/assets/js/log4js.min.js
+[2017-12-31T10:24:57.649] [WARN] webpay-web - GET /views/common.js
+[2017-12-31T10:24:57.649] [WARN] webpay-web - GET /views/app.bundle.js
+[2017-12-31T10:24:57.650] [INFO] webpay-web - GET /views/common.css
+[2017-12-31T10:24:57.873] [INFO] webpay-web - GET /views/common.js.map
+[2017-12-31T10:24:57.923] [INFO] webpay-web - ssr-server> Completed to response shipping.
+[2017-12-31T10:24:57.923] [INFO] webpay-web - GET /api/shipping?length=60&weight=30&from=%E6%9D%B1%E4%BA%AC%E9%83%BD
+[2017-12-31T10:24:57.925] [INFO] webpay-web - GET /views/common.css.map
+[2017-12-31T10:24:57.929] [INFO] webpay-web - GET /views/app.bundle.js.map
+[2017-12-31T10:24:58.166] [ERROR] webpay-web - ssr-server> TypeError Cannot read property 'USDJPY' of undefined
+[2017-12-31T10:24:58.166] [INFO] webpay-web - GET /api/currency?usd=600&jpy=72000
+[2017-12-31T10:25:41.125] [INFO] webpay-web - ssr-server> HTTP Server listening on 127.0.0.1:8081
+[2017-12-31T10:25:41.127] [INFO] webpay-web - ssr-server> Secure HTTP Server listening on 127.0.0.1:4444
