@@ -19,9 +19,7 @@ var encodeFormData = function(data) {
 };
 
 (function(){
-
   'use strict';
-
   // 目印のaタグからパラメータとってきたら消す
   var atag = document.getElementsByClassName('paypal-widget');
   var option = {};
@@ -33,9 +31,8 @@ var encodeFormData = function(data) {
   option['from']  = atag[0].dataset.from;
   atag[0].style.display = 'none';
 
-  var host = 'https://localhost:4443'
   var iframe = document.createElement('iframe');
-  iframe.src = host + '/api/' + '?' + encodeFormData(option);
+  iframe.src = '/api/' + '?' + encodeFormData(option);
   iframe.frameBorder = 0;
   iframe.width = '100%';
   iframe.height = '100%';
@@ -45,7 +42,6 @@ var encodeFormData = function(data) {
   iframe.id = 'paypal-widget';
   // atagの隣にiframeを挿入
   atag[0].parentNode.insertBefore(iframe,atag[0]);
-
 })();
 
 window.onload = function() {
@@ -55,9 +51,7 @@ window.onload = function() {
 var reSize = function(id) {
   var iframe = document.getElementById(id);
   var win = iframe.contentWindow;
-  win.postMessage('setResize!!', 'https://localhost:4443');
   setSize(iframe, scrollSize(win));
-  //win.postMessage('Done!!', 'https://localhost:4443');
 };
 
 var scrollSize = function(win) {
@@ -67,8 +61,3 @@ var scrollSize = function(win) {
 var setSize = function(element, height) {
   element.setAttribute('height', height + 'px');
 };
-
-function receiveMessage(event) {
-  console.log(event.origin, event.data);
-}
-window.addEventListener("message", receiveMessage, false);

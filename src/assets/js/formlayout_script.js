@@ -24,9 +24,3 @@ jQuery(function($) {
 	});
 	
 });
-
-function receiveMessage(event) {
-  console.log(event.origin, event.data);
-  event.source.postMessage('Good luck!!', event.origin);
-}
-window.addEventListener("message", receiveMessage, false);
