@@ -96,13 +96,13 @@ const config = {
       {
         test: /\.(gif|jpg|png|svg)$/,
         use: [
-          'file-loader'
+          'file-loader?name=[name].[ext]'
         ]
       },
       {
         test: /\.(woff|woff2|eot|ttf|otf)$/,
         use: [
-          'file-loader'
+          'file-loader?name=[name].[ext]'
         ]
       },
       {
