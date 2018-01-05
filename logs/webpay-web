@@ -1,7 +1,0 @@
-<<<<<<< HEAD
-[2018-01-05T15:49:26.352] [INFO] webpay-web - ssr-server> HTTP Server listening on 127.0.0.1:8081
-[2018-01-05T15:49:26.353] [INFO] webpay-web - ssr-server> Secure HTTP Server listening on 127.0.0.1:4444
-=======
-[2018-01-05T15:49:06.455] [INFO] webpay-web - ssr-server> HTTP Server listening on 127.0.0.1:8081
-[2018-01-05T15:49:06.457] [INFO] webpay-web - ssr-server> Secure HTTP Server listening on 127.0.0.1:4444
->>>>>>> ed0a0329221581e99f881106b5f768a051c63dc1
