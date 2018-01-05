@@ -33,7 +33,7 @@ class App extends React.Component {
         options={this.state.options}
         currency={this.state.currency}
         shipping={this.state.shipping}
-        message={this.state.message} />
+        results={this.state.results} />
       <AppFooter language={language} />
     </div>;
   }

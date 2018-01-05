@@ -139,14 +139,16 @@ export default {
   getCurrency(options) {
     return this.request('/currency', options);
   },
-  createPayment(options) {
+  createPayment(params) {
+    const options = this.validate(params);
     const buyer = this.setCustomer(options);
     const seler  = this.setManager(options);
     return this.postPayment(options)
       .then(() => this.postMessage(seler))
       .then(() => this.postMessage(buyer))
   },
-  createMessage(options) {
+  createMessage(params) {
+    const options = this.validate(params);
     const buyer = this.setCustomer(options);
     const seler  = this.setManager(options);
     return this.postMessage(seler)
@@ -157,6 +159,29 @@ export default {
   },
   fetchCurrency(options) {
     return this.getCurrency(options)
+  },
+  validate(params) {
+    const { item, shipping_address, infomation } = params;
+    let newItem = {};
+    let newAddr = {};
+    let newInfo = {};
+    newItem['quantity'] = Array.isArray(item.quantity)
+      ? item.quantity.join()
+      : item.quantity;
+    newAddr['country_code'] = Array.isArray(shipping_address.country_code)
+      ? shipping_address.country_code.join()
+      : shipping_address.country_code;
+    newInfo['month'] = Array.isArray(infomation.month)
+      ? infomation.month.join()
+      : infomation.month;
+    newInfo['payment'] = Array.isArray(infomation.payment)
+      ? infomation.payment.join()
+      : infomation.payment;
+    return Object.assign({}, params, {
+      item: Object.assign({},item, newItem)
+      , shipping_address: Object.assign({}, shipping_address, newAddr)
+      , infomation: Object.assign({}, infomation, newInfo)
+    });
   },
   setManager(obj) {
     const message = {
@@ -182,6 +207,7 @@ export default {
         + `         ${obj.shipping_address.phone}\n`
         + `         ${obj.shipping_address.country_code}\n\n`
         + ` 方　法：${obj.infomation.payment}\n`
+        + ` 連　絡：${obj.infomation.message}\n`
         + `銀行振込(deposit）、その他(other)の場合は、\n`
         + `以降、お客様対応をお願いします。\n`
     };
@@ -211,6 +237,7 @@ export default {
         + `         ${obj.shipping_address.phone}\n`
         + `         ${obj.shipping_address.country_code}\n\n`
         + ` 方　法：${obj.infomation.payment}\n`
+        + ` 連　絡：${obj.infomation.message}\n`
         + `銀行振込(deposit）、その他(other)の場合は、\n`
         + `以降、メールにてご連絡差し上げます。\n`
         + `ご利用有難うございました。\n`

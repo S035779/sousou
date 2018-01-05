@@ -243,10 +243,10 @@ label.error:before {
 }
 
 /* delivery menu */
-.category-group tbody.delivery {
+.buynow_contactlast div.delivery {
 }
 
-.category-group tbody.non-delivery {
+.buynow_contactlast div.non-delivery {
   display: none;
 }
 

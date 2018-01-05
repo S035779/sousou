@@ -13,7 +13,7 @@ class AppBody extends React.Component {
     const usd = props.usd;
     const jpy = props.jpy;
     const options = props.options;
-    const message = props.message;
+    const results = props.results;
 
     const infomation =        options.infomation;
     const details =           options.details;
@@ -52,9 +52,10 @@ class AppBody extends React.Component {
       , delivery:       infomation.delivery
       , payment:        infomation.payment
     //  , agreement:      infomation.agreement
+      , message:        infomation.message
       , usd:            usd
       , jpy:            jpy
-      , message:        message
+      , results:        results
     };
   }
 
@@ -72,46 +73,42 @@ class AppBody extends React.Component {
 
   handleChangeRadio(name, e) {
     let newState = {};
-    let shipping = {};
-    const value = newState[name] = e.target.value;
-    switch (value) {
-      case 'japan':
-        shipping = {
-          country_code:     'JP'
-          , state:          '南関東'
-          , postal_code:    '135-0046'
-          , city:           '東京都'
-          , line1:          '江東区'
-          , line2:          '牡丹1-2-2'
-          , recipient_name: '東京オフィス'
-        };
-        break;
-      case 'myanmer':
-        shipping = {
-          country_code:     'MM'
-          , state:          'Myanmer'
-          , postal_code:    '11181'
-          , city:           'YANGON'
-          , line1:          'Hledan Center, Kamayut Tsp'
-          , line2:          '#307, 3rd Floor'
-          , recipient_name: 'MYANMER OFFICE'
-        };
-        break;
-      case 'address':
-        shipping = {
-          country_code:     ''
-          , state:          ''
-          , postal_code:    ''
-          , city:           ''
-          , line1:          ''
-          , line2:          ''
-          , recipient_name: ''
-        };
-        break;
-      default:
-        break;
-    }
-    this.setState(Object.assign({}, shipping, newState));
+    newState[name] = e.target.value;
+    const newAddress = this.setAddress(e.target.value);
+    this.setState(Object.assign({}, newState, newAddress));
+  }
+
+  setAddress(value) {
+    let newAddress = {};
+    newAddress['japan'] = {
+      country_code:     [ 'JP' ]
+      , state:          '日本'
+      , postal_code:    '135-0046'
+      , city:           '東京都'
+      , line1:          '江東区'
+      , line2:          '牡丹1-2-2'
+      , recipient_name: '東京オフィス'
+    };
+    newAddress['myanmer'] = {
+      country_code:     [ 'MM' ]
+      , state:          'Myanmer'
+      , postal_code:    '11181'
+      , city:           'YANGON'
+      , line1:          'Hledan Center, Kamayut Tsp'
+      , line2:          '#307, 3rd Floor'
+      , recipient_name: 'MYANMER OFFICE'
+    };
+    return value === 'japan' || value === 'myanmer'
+      ? newAddress[value]
+      : {
+        country_code:     []
+        , state:          ''
+        , postal_code:    ''
+        , city:           ''
+        , line1:          ''
+        , line2:          ''
+        , recipient_name: ''
+      };
   }
 
   handleChangeSelect(name, e) {
@@ -145,7 +142,7 @@ class AppBody extends React.Component {
       , item: {
         name: pay.name
         , description: pay.description
-        , quantity: state.quantity ? state.quantity.join() : ''
+        , quantity: state.quantity
         , price: pay.price
         , currency: pay.currency
       }
@@ -155,7 +152,6 @@ class AppBody extends React.Component {
         , line2: state.line2
         , city: state.city
         , country_code: state.country_code
-          ? state.country_code.join() : ''
         , postal_code: state.postal_code
         , phone: state.phone
         , state: state.state
@@ -165,24 +161,25 @@ class AppBody extends React.Component {
         , last_name: state.last_name
       //  , gender: state.gender
       //  , year: state.year
-      //  , month: state.month ? state.month.join() : ''
+      //  , month: state.month
       //  , day: state.day
         , email: state.email
       //  , confirm_email: state.confirm_email
         , delivery: state.delivery
-        , payment: state.payment ? state.payment.join() : ''
+        , payment: state.payment
+        , message: state.message
       //  , agreement: state.agreement
       }
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    if(nextProps.message) {
-      if(nextProps.message.accepted
-      && nextProps.message.accepted[0] === this.state.email)
-        this.setState({ message: nextProps.message });
-      else if(nextProps.message.error)
-        this.setState({ message: nextProps.message });
+    if(nextProps.results) {
+      if(nextProps.results.accepted
+      && nextProps.results.accepted[0] === this.state.email)
+        this.setState({ results: nextProps.results });
+      else if(nextProps.results.error)
+        this.setState({ results: nextProps.results });
     }
 
     if(nextProps.jpy || nextProps.usd) 
@@ -203,9 +200,9 @@ class AppBody extends React.Component {
 
   componentWillUpdate(nextProps, nextState) {
     if(!this.isValid(nextState)) return;
-
     const state = nextState;
     const props = nextProps;
+
     const curr = props.currency;
     const ship = props.shipping;
     const isJP = obj => obj.country_code.join() === 'JP';
@@ -217,7 +214,8 @@ class AppBody extends React.Component {
       ems.code_2 === state.country_code.join())[0].paypal === 'OK';
     const price = isJP(state) ? Number(curr.JPY) : Math.ceil(curr.USD);
     const shipping = isJP(state)
-      ? (isCty(state) ? Number(isCty(state).price) : 0) 
+      //? (isCty(state) ? Number(isCty(state).price) : 0) 
+      ? 1500 
       : (isEms(state) && isPay(state) ? Number(isEms(state).price) : 0);
     const subtotal = price * state.quantity;
     const total = subtotal + shipping;
@@ -293,6 +291,7 @@ class AppBody extends React.Component {
       && next.recipient_name=== prev.recipient_nama
       && next.quantity      === prev.country_code
       && next.payment       === prev.payment
+      && next.message       === prev.message
       //&& next.agreement     === prev.agreement   
       && next.jpy           === prev.jpy
       && next.usd           === prev.usd
@@ -353,19 +352,19 @@ class AppBody extends React.Component {
     : <div></div>;
   }
 
-  renderModal(message, isJP) {
+  renderModal(results, isJP) {
     let head = '';
     let body = '';
-    if (message.accepted) {
+    if (results.accepted) {
       head = isJP
         ? 'ご利用ありがとうございました！'
         : 'Thank you for using!';
       body = isJP
         ? 'ご依頼の商品の詳細は別途メールにてご連絡させて頂きます。'
         : 'Details of the requested item will be notified separately by e-mail.';
-    } else if (message.error) {
-      head = message.error.name;
-      body = isJP ? message.error.message.jp : message.error.message.en;
+    } else if (results.error) {
+      head = results.error.name;
+      body = isJP ? results.error.message.jp : results.error.message.en;
     } 
     return (<div className="modalDialog">
         <div>
@@ -375,8 +374,16 @@ class AppBody extends React.Component {
       </div>);
   }
 
+  logInfo(message) {
+    log.info(`${pspid}>`, 'Request:', message);
+  }
+   
   logTrace(message) {
-    log.trace(`${pspid}>`, 'Trace:', message);
+    log.trace(`${pspid}>`, 'Response:', message);
+  }
+   
+  logError(error) {
+    log.error(`${pspid}>`, error.name, error.message);
   }
    
   render() {
@@ -387,10 +394,12 @@ class AppBody extends React.Component {
     const isJP = language === 'jp' ? true : false;
     
     const Information = isJP ? 'お客様の情報' : 'Your Information';
+    const Delivery = isJP ? 'お引き渡し場所' : 'Place of delivery';
+    const Shipping = isJP ? 'お届け先' : 'Delivery address';
     const Quantity = isJP
-      ? 'ご購入数と通貨' : 'Purchasing quantities and Currency'; 
+      ? 'ご購入数と通貨' : 'Purchasing quantities and currency'; 
     const HowToBuy = isJP ? 'お支払い方法' : 'Payment method'; 
-    const Shipping = isJP ? 'お引き渡し場所' : 'Place of delivery';
+    const Message = isJP ? 'メッセージ' : 'Message';
 
     const name = isJP ? 'お名前' : 'Name';
     const gender = isJP ? '性別' : 'Gender';
@@ -408,6 +417,7 @@ class AppBody extends React.Component {
     const recipient_name = isJP ? '受取人名義' : 'Recipient Name';
     const quantity = isJP ? 'ご購入数' : 'Quantity';
     const payment = isJP ? 'お支払い方法' : 'Payment';
+    const message = isJP ? 'ご連絡事項' : 'Message';
     const agreement = ' Agree to our terms of us and privacy policy. ';
 
     const first_name = isJP ? '名字' : 'First';
@@ -499,8 +509,8 @@ class AppBody extends React.Component {
     //  = this.checkNumber(this.state.year, this.state.day, isJP);
 
     const toggledButton = this.renderButton(this.state, isJP);
-    const popupModal = this.state.message
-      ? this.renderModal(this.state.message, isJP) : <div></div>;
+    const popupModal = this.state.results
+      ? this.renderModal(this.state.results, isJP) : <div></div>;
 
     return <div className="buynow_contactlast">
       <form id="user-sign-up" onSubmit={this.handleSubmit.bind(this)}>
@@ -566,9 +576,10 @@ class AppBody extends React.Component {
           <label htmlFor="month">{month} </label>
           <span className="birthday-field">
           <select name="month" id="month" className="short-field"
+            multiple={false}
             value={this.state.month}
             onChange={this.handleChangeSelect.bind(this, 'month')}>
-          <option value=""></option>
+          <option value="">{month}</option>
           <option value="1">1</option>
           <option value="2">2</option>
           <option value="3">3</option>
@@ -643,23 +654,97 @@ class AppBody extends React.Component {
       */}
         </tbody></table>
       </fieldset>
+      {/* Your Informatin */}
 
-      {/* Your Shipping Address */}
+      {/* Quantity & Currency */}
       <fieldset className="category-group">
-        <legend>{Shipping}</legend>
-        <table>
-        <thead>
+        <legend>{Quantity}</legend>
+        <table><tbody>
         <tr>
         {/*
           <th>
-          <label htmlFor="delivery">
-          {delivery} <span className="required-mark">required</span>
+          <label htmlFor="quantity">
+          {quantity} <span className="required-mark">required</span>
           </label>
           </th>
         */}
           <td>
-          <div className="delivery-field">
-          <Radio name="delivery"
+          <div className="multi-quantity-field">
+          <span className="quantity-field">
+          <select name="quantity" id="quantity"
+            multiple={false}
+            value={this.state.quantity}
+            onChange={this.handleChangeSelect.bind(this, 'quantity')}
+            className="short-field required">
+          <option value="">{quantity}</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+          <option value="10">10</option>
+          </select>
+          </span>
+          <span className="quantity-field">
+          <label>{label_quantity}</label>
+          </span>
+          </div>
+          <span className="notes">{notes_quantity}</span>
+          </td>
+        </tr>
+        </tbody></table>
+      </fieldset>
+      {/* Quantity & Currency */}
+
+      {/* How to Buy */}
+      <fieldset className="category-group">
+        <legend>{HowToBuy}</legend>
+        <table><tbody>
+        <tr>
+        {/*
+          <th>
+          <label htmlFor="payment">
+          {payment} <span className="required-mark">required</span>
+          </label>
+          </th>
+        */}
+          <td>
+          <div>
+          <select name="payment" id="payment"
+            multiple={false}
+            value={this.state.payment}
+            onChange={this.handleChangeSelect.bind(this, 'payment')}
+            className="middle-field required">
+          <option value="">{payment}</option>
+          {select_payment}
+          </select>
+          </div>
+          <span className="notes">{notes_payment}</span>
+          </td>
+        </tr>
+        </tbody></table>
+      </fieldset>
+      {/* How to buy */}
+
+      {/* Delivery */}
+      <fieldset className="category-group">
+        <legend>{Delivery}</legend>
+        <table><tbody>
+        <tr>
+        <th>
+        {/*
+          <label htmlFor="delivery">
+          {delivery} <span className="required-mark">required</span>
+          </label>
+        */}
+        </th>
+        <td>
+        <div className="delivery-field">
+        <Radio name="delivery"
             value={this.state.delivery}
             onChange={this.handleChangeRadio.bind(this, 'delivery')} >
             <option value="address"
@@ -668,15 +753,22 @@ class AppBody extends React.Component {
               id="delivery_japan"> {delivery_japan} </option>
             <option value="myanmer"
               id="delivery_myanmer"> {delivery_myanmer} </option>
-          </Radio>
-          <a className="btn btn-default" href="#"
+        </Radio>
+        <a className="btn btn-default" href="#"
             data-featherlight="#fl1">{delivery_check}</a>
-          </div>
-          <span className="notes">{notes_delivery}</span>
-          </td>
+        </div>
+        <span className="notes">{notes_delivery}</span>
+        </td>
         </tr>
-        </thead>
-        <tbody className={select_delivery}>
+        </tbody></table>
+      </fieldset>
+      {/* Delivery */}
+
+      {/* Your Shipping Address */}
+      <div className={select_delivery}>
+      <fieldset className="category-group">
+        <legend>{Shipping}</legend>
+        <table><tbody>
         <tr>
         {/*
           <th>
@@ -687,6 +779,7 @@ class AppBody extends React.Component {
         */}
           <td>
           <select name="country_code" id="country_code"
+            multiple={false}
             value={this.state.country_code}
             onChange={this.handleChangeSelect.bind(this, 'country_code')}
             className="required">
@@ -788,79 +881,32 @@ class AppBody extends React.Component {
         </tr>
         </tbody></table>
       </fieldset>
+      </div>
       {/* Your Shipping Address */}
 
-      {/* Quantity & Currency */}
+      {/* Message */}
       <fieldset className="category-group">
-        <legend>{Quantity}</legend>
+        <legend>{Message}</legend>
         <table><tbody>
         <tr>
         {/*
           <th>
-          <label htmlFor="quantity">
-          {quantity} <span className="required-mark">required</span>
+          <label htmlFor="message">
+          {message}
           </label>
           </th>
         */}
           <td>
-          <div className="multi-quantity-field">
-          <span className="quantity-field">
-          <select name="quantity" id="quantity"
-            value={this.state.quantity}
-            onChange={this.handleChangeSelect.bind(this, 'quantity')}
-            className="short-field required">
-          <option value="">{quantity}</option>
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5</option>
-          <option value="6">6</option>
-          <option value="7">7</option>
-          <option value="8">8</option>
-          <option value="9">9</option>
-          <option value="10">10</option>
-          </select>
-          </span>
-          <span className="quantity-field">
-          <label>{label_quantity}</label>
-          </span>
-          </div>
-          <span className="notes">{notes_quantity}</span>
+          <textarea name="message" id="message"
+            cons="40" rows="10"
+            onChange={this.handleChangeText.bind(this, 'message')}
+            placeholder={message}
+            className="add-placeholder"/>
           </td>
         </tr>
         </tbody></table>
       </fieldset>
-      {/* Quantity & Currency */}
-
-      {/* How to Buy */}
-      <fieldset className="category-group">
-        <legend>{HowToBuy}</legend>
-        <table><tbody>
-        <tr>
-        {/*
-          <th>
-          <label htmlFor="payment">
-          {payment} <span className="required-mark">required</span>
-          </label>
-          </th>
-        */}
-          <td>
-          <div>
-          <select name="payment" id="payment"
-            value={this.state.payment}
-            onChange={this.handleChangeSelect.bind(this, 'payment')}
-            className="middle-field required">
-          <option value="">{payment}</option>
-          {select_payment}
-          </select>
-          </div>
-          <span className="notes">{notes_payment}</span>
-          </td>
-        </tr>
-        </tbody></table>
-      </fieldset>
-      {/* How to buy */}
+      {/* Message */}
 
       {/* Agreement }
       <div id="signup-agreement">

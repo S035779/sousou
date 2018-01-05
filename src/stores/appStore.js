@@ -12,7 +12,7 @@ class AppStore extends ReduceStore<number> {
       , jpy: 0
       , shipping: {}
       , currency: {}
-      , message:  null
+      , results:  null
       , options:  {
         total:  0
         , currency: ''
@@ -24,7 +24,7 @@ class AppStore extends ReduceStore<number> {
         , item: { 
           name: ''
           , description: ''
-          , quantity: ''
+          , quantity: []
           , price: 0
           , currency: ''
         }
@@ -33,7 +33,7 @@ class AppStore extends ReduceStore<number> {
           , line1: ''
           , line2: ''
           , city: ''
-          , country_code: ''
+          , country_code: []
           , postal_code: ''
           , phone: ''
           , state: ''
@@ -43,12 +43,13 @@ class AppStore extends ReduceStore<number> {
           , last_name: ''
         //  , gender: ''
         //  , year: ''
-        //  , month: ''
+        //  , month: []
         //  , day: ''
           , email: ''
         //  , confirm_email: ''
           , delivery: 'address'
-          , payment: ''
+          , payment: []
+          , message: ''
         //  , agreement: false
         }
       }};
@@ -58,12 +59,12 @@ class AppStore extends ReduceStore<number> {
     switch (action.type) { 
       case 'item/create/payment':
         return Object.assign({}, state, {
-          message:    action.message
+          results:    action.results
           , options:  action.options
         });
       case 'item/create/message':
         return Object.assign({}, state, {
-          message:    action.message
+          results:    action.results
           , options:  action.options
         });
       case 'config/fetch/shipping':
