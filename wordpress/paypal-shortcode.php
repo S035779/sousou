@@ -12,9 +12,9 @@ function display_paypal_payment($arr, $content="") {
   $def = array(
     'language' => 'jp',
     'usd' => 600,
-    'jpy' => 57000,
+    'jpy' => 72000,
     'length' => 60,
-    'weight' => 30,
+    'weight' => 1.5,
     'from' => '東京都',
   );
   

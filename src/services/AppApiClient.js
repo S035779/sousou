@@ -5,8 +5,9 @@ const env = process.env.NODE_ENV || 'development';
 const productions_access_key = process.env.PAYPAL_ACCESS_KEY;
 const development_access_key = process.env.PAYPAL_ACCESS_KEY;
 const sender = process.env.MMS_FROM;
-const ssl_host = process.env.TOP_URL;
-const path = ssl_host + '/api';
+const host = process.env.TOP_URL;
+const api_path = process.env.API_PATH;
+const api = host + api_path;
 const pspid = 'AppApiClient';
 
 let paypal_env = '';
@@ -21,11 +22,11 @@ if (env === 'development') {
   log.config('console', 'json', 'webpay-renderer', 'INFO');
 }
 log.info(`${pspid}>`, 'Paypal Environment:', paypal_env);
-log.info(`${pspid}>`, 'Paypal Payment URI:', path);
+log.info(`${pspid}>`, 'Paypal Payment URI:', api);
 
 export default {
   request(operation, options) {
-    const uri = path + operation;
+    const uri = api + operation;
     switch(operation) {
       case '/payment':
         return new Promise((resolve, reject) => {

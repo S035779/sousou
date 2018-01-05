@@ -19,9 +19,7 @@ var encodeFormData = function(data) {
 };
 
 (function(){
-
   'use strict';
-
   // 目印のaタグからパラメータとってきたら消す
   var atag = document.getElementsByClassName('paypal-widget');
   var option = {};
@@ -44,7 +42,6 @@ var encodeFormData = function(data) {
   iframe.id = 'paypal-widget';
   // atagの隣にiframeを挿入
   atag[0].parentNode.insertBefore(iframe,atag[0]);
-
 })();
 
 window.onload = function() {
