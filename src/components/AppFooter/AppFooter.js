@@ -1,6 +1,16 @@
 import React from 'react';
 import Photo from 'Assets/image/myanmaphoto.png';
 
+const env = process.env.NODE_ENV || 'development';
+const host = process.env.TOP_URL;
+const asset_path = process.env.ASSET_PATH;
+let assets;
+if (env === 'development') {
+  assets = '';
+} else if (env === 'staging' || env === 'production') {
+  assets = host + asset_path + '/js';
+}
+
 class AppFooter extends React.Component {
   render() {
     const isJP = this.props.language === 'jp' ? true : false;
@@ -39,7 +49,7 @@ class AppFooter extends React.Component {
       <div className="office-p-wrap">
       <p className="office-name">{myanmer_name_en}<br />{myanmer_name_jp}</p>
       <p>{myanmer_address}<br />{myanmer_phone}</p>
-      <img src={Photo}/>
+      <img src={assets + Photo}/>
       </div>
       </div>
       </div>

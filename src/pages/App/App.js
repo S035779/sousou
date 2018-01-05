@@ -24,7 +24,7 @@ class App extends React.Component {
 
   render() {
     const { language } = this.props;
-    return <div className="buynow">
+    return <div>
       <AppHeader language={language} />
       <AppBody
         language={language}
