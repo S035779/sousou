@@ -433,7 +433,7 @@ class AppBody extends React.Component {
     const delivery_check = isJP ? '住所を確認する' : 'Check the address';
 
     const notes_delivery = isJP 
-      ? '発送先で送料が異なります。送料はメールでお知らせします。'
+      ? '配送先で送料が異なります。送料はメールでお知らせします。'
       : 'Shipping fee differs depending on shipping destination. Shipping fee will be notified by E-mail.';
     const label_quantity = isJP
       ? '冊 x '
