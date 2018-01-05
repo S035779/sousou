@@ -54,8 +54,10 @@ window.onload = function() {
 
 var reSize = function(id) {
   var iframe = document.getElementById(id);
-  var innerWin = iframe.contentWindow;
-  setSize(iframe, scrollSize(innerWin));
+  var win = iframe.contentWindow;
+  win.postMessage('setResize!!', 'https://localhost:4443');
+  setSize(iframe, scrollSize(win));
+  //win.postMessage('Done!!', 'https://localhost:4443');
 };
 
 var scrollSize = function(win) {
@@ -66,3 +68,7 @@ var setSize = function(element, height) {
   element.setAttribute('height', height + 'px');
 };
 
+function receiveMessage(event) {
+  console.log(event.origin, event.data);
+}
+window.addEventListener("message", receiveMessage, false);
