@@ -8,7 +8,7 @@ let assets;
 if (env === 'development') {
   assets = '';
 } else if (env === 'staging' || env === 'production') {
-  assets = host + asset_path + '/js';
+  assets = host + asset_path + '/image';
 }
 
 class AppFooter extends React.Component {
