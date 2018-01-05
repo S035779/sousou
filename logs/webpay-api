@@ -25,3 +25,44 @@
 [2018-01-05T17:38:49.403] [INFO] webpay-api - HTTP Server listening on 127.0.0.1:8081
 [2018-01-05T17:43:13.434] [INFO] webpay-api - HTTP Server listening on 127.0.0.1:8081
 [2018-01-05T17:52:36.635] [INFO] webpay-api - GET /api/?language=jp&usd=600&jpy=72000&length=60&weight=1.5&from=%E6%9D%B1%E4%BA%AC%E9%83%BD
+[2018-01-05T21:44:53.609] [INFO] webpay-api - HTTP Server listening on 127.0.0.1:8081
+[2018-01-05T21:45:16.053] [INFO] webpay-api - HTTP Server listening on 127.0.0.1:8081
+[2018-01-05T21:46:37.825] [INFO] webpay-api - HTTP Server listening on 127.0.0.1:8081
+[2018-01-05T22:08:18.362] [INFO] webpay-api - GET /api/?language=jp&usd=600&jpy=57000&length=60&weight=30&from=%E6%9D%B1%E4%BA%AC%E9%83%BD
+[2018-01-05T22:08:37.279] [INFO] webpay-api - GET /api/?language=jp&usd=600&jpy=72000&length=60&weight=1.5&from=%E6%9D%B1%E4%BA%AC%E9%83%BD
+[2018-01-05T22:09:28.461] [INFO] webpay-api - GET /api/?language=jp&usd=600&jpy=72000&length=60&weight=1.5&from=%E6%9D%B1%E4%BA%AC%E9%83%BD
+[2018-01-05T22:09:37.077] [INFO] webpay-api - GET /api/?language=jp&usd=600&jpy=72000&length=60&weight=1.5&from=%E6%9D%B1%E4%BA%AC%E9%83%BD
+[2018-01-05T22:15:17.671] [INFO] webpay-api - GET /api/?language=jp&usd=600&jpy=72000&length=60&weight=1.5&from=%E6%9D%B1%E4%BA%AC%E9%83%BD
+[2018-01-05T22:15:18.697] [INFO] webpay-api - Completed to responce currency.
+[2018-01-05T22:15:18.697] [INFO] webpay-api - GET /api/currency?usd=600&jpy=72000
+[2018-01-05T22:17:49.679] [INFO] webpay-api - GET /api/?language=jp&usd=600&jpy=72000&length=60&weight=1.5&from=%E6%9D%B1%E4%BA%AC%E9%83%BD
+[2018-01-05T22:17:50.275] [INFO] webpay-api - Completed to response shipping.
+[2018-01-05T22:17:50.276] [INFO] webpay-api - GET /api/shipping?length=60&weight=1.5&from=%E6%9D%B1%E4%BA%AC%E9%83%BD
+[2018-01-05T22:18:36.744] [INFO] webpay-api - GET /api/?language=jp&usd=600&jpy=72000&length=60&weight=1.5&from=%E6%9D%B1%E4%BA%AC%E9%83%BD
+[2018-01-05T22:18:37.259] [INFO] webpay-api - Completed to response shipping.
+[2018-01-05T22:18:37.259] [INFO] webpay-api - GET /api/shipping?length=60&weight=1.5&from=%E6%9D%B1%E4%BA%AC%E9%83%BD
+[2018-01-05T22:19:08.998] [INFO] webpay-api - GET /api/?language=jp&usd=600&jpy=72000&length=60&weight=1.5&from=%E6%9D%B1%E4%BA%AC%E9%83%BD
+[2018-01-05T22:19:09.579] [INFO] webpay-api - Completed to response shipping.
+[2018-01-05T22:19:09.579] [INFO] webpay-api - GET /api/shipping?length=60&weight=1.5&from=%E6%9D%B1%E4%BA%AC%E9%83%BD
+[2018-01-05T22:21:35.992] [INFO] webpay-api - GET /api/?language=jp&usd=600&jpy=72000&length=60&weight=1.5&from=%E6%9D%B1%E4%BA%AC%E9%83%BD
+[2018-01-05T22:21:37.016] [INFO] webpay-api - Completed to responce currency.
+[2018-01-05T22:21:37.016] [INFO] webpay-api - GET /api/currency?usd=600&jpy=72000
+[2018-01-05T22:24:37.288] [INFO] webpay-api - GET /api/?language=jp&usd=600&jpy=72000&length=60&weight=1.5&from=%E6%9D%B1%E4%BA%AC%E9%83%BD
+[2018-01-05T22:24:38.216] [INFO] webpay-api - Completed to responce currency.
+[2018-01-05T22:24:38.216] [INFO] webpay-api - GET /api/currency?usd=600&jpy=72000
+[2018-01-05T22:26:44.063] [INFO] webpay-api - GET /api/?language=jp&usd=600&jpy=72000&length=60&weight=1.5&from=%E6%9D%B1%E4%BA%AC%E9%83%BD
+[2018-01-05T22:26:44.986] [INFO] webpay-api - Completed to responce currency.
+[2018-01-05T22:26:44.986] [INFO] webpay-api - GET /api/currency?usd=600&jpy=72000
+[2018-01-05T22:29:43.093] [INFO] webpay-api - GET /api/?language=jp&usd=600&jpy=72000&length=60&weight=1.5&from=%E6%9D%B1%E4%BA%AC%E9%83%BD
+[2018-01-05T22:29:43.997] [INFO] webpay-api - Completed to responce currency.
+[2018-01-05T22:29:43.997] [INFO] webpay-api - GET /api/currency?usd=600&jpy=72000
+[2018-01-05T22:34:55.525] [INFO] webpay-api - Completed to responce currency.
+[2018-01-05T22:34:55.525] [INFO] webpay-api - GET /api/currency?usd=600&jpy=72000
+[2018-01-05T22:39:21.686] [INFO] webpay-api - Completed to responce currency.
+[2018-01-05T22:39:21.686] [INFO] webpay-api - GET /api/currency?usd=600&jpy=72000
+[2018-01-05T22:41:56.999] [INFO] webpay-api - GET /api/?language=jp&usd=600&jpy=72000&length=60&weight=1.5&from=%E6%9D%B1%E4%BA%AC%E9%83%BD
+[2018-01-05T22:41:57.652] [INFO] webpay-api - Completed to response shipping.
+[2018-01-05T22:41:57.652] [INFO] webpay-api - GET /api/shipping?length=60&weight=1.5&from=%E6%9D%B1%E4%BA%AC%E9%83%BD
+[2018-01-05T22:42:33.218] [INFO] webpay-api - Completed to responce currency.
+[2018-01-05T22:42:33.218] [INFO] webpay-api - GET /api/currency?usd=600&jpy=72000
+[2018-01-05T22:45:46.466] [INFO] webpay-api - HTTP Server listening on 127.0.0.1:8081
