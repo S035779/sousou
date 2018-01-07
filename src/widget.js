@@ -4,13 +4,13 @@
  * @param {object} data 
  * @returns {string}
  */
-var encodeFormData = function(data) {
+const encodeFormData = data => {
   if (!data) return ""
-  var pairs = [];
-  for(var name in data) {
+  let pairs = [];
+  for(let name in data) {
     if (!data.hasOwnProperty(name)) continue;
     if (typeof data[name] === "function") continue;
-    var value = data[name].toString();
+    let value = data[name].toString();
     name = encodeURIComponent(name.replace(" ", "+"));
     value = encodeURIComponent(value.replace(" ", "+"));
     pairs.push(name + "=" + value);
@@ -18,11 +18,30 @@ var encodeFormData = function(data) {
   return pairs.join('&');
 };
 
-(function(){
+const getElm = id => document.getElementById(id);
+const getSize = id => getElm(id)
+  .contentWindow.document.documentElement.scrollHeight;
+
+const setSize = (element, height) => {
+  element.setAttribute('height', height + 'px');
+};
+
+
+window.addEventListener('load', () => {
+  setSize(getElm('paypal-widget'), getSize('paypal-widget'));
+});
+
+window.addEventListener('message', event => {
+  if (event.origin !== "https://localhost:4443") return;
+  console.log(event.data);
+  setSize(getElm('paypal-widget'), event.data);
+}, false);
+
+(() => {
   'use strict';
   // 目印のaタグからパラメータとってきたら消す
-  var atag = document.getElementsByClassName('paypal-widget');
-  var option = {};
+  const atag = document.getElementsByClassName('paypal-widget');
+  const option = {};
   option['language'] = atag[0].dataset.language;
   option['usd']  = atag[0].dataset.usd;
   option['jpy']  = atag[0].dataset.jpy;
@@ -31,7 +50,7 @@ var encodeFormData = function(data) {
   option['from']  = atag[0].dataset.from;
   atag[0].style.display = 'none';
 
-  var iframe = document.createElement('iframe');
+  const iframe = document.createElement('iframe');
   iframe.src = '/api/' + '?' + encodeFormData(option);
   iframe.frameBorder = 0;
   iframe.width = '100%';
@@ -44,20 +63,5 @@ var encodeFormData = function(data) {
   atag[0].parentNode.insertBefore(iframe,atag[0]);
 })();
 
-window.onload = function() {
-  reSize('paypal-widget');
-};
 
-var reSize = function(id) {
-  var iframe = document.getElementById(id);
-  var win = iframe.contentWindow;
-  setSize(iframe, scrollSize(win));
-};
 
-var scrollSize = function(win) {
-  return win.document.documentElement.scrollHeight;
-};
-
-var setSize = function(element, height) {
-  element.setAttribute('height', height + 'px');
-};

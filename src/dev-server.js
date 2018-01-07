@@ -3,7 +3,7 @@ import express from 'express';
 import webpack from 'webpack';
 import webpackDevMiddleware from 'webpack-dev-middleware';
 import webpackHotMiddleware from 'webpack-hot-middleware';
-import config from '../webpack.config.js';
+import config from '../webpack.development.js';
 import fs from 'fs';
 import https from 'https';
 import proxy from 'proxy-middleware';
