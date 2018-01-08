@@ -1,3 +1,22 @@
+const host = process.env.TOP_URL || 'https://localhost:4443';
+
+const getElm = id => document.getElementById(id);
+const getSize = id => getElm(id)
+  .contentWindow.document.documentElement.scrollHeight;
+const setSize = (element, height) => {
+  element.setAttribute('height', height + 'px');
+};
+
+window.addEventListener('load', () => {
+  setSize(getElm('paypal-widget'), getSize('paypal-widget'));
+});
+
+window.addEventListener('message', event => {
+  if (event.origin !== host) return;
+  if (event.data.bodySize)
+    setSize(getElm('paypal-widget'), event.data.bodySize.height);
+}, false);
+
 /**
  * encodeFormData
  *
@@ -18,27 +37,7 @@ const encodeFormData = data => {
   return pairs.join('&');
 };
 
-const getElm = id => document.getElementById(id);
-const getSize = id => getElm(id)
-  .contentWindow.document.documentElement.scrollHeight;
-
-const setSize = (element, height) => {
-  element.setAttribute('height', height + 'px');
-};
-
-
-window.addEventListener('load', () => {
-  setSize(getElm('paypal-widget'), getSize('paypal-widget'));
-});
-
-window.addEventListener('message', event => {
-  if (event.origin !== "https://localhost:4443") return;
-  console.log(event.data);
-  setSize(getElm('paypal-widget'), event.data);
-}, false);
-
 (() => {
-  'use strict';
   // 目印のaタグからパラメータとってきたら消す
   const atag = document.getElementsByClassName('paypal-widget');
   const option = {};

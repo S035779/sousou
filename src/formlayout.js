@@ -1,14 +1,4 @@
-const getSize = () => window.document.documentElement.scrollHeight;
-
-const post = message => {
-  parent.postMessage(message, 'https://localhost:4443');
-};
-
-$('body').exResize(function(){
-  console.log('exResize!!');
-  console.log(getSize());
-  post(getSize());
-});
+ const host = process.env.TOP_URL || 'https://localhost:4443';
 
 jQuery(function($) {
   // ah-placeholder
@@ -32,6 +22,15 @@ jQuery(function($) {
       } else {
         error.insertAfter(element);
       }
+    }
+  });
+
+  // exresize
+  $('body').exResize({
+    contentsWatch : true,
+    callback: function(api){
+      const bodySize = api.getSize();
+      parent.postMessage({ bodySize }, host);
     }
   });
 });
