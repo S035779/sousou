@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <h2>XXXXX PRESSの購入（手動インテグレーションの例）</h2>
+  <h4>価格: 1,554円</h4>
+  <iframe name='hss_iframe1' style='width:590px;height:560px;border:none;overflow:hidden;'></iframe>
+  <form method='post' name='form_iframe1' target='hss_iframe1'
+    style='display:none' action='https://securepayments.sandbox.paypal.com/webapps/HostedSoleSolutionApp/webflow/sparta/hostedSoleSolutionProcess'>
+    <input name='cmd' type='hidden' value='_hosted-payment'>
+    <input name='subtotal' type='hidden' value='1554'>
+    <input name='business' type='hidden' value='P8HNLXUB3DRQA'>
+    <input name='paymentaction' type='hidden' value='sale'>
+    <input name='template' type='hidden' value='templateD'>
+    <input name='return' type='hidden' value='https://localhost:4443/sample_dev.html'>
+  </form>
+  <script type="text/javascript">
+    document.form_iframe1.submit();
+  </script>
+
+  <h2>XXXXX PRESSの購入</h2>
+  <h4>価格: 1,554円</h4>
+  <form method='post' action='https://securepayments.sandbox.paypal.com/webapps/HostedSoleSolutionApp/webflow/sparta/hostedSoleSolutionProcess'>
+    <input name='cmd' type='hidden' value='_hosted-payment'>
+    <input name='subtotal' type='hidden' value='1554'>
+    <input name='business' type='hidden' value='P8HNLXUB3DRQA'>
+    <input name='paymentaction' type='hidden' value='sale'>
+    <input name='return' type='hidden' value='https://localhost:4443/sample_dev.html'>
+    <input type="submit" name="METHOD" value="Pay Now">
+  </form>
+
+</body>
+</html>
