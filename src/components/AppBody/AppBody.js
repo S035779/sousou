@@ -28,11 +28,11 @@ class AppBody extends React.Component {
       , name:           item.name
       , description:    item.description
       , price:          item.price
-      , currency:       item.currency
     };
 
     this.state = {
-      quantity:         item.quantity
+      currency:       item.currency
+      , quantity:       item.quantity
       , recipient_name: shipping_address.recipient_name
       , line1:          shipping_address.line1
       , line2:          shipping_address.line2
@@ -78,6 +78,73 @@ class AppBody extends React.Component {
     this.setState(Object.assign({}, newState, newAddress));
   }
 
+  handleChangeSelect(name, e) {
+    let newState = {};
+    let options = e.target.options;
+    let values = [];
+    for( let i=0; i<options.length; i++) {
+      if(options[i].selected) values.push(options[i].value);
+    }
+    newState[name] = values;
+    this.setState(newState);
+  }
+
+  handleSubmit(e) {
+    e.preventDefault();
+    if(!this.isValid(this.state)) return;
+
+    const options = this.setOptions(this.state, this.payment);
+    if(this.isCredit(this.state)) {
+      AppAction.createCredit(options);
+    } else {
+      AppAction.createMessage(options);
+    }
+    this.logTrace(this.payment);
+    //this.logTrace(this.state);
+  }
+
+  setOptions(state, pay) {
+    return {
+      total: pay.total
+      , currency: pay.total_currency
+      , details: {
+        subtotal: pay.subtotal
+        , shipping: pay.shipping
+      }
+      , item: {
+        name: pay.name
+        , description: pay.description
+        , quantity: state.quantity
+        , price: pay.price
+        , currency: state.currency
+      }
+      , shipping_address: {
+        recipient_name: state.recipient_name
+        , line1: state.line1
+        , line2: state.line2
+        , city: state.city
+        , country_code: state.country_code
+        , postal_code: state.postal_code
+        , phone: state.phone
+        , state: state.state
+      }
+      , infomation: {
+        first_name: state.first_name
+        , last_name: state.last_name
+      //  , gender: state.gender
+      //  , year: state.year
+      //  , month: state.month
+      //  , day: state.day
+        , email: state.email
+      //  , confirm_email: state.confirm_email
+        , delivery: state.delivery
+        , payment: state.payment
+        , message: state.message
+      //  , agreement: state.agreement
+      }
+    }
+  }
+
   setAddress(value) {
     let newAddress = {};
     newAddress['japan'] = {
@@ -111,68 +178,6 @@ class AppBody extends React.Component {
       };
   }
 
-  handleChangeSelect(name, e) {
-    let newState = {};
-    let options = e.target.options;
-    let values = [];
-    for( let i=0; i<options.length; i++) {
-      if(options[i].selected) values.push(options[i].value);
-    }
-    newState[name] = values;
-    this.setState(newState);
-  }
-
-  handleSubmit(e) {
-    e.preventDefault();
-    if(!this.isValid(this.state)) return;
-    const options = this.setOptions(this.state, this.payment);
-    AppAction.createMessage(options);
-    //this.logTrace(this.state);
-    //this.logTrace(this.payment);
-  }
-
-  setOptions(state, pay) {
-    return {
-      total: pay.total
-      , currency: pay.currency
-      , details: {
-        subtotal: pay.subtotal
-        , shipping: pay.shipping
-      }
-      , item: {
-        name: pay.name
-        , description: pay.description
-        , quantity: state.quantity
-        , price: pay.price
-        , currency: pay.currency
-      }
-      , shipping_address: {
-        recipient_name: state.recipient_name
-        , line1: state.line1
-        , line2: state.line2
-        , city: state.city
-        , country_code: state.country_code
-        , postal_code: state.postal_code
-        , phone: state.phone
-        , state: state.state
-      }
-      , infomation: {
-        first_name: state.first_name
-        , last_name: state.last_name
-      //  , gender: state.gender
-      //  , year: state.year
-      //  , month: state.month
-      //  , day: state.day
-        , email: state.email
-      //  , confirm_email: state.confirm_email
-        , delivery: state.delivery
-        , payment: state.payment
-        , message: state.message
-      //  , agreement: state.agreement
-      }
-    }
-  }
-
   componentWillReceiveProps(nextProps) {
     if(nextProps.results) {
       if(nextProps.results.accepted
@@ -198,34 +203,18 @@ class AppBody extends React.Component {
     return !this.isNotChanged(nextState, this.state);
   }
 
-  componentWillUpdate(nextProps, nextState) {
-    if(!this.isValid(nextState)) return;
-    const state = nextState;
-    const props = nextProps;
-
-    const curr = props.currency;
-    const ship = props.shipping;
-    const isJP = obj => obj.country_code.join() === 'JP';
-    const isCty = obj => ship.jpp.filter(jpp =>
-      jpp.city === obj.city)[0];
-    const isEms = obj => ship.ems.filter(ems =>
-      ems.code_2 === state.country_code.join())[0];
-    const isPay = obj => ship.ems.filter(ems =>
-      ems.code_2 === state.country_code.join())[0].paypal === 'OK';
-    const price = isJP(state) ? Number(curr.JPY) : Math.ceil(curr.USD);
-    const shipping = isJP(state)
-      //? (isCty(state) ? Number(isCty(state).price) : 0) 
-      ? 1500 
-      : (isEms(state) && isPay(state) ? Number(isEms(state).price) : 0);
-    const subtotal = price * state.quantity;
+  componentWillUpdate(props, state) {
+    if(!this.isValid(state)) return;
+    const price = this.isPrice(props.currency, state);
+    const shipping =
+      this.isShipping(props.shipping, props.currency, state);
+    const subtotal = price * state.quantity.join();
     const total = subtotal + shipping;
-    const total_currency = 'JPY';
+    const total_currency = state.currency;
     const name = 'Myanmar Companies YearBook Vol.1';
     const description = 'Myanmar Companies Yearbook';
-    const currency = 'JPY';
-
     this.payment = { price, shipping, subtotal, total, total_currency
-      , name, description, currency };
+      , name, description };
     this.logTrace(this.payment);
   }
 
@@ -233,17 +222,62 @@ class AppBody extends React.Component {
     this.componentWillUnmount();
     this.componentDidMount();
 
-    if(!this.isValid(this.state)
-      || this.isMail(this.state) || !this.payment.shipping) return;
+    if(!this.isValid(this.state)) return;
+
     const options = this.setOptions(this.state, this.payment);
-    AppAction.createPayment(options);
-    //this.logTrace(this.state);
-    //this.logTrace(this.payment);
+    if(this.isPayPal(state)) {
+      AppAction.createPayment(options);
+    }
+    this.logTrace(this.payment);
   }
 
   componentWillUnmount() {
     const buttonNode = ReactDOM.findDOMNode(this.refs.signup_next);
     buttonNode.removeChild(this.el);
+  }
+
+  isCredit(state) {
+    return !this.isMail(state) && !this.isUSD(state)
+      && this.payment.shipping;
+  }
+
+  isPayPal(state) {
+    return !this.isMail(state) && this.isUSD(state)
+      && this.payment.shipping;
+  }
+
+  isPrice(currency, state) {
+    return this.isJP(state)
+      ? Number(state.jpy)
+      : this.isUSD(state)
+        ? Math.ceil(state.usd)
+        : Math.ceil(currency.USD);
+  }
+
+  isShipping(shipping, currency, state) {
+    const isJpp = obj => shipping.jpp.filter(jpp =>
+      jpp.city === obj.city)[0];
+    const isEms = obj => shipping.ems.filter(ems =>
+      ems.code_2 === state.country_code.join())[0];
+    const isPay = obj => shipping.ems.filter(ems =>
+      ems.code_2 === state.country_code.join())[0].paypal === 'OK';
+    return this.isJP(state)
+      ? isJpp(state)
+        ? Number(isJpp(state).price)
+        : 0 
+      : isEms(state) && isPay(state)
+        ? this.isUSD(state)
+          ? Math.ceil((isEms(state).price) / currency.USDJPY)
+          : Math.ceil(isEms(state).price)
+        : 0;
+  }
+
+  isJP(state) {
+    return state.country_code && state.country_code.join() === 'JP';
+  }
+
+  isUSD(state) {
+    return state.currency && state.currency.join() === 'USD';
   }
 
   isMail(state) {
@@ -256,6 +290,7 @@ class AppBody extends React.Component {
       && state.state
       && state.city
       && state.quantity       && (state.quantity.join() !== '')
+      && state.currency       && (state.currency.join() !== '')
       && state.payment        && (state.payment.join() !== '')
       && state.first_name
       && state.last_name
@@ -289,7 +324,8 @@ class AppBody extends React.Component {
       && next.line1         === prev.line1       
       && next.line2         === prev.line2      
       && next.recipient_name=== prev.recipient_nama
-      && next.quantity      === prev.country_code
+      && next.quantity      === prev.quantity
+      && next.currency      === prev.currency
       && next.payment       === prev.payment
       && next.message       === prev.message
       //&& next.agreement     === prev.agreement   
@@ -336,7 +372,7 @@ class AppBody extends React.Component {
         : '';
   }
 
-  renderSelect(objs, key, value, isJP) {
+  renderSelect(objs, key, value) {
     if(!objs) return null;
     const opts = objs.map(obj => ({ key: obj[key], val: obj[value] }))
     return opts.map((opt, idx) => (<option
@@ -344,12 +380,14 @@ class AppBody extends React.Component {
   }
 
   renderButton(state, isJP) {
-    return (this.isMail(state) || !this.isValid(state)
-      || !this.payment.shipping)
-    ? isJP 
-      ? <input type="submit" value="SEND" className="button-primary"/>
-      : <input type="submit" value="SEND" className="button-primary"/>
-    : <div></div>;
+    if ( this.isMail(state) || this.isCredit(state)
+    || !this.isValid(state) || !this.payment.shipping) {
+      return isJP 
+        ? <input type="submit" value="SEND" className="button-primary"/>
+        : <input type="submit" value="SEND" className="button-primary"/>
+    } else {
+      return <div></div>;
+    }
   }
 
   renderModal(results, isJP) {
@@ -387,7 +425,7 @@ class AppBody extends React.Component {
   }
    
   render() {
-    this.logTrace(this.state);
+    //this.logTrace(this.state);
     const shipping = this.props.shipping;
     const language = this.props.language;
 
@@ -416,6 +454,7 @@ class AppBody extends React.Component {
     const line2 = isJP ? '地番・部屋番号' : 'A lot / Room Number';
     const recipient_name = isJP ? '受取人名義' : 'Recipient Name';
     const quantity = isJP ? 'ご購入数' : 'Quantity';
+    const currency = isJP ? '通貨' : 'Currency';
     const payment = isJP ? 'お支払い方法' : 'Payment';
     const message = isJP ? 'ご連絡事項' : 'Message';
     const agreement = ' Agree to our terms of us and privacy policy. ';
@@ -437,13 +476,11 @@ class AppBody extends React.Component {
       : 'Shipping fee differs depending on shipping destination. Shipping fee will be notified by E-mail.';
     const label_quantity = isJP
       ? '冊 x '
-        + Number(this.state.jpy)
-          .toLocaleString('ja-JP')
-        + '円（税込／送料別）'
-      : 'book(s) x JP '
-        + Number(this.state.jpy)
-          .toLocaleString('ja-JP')
-        + 'yen (tax included / shipping fee is separately)';
+      : 'book(s) x '
+    const label_currency = isJP
+      ? '（税込／送料別）'
+      : '(tax included / shipping fee is separately)';
+
     const notes_quantity = isJP
       ? '日本国外への配送はUS '
         + Number(this.state.usd)
@@ -453,6 +490,9 @@ class AppBody extends React.Component {
         + Number(this.state.usd)
           .toLocaleString('en-US', { style: 'currency', currency: 'USD' })
         + ' into Japanese yen at the current rate.';
+    const notes_currency = isJP
+      ? 'US $ での支払の場合、PayPalアカウントが必要です。'
+      : 'For payment with US $, a PayPal account is required.';
     const notes_payment = isJP
       ? 'ミャンマー発行のクレジットカードはご使用になれません。'
       : 'Credit card issued by Myanmar can not be used.';
@@ -460,7 +500,7 @@ class AppBody extends React.Component {
       //: 'For credit card transactions, you need a PayPal account.';
 
     const opts_country = [
-      { name_en: 'Japan'    , name_jp: '日本'           , code_2: 'JP' }
+      {   name_en: 'Japan'    , name_jp: '日本'           , code_2: 'JP' }
       , { name_en: 'Myanmar'  , name_jp: 'ミャンマー'     , code_2: 'MM' }
       , { name_en: 'Tai'      , name_jp: 'タイ'           , code_2: 'TH' }
       , { name_en: 'China'    , name_jp: '中華人民共和国 (中国)'
@@ -476,14 +516,32 @@ class AppBody extends React.Component {
       ? isJP
         ? this.renderSelect(opts_country
           .concat(std.sortObjUni(shipping.ems, 'name_jp'))
-          , 'name_jp', 'code_2', isJP) 
+          , 'name_jp', 'code_2') 
         : this.renderSelect(opts_country
           .concat(std.sortObjStr(shipping.ems, 'name_en'))
-          , 'name_en', 'code_2', isJP)
+          , 'name_en', 'code_2')
       : null;
 
+    const opts_currency = [
+      {   name_en: 'JP ' +
+          Number(this.state.jpy).toLocaleString('ja-JP') + ' yen'
+        , name_jp:
+          Number(this.state.jpy).toLocaleString('ja-JP') + ' 円'
+        , value: 'JPY' }
+      , { name_en: 'US ' + 
+          Number(this.state.usd)
+          .toLocaleString('en-US', { style: 'currency', currency: 'USD' })
+        , name_jp:
+          Number(this.state.usd)
+          .toLocaleString('en-US', { style: 'currency', currency: 'USD' })
+        , value: 'USD' }
+    ];
+    const select_currency = isJP
+      ? this.renderSelect(opts_currency, 'name_jp', 'value')
+      : this.renderSelect(opts_currency, 'name_en', 'value')
+
     const opts_payment = [
-      { name_en: 'Credit card (Paypal)'
+      {   name_en: 'Credit card (Paypal)'
         , name_jp: 'クレジットカード（PayPal）', value: 'paypal'  }
       , { name_en: 'Bank transfer (prepayment)'
         , name_jp: '銀行振り込み（前払い）'    , value: 'deposit' }
@@ -491,8 +549,8 @@ class AppBody extends React.Component {
         , name_jp: 'その他'                    , value: 'other'   }
     ];
     const select_payment = isJP
-      ? this.renderSelect(opts_payment, 'name_jp', 'value', isJP)
-      : this.renderSelect(opts_payment, 'name_en', 'value', isJP)
+      ? this.renderSelect(opts_payment, 'name_jp', 'value')
+      : this.renderSelect(opts_payment, 'name_en', 'value')
 
     const select_delivery = this.state.delivery === 'address'
       ? 'delivery' : 'non-delivery';
@@ -689,11 +747,21 @@ class AppBody extends React.Component {
           <option value="10">10</option>
           </select>
           </span>
-          <span className="quantity-field">
           <label>{label_quantity}</label>
+          <span className="quantity-field">
+          <select name="currency" id="currency"
+            multiple={false}
+            value={this.state.currency}
+            onChange={this.handleChangeSelect.bind(this, 'currency')}
+            className="short-field required">
+          <option value="">{currency}</option>
+          {select_currency}
+          </select>
           </span>
+          <label>{label_currency}</label>
           </div>
           <span className="notes">{notes_quantity}</span>
+          <span className="notes">{notes_currency}</span>
           </td>
         </tr>
         </tbody></table>

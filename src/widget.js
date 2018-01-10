@@ -13,8 +13,8 @@ window.addEventListener('load', () => {
 
 window.addEventListener('message', event => {
   if (event.origin !== host) return;
-  if (event.data.bodySize)
-    setSize(getElm('paypal-widget'), event.data.bodySize.height);
+  if (event.data.app)
+    setSize(getElm('paypal-widget'), event.data.app.height);
 }, false);
 
 /**

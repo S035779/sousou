@@ -15,7 +15,7 @@ class AppStore extends ReduceStore<number> {
       , results:  null
       , options:  {
         total:  0
-        , currency: ''
+        , currency: []
         , details:
           {
             subtotal: 0
@@ -26,7 +26,7 @@ class AppStore extends ReduceStore<number> {
           , description: ''
           , quantity: []
           , price: 0
-          , currency: ''
+          , currency: []
         }
         , shipping_address: {
           recipient_name: ''

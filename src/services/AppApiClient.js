@@ -1,3 +1,4 @@
+import std from 'Utilities/stdutils';
 import xhr from 'Utilities/xhrutils';
 import { log } from 'Utilities/webutils';
 
@@ -28,6 +29,13 @@ export default {
   request(operation, options) {
     const uri = api + operation;
     switch(operation) {
+      case '/credit':
+        return new Promise((resolve, reject) => {
+          this.modalDialog(uri + '?'
+            + std.encodeFormData({ options: JSON.stringify(options) })
+            ,'modalDialog',600,940);
+          resolve();
+        });
       case '/payment':
         return new Promise((resolve, reject) => {
           paypal.Button.render({
@@ -128,6 +136,9 @@ export default {
           });
     }
   },
+  postCredit(options) {
+    return this.request('/credit', options);
+  },
   postPayment(options) {
     return this.request('/payment', options);
   },
@@ -139,6 +150,12 @@ export default {
   },
   getCurrency(options) {
     return this.request('/currency', options);
+  },
+  createCredit(params) {
+    const options = this.validate(params);
+    const buyer = this.setCustomer(options);
+    const seler  = this.setManager(options);
+    return this.postCredit(options)
   },
   createPayment(params) {
     const options = this.validate(params);
@@ -162,13 +179,19 @@ export default {
     return this.getCurrency(options)
   },
   validate(params) {
-    const { item, shipping_address, infomation } = params;
+    const { currency, item, shipping_address, infomation } = params;
     let newItem = {};
     let newAddr = {};
     let newInfo = {};
+    const newCurrency = Array.isArray(currency)
+      ? currency.join()
+      : currency;
     newItem['quantity'] = Array.isArray(item.quantity)
       ? item.quantity.join()
       : item.quantity;
+    newItem['currency'] = Array.isArray(item.currency)
+      ? item.currency.join()
+      : item.currency;
     newAddr['country_code'] = Array.isArray(shipping_address.country_code)
       ? shipping_address.country_code.join()
       : shipping_address.country_code;
@@ -179,7 +202,8 @@ export default {
       ? infomation.payment.join()
       : infomation.payment;
     return Object.assign({}, params, {
-      item: Object.assign({},item, newItem)
+      currency: newCurrency
+      , item: Object.assign({},item, newItem)
       , shipping_address: Object.assign({}, shipping_address, newAddr)
       , infomation: Object.assign({}, infomation, newInfo)
     });
@@ -254,4 +278,20 @@ export default {
   logError(error) {
     log.error(`${pspid}>`, error.name, error.message);
   },
+  modalDialog(url,name,width,height) {
+    let features="location=no, menubar=no, status=yes, scrollbars=yes, resizable=yes, toolbar=no";
+    if (width) {
+      if (window.screen.width > width)
+      features+=", left="+(window.screen.width-width)/2;
+      else width=window.screen.width;
+      features+=", width="+width;
+    }
+    if (height) {
+      if (window.screen.height > height)
+        features+=", top="+(window.screen.height-height)/2;
+      else height=window.screen.height;
+      features+=", height="+height;
+    }
+    window.open(url,name,features);
+  }
 }

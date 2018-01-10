@@ -1,4 +1,4 @@
- const host = process.env.TOP_URL || 'https://localhost:4443';
+const host = process.env.TOP_URL || 'https://localhost:4443';
 
 jQuery(function($) {
   // ah-placeholder
@@ -12,12 +12,14 @@ jQuery(function($) {
   $('#user-sign-up').validate({
     groups: {
       usersname: 'first-name last-name'
+      , quantitys: 'quantity currency'
     },
     errorPlacement: function(error, element) {
       if (element.attr('name') == 'first-name'
         || element.attr('name') == 'last-name' ) {
         error.appendTo('.multi-name-field');
-      } else if (element.attr('name') == 'quantity') {
+      } else if (element.attr('name') == 'quantity'
+        || element.attr('name') == 'currency') {
         error.appendTo('.multi-quantity-field');
       } else {
         error.insertAfter(element);
@@ -26,11 +28,11 @@ jQuery(function($) {
   });
 
   // exresize
-  $('body').exResize({
+  $('div#app').exResize({
     contentsWatch : true,
     callback: function(api){
-      const bodySize = api.getSize();
-      parent.postMessage({ bodySize }, host);
+      const app = api.getSize();
+      parent.postMessage({ app }, host);
     }
   });
 });

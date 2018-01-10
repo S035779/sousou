@@ -5,6 +5,22 @@ import { log } from 'Utilities/webutils';
 const pspid = 'AppAction';
 
 export default {
+  createCredit(options) {
+    return AppApiClient.createCredit(options)
+      .then(results => {
+        dispatch({ type: 'item/create/credit', results, options });
+      }).catch(err => {
+        this.logError(err);
+        const results = { error: {
+          name: 'Credit Payment API Error'
+          , message: {
+            jp: '入力手続きが完了しませんでした。'
+            , en: 'The input procedure was not completed.'
+          }
+        }};
+        dispatch({ type: 'item/create/credit', results, options });
+      });
+  },
   createPayment(options) {
     return AppApiClient.createPayment(options)
       .then(results => {
@@ -34,7 +50,7 @@ export default {
             , en: 'Message sending was not completed.'
           }
         }};
-        dispatch({ type: 'item/create/payment', results, options });
+        dispatch({ type: 'item/create/message', results, options });
       });
   },
   fetchShipping({ length, weight, from }) {
@@ -51,7 +67,7 @@ export default {
             , en: 'The shipping fee calculation procedure was not completed.'
           }
         }};
-        dispatch({ type: 'item/create/payment', results, options });
+        dispatch({ type: 'item/fetch/shipping', results, options });
       });
   },
   fetchCurrency({ usd, jpy }) {
@@ -68,7 +84,7 @@ export default {
             , en: 'The currency calculation procedure was not completed.'
           }
         }};
-        dispatch({ type: 'item/create/payment', results, options });
+        dispatch({ type: 'item/fetch/currency', results, options });
       });
   },
   logInfo(request) {
