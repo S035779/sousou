@@ -71,9 +71,9 @@ router.route('/')
 
 router.route('/credit')
 .get((req, res, next)     => {
-  const { options } = req.query;
+  const { language, options } = req.query;
   res.send('<!doctype html>\n'
-    + ReactDOMServer.renderToStaticMarkup(<Credit options={options}/>));
+    + ReactDOMServer.renderToStaticMarkup(<Credit options={options} />));
 })
 .put((req, res, next)     => { next(new Error('not implemented')); })
 .post((req, res, next)    => { next(new Error('not implemented')); })

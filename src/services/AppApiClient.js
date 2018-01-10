@@ -31,10 +31,22 @@ export default {
     switch(operation) {
       case '/credit':
         return new Promise((resolve, reject) => {
-          this.modalDialog(uri + '?'
+          const openWindow = this.modalDialog(uri + '?'
             + std.encodeFormData({ options: JSON.stringify(options) })
-            ,'modalDialog',600,940);
-          resolve();
+            ,'dialog' ,580 ,920);
+          const interval = setInterval(() => {
+            if(!openWindow || openWindow.closed) {
+              clearInterval(interval);
+              console.log('Close!!')
+              resolve();
+            } else {
+              if(!openWindow.document.hasFocus()) {
+                openWindow.focus();
+                console.log('Forcus!!')
+              }
+              console.log('Open!!')
+            }
+          }, 1000);
         });
       case '/payment':
         return new Promise((resolve, reject) => {
@@ -214,8 +226,8 @@ export default {
       , to: sender
       , subject: '購入を受付ました。'
       , text: `お客様は以下の商品を購入しました。\n\n`
-        + ` お客様：${obj.infomation.first_name}`
-          + ` ${obj.infomation.last_name}\n`
+        + ` お客様：${obj.infomation.last_name}`
+          + ` ${obj.infomation.first_name}\n`
         + ` 商品名：${obj.item.name}\n`
         + ` 概　要：${obj.item.description}\n`
         + ` 単　価：${obj.item.price} ${obj.item.currency}\n`
@@ -244,8 +256,8 @@ export default {
       , to: obj.infomation.email
       , subject: 'ご購入有難うございました。'
       , text: `お客様は以下の商品を購入しました。\n\n`
-        + ` お客様：${obj.infomation.first_name}`
-          + ` ${obj.infomation.last_name}\n`
+        + ` お客様：${obj.infomation.last_name}`
+          + ` ${obj.infomation.first_name}\n`
         + ` 商品名：${obj.item.name}\n`
         + ` 概　要：${obj.item.description}\n`
         + ` 単　価：${obj.item.price} ${obj.item.currency}\n`
@@ -292,6 +304,6 @@ export default {
       else height=window.screen.height;
       features+=", height="+height;
     }
-    window.open(url,name,features);
+    return window.open(url,name,features);
   }
 }

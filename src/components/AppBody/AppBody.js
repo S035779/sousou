@@ -31,7 +31,7 @@ class AppBody extends React.Component {
     };
 
     this.state = {
-      currency:       item.currency
+      currency:         item.currency
       , quantity:       item.quantity
       , recipient_name: shipping_address.recipient_name
       , line1:          shipping_address.line1
@@ -96,51 +96,52 @@ class AppBody extends React.Component {
     const options = this.setOptions(this.state, this.payment);
     if(this.isCredit(this.state)) {
       AppAction.createCredit(options);
+      this.logTrace(this.payment);
     } else {
       AppAction.createMessage(options);
     }
-    this.logTrace(this.payment);
     //this.logTrace(this.state);
   }
 
   setOptions(state, pay) {
     return {
-      total: pay.total
-      , currency: pay.total_currency
+      language:         this.props.language
+      , total:          pay.total
+      , currency:       pay.total_currency
       , details: {
-        subtotal: pay.subtotal
-        , shipping: pay.shipping
+        subtotal:       pay.subtotal
+        , shipping:     pay.shipping
       }
       , item: {
-        name: pay.name
-        , description: pay.description
-        , quantity: state.quantity
-        , price: pay.price
-        , currency: state.currency
+        name:           pay.name
+        , description:  pay.description
+        , quantity:     state.quantity
+        , price:        pay.price
+        , currency:     state.currency
       }
       , shipping_address: {
         recipient_name: state.recipient_name
-        , line1: state.line1
-        , line2: state.line2
-        , city: state.city
+        , line1:        state.line1
+        , line2:        state.line2
+        , city:         state.city
         , country_code: state.country_code
-        , postal_code: state.postal_code
-        , phone: state.phone
-        , state: state.state
+        , postal_code:  state.postal_code
+        , phone:        state.phone
+        , state:        state.state
       }
       , infomation: {
-        first_name: state.first_name
-        , last_name: state.last_name
-      //  , gender: state.gender
-      //  , year: state.year
-      //  , month: state.month
-      //  , day: state.day
+        first_name:     state.first_name
+        , last_name:    state.last_name
+      //  , gender:       state.gender
+      //  , year:         state.year
+      //  , month:        state.month
+      //  , day:          state.day
         , email: state.email
-      //  , confirm_email: state.confirm_email
-        , delivery: state.delivery
-        , payment: state.payment
-        , message: state.message
-      //  , agreement: state.agreement
+      //  , confirm_email:  state.confirm_email
+        , delivery:     state.delivery
+        , payment:      state.payment
+        , message:      state.message
+      //  , agreement:    state.agreement
       }
     }
   }
@@ -215,20 +216,22 @@ class AppBody extends React.Component {
     const description = 'Myanmar Companies Yearbook';
     this.payment = { price, shipping, subtotal, total, total_currency
       , name, description };
-    this.logTrace(this.payment);
+    //this.logTrace(this.payment);
   }
 
   componentDidUpdate(prevProps, prevState) {
     this.componentWillUnmount();
     this.componentDidMount();
 
-    if(!this.isValid(this.state)) return;
+    const state = this.state;
+    if(!this.isValid(state)) return;
 
-    const options = this.setOptions(this.state, this.payment);
+    const payment = this.payment;
+    const options = this.setOptions(state, payment);
     if(this.isPayPal(state)) {
       AppAction.createPayment(options);
+      this.logTrace(payment);
     }
-    this.logTrace(this.payment);
   }
 
   componentWillUnmount() {
@@ -248,9 +251,11 @@ class AppBody extends React.Component {
 
   isPrice(currency, state) {
     return this.isJP(state)
-      ? Number(state.jpy)
+      ? this.isUSD(state)
+        ? Math.ceil(state.jpy / currency.USDJPY)
+        : Number(state.jpy)
       : this.isUSD(state)
-        ? Math.ceil(state.usd)
+        ? Number(state.usd)
         : Math.ceil(currency.USD);
   }
 
@@ -263,12 +268,14 @@ class AppBody extends React.Component {
       ems.code_2 === state.country_code.join())[0].paypal === 'OK';
     return this.isJP(state)
       ? isJpp(state)
-        ? Number(isJpp(state).price)
+        ? this.isUSD(state)
+          ? Math.ceil(isJpp(state).price / currency.USDJPY)
+          : Number(isJpp(state).price)
         : 0 
       : isEms(state) && isPay(state)
         ? this.isUSD(state)
-          ? Math.ceil((isEms(state).price) / currency.USDJPY)
-          : Math.ceil(isEms(state).price)
+          ? Math.ceil(isEms(state).price / currency.USDJPY)
+          : Number(isEms(state).price)
         : 0;
   }
 
@@ -444,7 +451,7 @@ class AppBody extends React.Component {
     const birthday = isJP ? '誕生日' : 'Birthday';
     const phone = isJP ? '電話番号' : 'Phone';
     const email = isJP ? 'メールアドレス' : 'E-Mail';
-    const confirm_email = isJP ? 'メールアドレス 確認' : 'Confirm E-Mail';
+    const confirm_email =isJP ? 'メールアドレス 確認' : 'Confirm E-Mail';
     const delivery = isJP ? 'お届け先' : 'Delivery address';
     const country_code = isJP ? '国名' : 'Country';
     const state = isJP ? '州名' : 'State';
@@ -459,8 +466,8 @@ class AppBody extends React.Component {
     const message = isJP ? 'ご連絡事項' : 'Message';
     const agreement = ' Agree to our terms of us and privacy policy. ';
 
-    const first_name = isJP ? '名字' : 'First';
-    const last_name = isJP ? '名前' : 'Last';
+    const first_name = isJP ? '名' : 'First';
+    const last_name = isJP ? '姓' : 'Last';
     const gender_male = isJP ? '男性' : 'Male';
     const gender_female = isJP ? '女性' : 'Female';
     const year = isJP ? '年' : 'Year';
@@ -473,7 +480,8 @@ class AppBody extends React.Component {
 
     const notes_delivery = isJP 
       ? '配送先で送料が異なります。送料はメールでお知らせします。'
-      : 'Shipping fee differs depending on shipping destination. Shipping fee will be notified by E-mail.';
+      : 'Shipping fee differs depending on shipping destination.'
+        + 'Shipping fee will be notified by E-mail.';
     const label_quantity = isJP
       ? '冊 x '
       : 'book(s) x '
@@ -483,12 +491,12 @@ class AppBody extends React.Component {
 
     const notes_quantity = isJP
       ? '日本国外への配送はUS '
-        + Number(this.state.usd)
-          .toLocaleString('en-US', { style: 'currency', currency: 'USD' })
+        + Number(this.state.usd).toLocaleString('en-US'
+          , { style: 'currency', currency: 'USD' })
         + ' を当日レートで日本円に換算した金額のご請求となります。'
       : 'Shipping outside of Japan will be charged for US '
-        + Number(this.state.usd)
-          .toLocaleString('en-US', { style: 'currency', currency: 'USD' })
+        + Number(this.state.usd).toLocaleString('en-US'
+      , { style: 'currency', currency: 'USD' })
         + ' into Japanese yen at the current rate.';
     const notes_currency = isJP
       ? 'US $ での支払の場合、PayPalアカウントが必要です。'
@@ -500,17 +508,17 @@ class AppBody extends React.Component {
       //: 'For credit card transactions, you need a PayPal account.';
 
     const opts_country = [
-      {   name_en: 'Japan'    , name_jp: '日本'           , code_2: 'JP' }
-      , { name_en: 'Myanmar'  , name_jp: 'ミャンマー'     , code_2: 'MM' }
-      , { name_en: 'Tai'      , name_jp: 'タイ'           , code_2: 'TH' }
-      , { name_en: 'China'    , name_jp: '中華人民共和国 (中国)'
-                                                          , code_2: 'CN' }
-      , { name_en: 'Singapore', name_jp: 'シンガポール'   , code_2: 'SG' }
-      , { name_en: 'Malaysia' , name_jp: 'マレーシア'     , code_2: 'MY' }
-      , { name_en: 'Taiwan'   , name_jp: '台湾'           , code_2: 'TW' }
-      , { name_en: 'Hong Kong', name_jp: '香港'           , code_2: 'HK' }
-      , { name_en: 'Vietnam'  , name_jp: 'ベトナム'       , code_2: 'VN' }
-      , { name_en: 'Korea'    , name_jp: '大韓民国 (韓国)', code_2: 'KR' }
+      {  name_en: 'Japan'    , name_jp: '日本'           , code_2: 'JP' }
+      ,{ name_en: 'Myanmar'  , name_jp: 'ミャンマー'     , code_2: 'MM' }
+      ,{ name_en: 'Tai'      , name_jp: 'タイ'           , code_2: 'TH' }
+      ,{ name_en: 'China'    , name_jp: '中華人民共和国 (中国)'
+                                                         , code_2: 'CN' }
+      ,{ name_en: 'Singapore', name_jp: 'シンガポール'   , code_2: 'SG' }
+      ,{ name_en: 'Malaysia' , name_jp: 'マレーシア'     , code_2: 'MY' }
+      ,{ name_en: 'Taiwan'   , name_jp: '台湾'           , code_2: 'TW' }
+      ,{ name_en: 'Hong Kong', name_jp: '香港'           , code_2: 'HK' }
+      ,{ name_en: 'Vietnam'  , name_jp: 'ベトナム'       , code_2: 'VN' }
+      ,{ name_en: 'Korea'    , name_jp: '大韓民国 (韓国)', code_2: 'KR' }
     ];
     const select_country = shipping.ems
       ? isJP
@@ -524,16 +532,16 @@ class AppBody extends React.Component {
 
     const opts_currency = [
       {   name_en: 'JP ' +
-          Number(this.state.jpy).toLocaleString('ja-JP') + ' yen'
+        Number(this.state.jpy).toLocaleString('ja-JP') + ' yen'
         , name_jp:
-          Number(this.state.jpy).toLocaleString('ja-JP') + ' 円'
+        Number(this.state.jpy).toLocaleString('ja-JP') + ' 円'
         , value: 'JPY' }
       , { name_en: 'US ' + 
-          Number(this.state.usd)
-          .toLocaleString('en-US', { style: 'currency', currency: 'USD' })
+        Number(this.state.usd).toLocaleString('en-US'
+          , { style: 'currency', currency: 'USD' })
         , name_jp:
-          Number(this.state.usd)
-          .toLocaleString('en-US', { style: 'currency', currency: 'USD' })
+        Number(this.state.usd).toLocaleString('en-US'
+          , { style: 'currency', currency: 'USD' })
         , value: 'USD' }
     ];
     const select_currency = isJP
