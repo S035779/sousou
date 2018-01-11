@@ -98,12 +98,12 @@ class AppBody extends React.Component {
   handleChangeRadio(name, e) {
     let newState = {};
     newState[name] = e.target.value;
-    if(name === 'delivery') {
+    //if(name === 'delivery') {
       const newAddress = this.setAddress(e.target.value);
       this.setState(Object.assign({}, newState, newAddress));
-    } else {
-      this.setState(newState);
-    } 
+    //} else {
+    //  this.setState(newState);
+    //} 
   }
 
   handleChangeSelect(name, e) {
@@ -114,24 +114,24 @@ class AppBody extends React.Component {
       if(options[i].selected) values.push(options[i].value);
     }
     newState[name] = values;
-    if(name === 'country_code') {
-      const newShippingState = this.setShippingState(values);
-      this.setState(Object.assign({}, newState, newShippingState));
-    } else if(name === 'payment') {
-      const newPayment = this.setPayment(values);
-      this.setState(Object.assign({}, newState, newPayment));
-    } else {
+    //if(name === 'country_code') {
+    //  const newShippingState = this.setShippingState(values);
+    //  this.setState(Object.assign({}, newState, newShippingState));
+    //} else if(name === 'payment') {
+    //  const newPayment = this.setPayment(values);
+    //  this.setState(Object.assign({}, newState, newPayment));
+    //} else {
       this.setState(newState);
-    }
+    //}
   }
 
-  setShippingState(values) {
-    return { state: [] };
-  }
+  //setShippingState(values) {
+  //  return { state: [] };
+  //}
 
-  setPayment(values) {
-    return { payment: [] };
-  }
+  //setPayment(values) {
+  //  return { payment: [] };
+  //}
 
   handleSubmit(e) {
     e.preventDefault();
@@ -275,10 +275,14 @@ class AppBody extends React.Component {
 
   componentWillUpdate(props, state) {
     if(!this.isValid(state)) return;
+    const price = this.isPrice(props.currency, state);
+    const shipping =
+      this.isShipping(props.shipping, props.currency, state);
+    const subtotal = price * state.quantity.join();
     this.payment = {
-      price:        this.isPrice(props.currency, state)
-      , shipping:   this.isShipping(props.shipping, props.currency, state)
-      , subtotal:   price * state.quantity.join()
+      price:        price
+      , shipping:   shipping
+      , subtotal:   subtotal
       , total:      subtotal + shipping
       , total_currency: state.currency
       , name:       'Myanmar Companies YearBook Vol.1'
