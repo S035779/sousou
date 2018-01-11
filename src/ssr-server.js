@@ -10,7 +10,6 @@ import CurrencyLayer from './utils/CurrencyLayer';
 import Shipping from './utils/Shipping';
 import Sendmail from './utils/Sendmail';
 import Home from './pages/Home/Home';
-import Credit from './pages/Credit/Credit';
 import { logs as log } from './utils/logutils';
 
 const app = express();
@@ -64,16 +63,6 @@ router.route('/')
     from={from}
     usd={usd}
     jpy={jpy} />));
-})
-.put((req, res, next)     => { next(new Error('not implemented')); })
-.post((req, res, next)    => { next(new Error('not implemented')); })
-.delete((req, res, next)  => { next(new Error('not implemented')); });
-
-router.route('/credit')
-.get((req, res, next)     => {
-  const { language, options } = req.query;
-  res.send('<!doctype html>\n'
-    + ReactDOMServer.renderToStaticMarkup(<Credit options={options} />));
 })
 .put((req, res, next)     => { next(new Error('not implemented')); })
 .post((req, res, next)    => { next(new Error('not implemented')); })

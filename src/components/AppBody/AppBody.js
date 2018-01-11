@@ -1,5 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom'
+import Credit from 'Components/Credit/Credit';
+import Modal from 'Components/ModalDialog/ModalDialog';
 import Radio from 'Components/Radio/Radio';
 import AppAction from 'Actions/AppAction';
 import std from 'Utilities/stdutils';
@@ -14,11 +16,10 @@ class AppBody extends React.Component {
     const jpy = props.jpy;
     const options = props.options;
     const results = props.results;
-
-    const infomation =        options.infomation;
-    const details =           options.details;
-    const item =              options.item;
-    const shipping_address =  options.shipping_address;
+    const infomation = options.infomation;
+    const details = options.details;
+    const item = options.item;
+    const shipping_address = options.shipping_address;
 
     this.payment = {
       total:            options.total
@@ -56,6 +57,8 @@ class AppBody extends React.Component {
       , usd:            usd
       , jpy:            jpy
       , results:        results
+      , showModalCredit:  false
+      , showModalResults:  false
     };
   }
 
@@ -91,22 +94,22 @@ class AppBody extends React.Component {
 
   handleSubmit(e) {
     e.preventDefault();
-    if(!this.isValid(this.state)) return;
-
-    const options = this.setOptions(this.state, this.payment);
-    if(this.isCredit(this.state)) {
-      AppAction.createCredit(options);
-      this.logTrace(this.payment);
+    const state = this.state;
+    if(!this.isValid(state)) return;
+    const payment = this.payment;
+    const options = this.setOptions(state, payment);
+    if(this.isCredit(state)) {
+      this.setState({ showModalCredit: true });
     } else {
       AppAction.createMessage(options);
     }
-    //this.logTrace(this.state);
+    //this.logTrace(payment);
+    //this.logTrace(state);
   }
 
   setOptions(state, pay) {
     return {
-      language:         this.props.language
-      , total:          pay.total
+      total:          pay.total
       , currency:       pay.total_currency
       , details: {
         subtotal:       pay.subtotal
@@ -183,9 +186,15 @@ class AppBody extends React.Component {
     if(nextProps.results) {
       if(nextProps.results.accepted
       && nextProps.results.accepted[0] === this.state.email)
-        this.setState({ results: nextProps.results });
+        this.setState({
+          results: nextProps.results
+          , showModalResults: true
+        });
       else if(nextProps.results.error)
-        this.setState({ results: nextProps.results });
+        this.setState({
+          results: nextProps.results
+          , showModalResults: true
+        });
     }
 
     if(nextProps.jpy || nextProps.usd) 
@@ -214,8 +223,14 @@ class AppBody extends React.Component {
     const total_currency = state.currency;
     const name = 'Myanmar Companies YearBook Vol.1';
     const description = 'Myanmar Companies Yearbook';
-    this.payment = { price, shipping, subtotal, total, total_currency
-      , name, description };
+    this.payment = {
+      price
+      , shipping
+      , subtotal
+      , total
+      , total_currency
+      , name
+      , description };
     //this.logTrace(this.payment);
   }
 
@@ -336,8 +351,10 @@ class AppBody extends React.Component {
       && next.payment       === prev.payment
       && next.message       === prev.message
       //&& next.agreement     === prev.agreement   
-      && next.jpy           === prev.jpy
       && next.usd           === prev.usd
+      && next.jpy           === prev.jpy
+      && next.showModalResults === prev.showModalResults
+      && next.showModalCredit  === prev.showModalCredit
     );
   }
 
@@ -386,37 +403,31 @@ class AppBody extends React.Component {
       key={"choice-" + idx} value={opt.val} >{opt.key}</option>));
   }
 
-  renderButton(state, isJP) {
+  renderButton(state) {
     if ( this.isMail(state) || this.isCredit(state)
     || !this.isValid(state) || !this.payment.shipping) {
-      return isJP 
-        ? <input type="submit" value="SEND" className="button-primary"/>
-        : <input type="submit" value="SEND" className="button-primary"/>
+      return <input type="submit" value="SEND"
+        className="button-primary"/>
     } else {
       return <div></div>;
     }
   }
 
-  renderModal(results, isJP) {
-    let head = '';
-    let body = '';
-    if (results.accepted) {
+  setResults(results, isJP) {
+    let head, body = '';
+    if (results && results.accepted) {
       head = isJP
         ? 'ご利用ありがとうございました！'
         : 'Thank you for using!';
       body = isJP
         ? 'ご依頼の商品の詳細は別途メールにてご連絡させて頂きます。'
-        : 'Details of the requested item will be notified separately by e-mail.';
-    } else if (results.error) {
+        : 'Details of the requested item will be notified separately'
+          + 'by e-mail.';
+    } else if (results && results.error) {
       head = results.error.name;
       body = isJP ? results.error.message.jp : results.error.message.en;
     } 
-    return (<div className="modalDialog">
-        <div>
-        <h3>{head}</h3>
-        <p>{body}</p>
-        </div>
-      </div>);
+    return { head, body };
   }
 
   logInfo(message) {
@@ -432,9 +443,9 @@ class AppBody extends React.Component {
   }
    
   render() {
-    //this.logTrace(this.state);
-    const shipping = this.props.shipping;
+    this.logTrace(this.state);
     const language = this.props.language;
+    const shipping = this.props.shipping;
 
     const isJP = language === 'jp' ? true : false;
     
@@ -574,9 +585,10 @@ class AppBody extends React.Component {
     //const check_birthday
     //  = this.checkNumber(this.state.year, this.state.day, isJP);
 
-    const toggledButton = this.renderButton(this.state, isJP);
-    const popupModal = this.state.results
-      ? this.renderModal(this.state.results, isJP) : <div></div>;
+    const toggledButton = this.renderButton(this.state);
+    const results = this.setResults(this.state.results, isJP);
+    const showModalCredit = !!this.state.showModalCredit;
+    const showModalResults = !!this.state.showModalResults;
 
     return <div className="buynow_contactlast">
       <form id="user-sign-up" onSubmit={this.handleSubmit.bind(this)}>
@@ -1002,7 +1014,13 @@ class AppBody extends React.Component {
         <div ref="signup_next"></div>
       </div>
       </form>
-      {popupModal}
+      <Modal showModal={showModalResults}>
+        <h3>{results.head}</h3>
+        <p>{results.body}</p>
+      </Modal>
+      <Modal showModal={showModalCredit}>
+        <Credit options={this.props.options}/>
+      </Modal>
     </div>;
   }
 };

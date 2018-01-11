@@ -14,8 +14,7 @@ class AppStore extends ReduceStore<number> {
       , currency: {}
       , results:  null
       , options:  {
-        language: ''
-        , total:  0
+        total:  0
         , currency: []
         , details:
           {

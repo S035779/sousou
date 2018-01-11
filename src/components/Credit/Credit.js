@@ -1,46 +1,56 @@
-import dotenv from 'dotenv';
 import React from 'react';
 
-dotenv.config();
 const env = process.env.NODE_ENV || 'development';
 const host = process.env.TOP_URL || '';
+const notify_url = host + '/api';
 const redirect_url = process.env.REDIRECT_URL;
 const canceled_url = process.env.CANCELED_URL;
 const paypal_sandbox = 'https://securepayments.sandbox.paypal.com/webapps/HostedSoleSolutionApp/webflow/sparta/hostedSoleSolutionProcess';
 const paypal_production = 'https://securepayments.paypal.com/webapps/HostedSoleSolutionApp/webflow/sparta/hostedSoleSolutionProcess';
-const assets = process.env.ASSET_PATH || '';
-const jquery_path = 'https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js';
 
-let path_to_js = ''; 
-let path_to_css = '';
 let credit_url = '';
-let notify_url = '';
 if (env === 'development') {
   credit_url = paypal_sandbox;
 } else if (env === 'staging') {
-  path_to_js  = host + assets + '/js';
-  path_to_css = host + assets + '/css';
   credit_url = paypal_sandbox;
-  notify_url = host + '/api';
 } else if (env === 'production') {
-  path_to_js  = host + assets + '/js';
-  path_to_css = host + assets + '/css';
   credit_url = paypal_production;
-  notify_url = host + '/api';
 }
 
 class Credit extends React.Component {
-  handleButtonClick() {
-    window.close();
-  }
   render() {
     const iframe_styles = {
       width: '100%', height: '470px', border: 'none', overflow: 'hidden'
     };
     const form_styles = { display: 'none' };
-    const obj = JSON.parse(this.props.options);
+    const obj = this.props.options;
     const isJP = obj.language === 'jp' ? true : false;
     const language =  isJP ? 'JP' : 'US';
+    const item_currency = obj.item.currency.join() !== '' 
+      ? obj.item.currency : '';
+    const total_currency = obj.currency.join() !== ''
+      ? obj.currency : '';
+    const subtotal_price = item_currency !== ''
+      ? isJP
+          ? Number(obj.details.subtotal).toLocaleString('ja-JP'
+              , { style: 'currency', currency: item_currency})
+          : Number(obj.details.subtotal).toLocaleString('en-US'
+              , { style: 'currency', currency: item_currency})
+      : 0;
+    const shipping_price = total_currency !== ''
+      ? isJP
+          ? Number(obj.details.shipping).toLocaleString('ja-JP'
+              , { style: 'currency', currency: total_currency})
+          : Number(obj.details.shipping).toLocaleString('en-US'
+              , { style: 'currency', currency: total_currency})
+      : 0;
+    const total_price = total_currency !== ''
+      ? isJP 
+          ? Number(obj.total).toLocaleString('ja-JP'
+              , { style: 'currency', currency: total_currency})
+          : Number(obj.total).toLocaleString('en-US'
+              , { style: 'currency', currency: total_currency})
+      : 0;
     const contents = {
       email:       { key: isJP ? '　メール： ' : '              Email : '
         , value: `${obj.infomation.email}` },
@@ -54,30 +64,15 @@ class Credit extends React.Component {
       description: { key: isJP ? '　概　要： ' : '        Description : '
         , value: `${obj.item.description}` },
       price:       { key: isJP ? '　単　価： ' : '              Price : '
-        , value: `${obj.item.price} ${obj.item.currency}` },
+        , value: `${obj.item.price} ${item_currency}` },
       quantity:    { key: isJP ? '　数　量： ' : '           Quantity : '
         , value: `${obj.item.quantity}`},
       subtotal:    { key: isJP ? '　小　計： ' : '           Subtotal : '
-        , value: isJP 
-          ? Number(obj.details.subtotal).toLocaleString('ja-JP'
-              , { style: 'currency', currency: obj.item.currency})
-          : Number(obj.details.subtotal).toLocaleString('en-US'
-              , { style: 'currency', currency: obj.item.currency})
-      },
+        , value: subtotal_price },
       shipping:    { key: isJP ? '　配送料： ' : '       Shipping fee : '
-        , value: isJP
-          ? Number(obj.details.shipping).toLocaleString('ja-JP'
-              , { style: 'currency', currency: obj.currency})
-          : Number(obj.details.shipping).toLocaleString('en-US'
-              , { style: 'currency', currency: obj.currency})
-      },
+        , value: shipping_price },
       total:       { key: isJP ? '　合　計： ' : '              Total : '
-        , value: isJP 
-          ? Number(obj.total).toLocaleString('ja-JP'
-              , { style: 'currency', currency: obj.currency})
-          : Number(obj.total).toLocaleString('en-US'
-              , { style: 'currency', currency: obj.currency})
-      },
+        , value: total_price },
       postal_code: { key: isJP ? '郵便番号： ' : '                Zip : '
         , value: `${obj.shipping_address.postal_code}` },
       state:       { key: isJP ? '　州　名： ' : '              State : '
@@ -107,16 +102,7 @@ class Credit extends React.Component {
       : 'Customers selected the following items.';
     const ConfirmOrder = isJP
       ? '注文を確定する' : 'Confirm order';
-    return <html>
-      <head>
-      <meta charSet="utf-8" />
-      <title>PayPal Payment</title>
-      <link rel="shortcut icon" href={ path_to_css + "/favicon.ico" } />
-      <link rel="stylesheet"    href={ path_to_css + "/style.css" } />
-      <script src={ jquery_path }></script>
-      </head>
-      <body>
-      <div className="buynow_contactlast">
+    return <div className="buynow_contactlast">
       <div id="user-sign-up">
       <fieldset className="category-group">
       <legend>{Confirm}</legend>
@@ -159,7 +145,7 @@ class Credit extends React.Component {
       <input name='shipping' type='hidden'
         value={obj.details.shipping}/>
       <input name='currency_code' type='hidden'
-        value={obj.currency}/>
+        value={total_currency}/>
       <input name='billing_zip' type='hidden'
         value={obj.shipping_address.postal_code}/>
       <input name='billing_state' type='hidden'
@@ -186,15 +172,8 @@ class Credit extends React.Component {
         document.form_iframe.submit();
       </script>
       </fieldset>
-      <div id="signup-next">
-        <input type="submit" value="SEND" 
-          onClick={this.handleButtonClick.bind(this)}
-          className="button-primary"/>
       </div>
-      </div>
-      </div>
-      </body>
-      </html>;
+      </div>;
   }
 }
 export default Credit;

@@ -23,10 +23,6 @@ module.exports = {
       './main.js',
       './main.css',
     ],
-    creditlayout: [
-      './assets/js/jquery.exresize-latest.js',
-      './creditlayout.js',
-    ],
     widget: './widget.js',
   },
   plugins: [

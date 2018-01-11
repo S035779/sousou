@@ -29,25 +29,6 @@ export default {
   request(operation, options) {
     const uri = api + operation;
     switch(operation) {
-      case '/credit':
-        return new Promise((resolve, reject) => {
-          const openWindow = this.modalDialog(uri + '?'
-            + std.encodeFormData({ options: JSON.stringify(options) })
-            ,'dialog' ,580 ,920);
-          const interval = setInterval(() => {
-            if(!openWindow || openWindow.closed) {
-              clearInterval(interval);
-              console.log('Close!!')
-              resolve();
-            } else {
-              if(!openWindow.document.hasFocus()) {
-                openWindow.focus();
-                console.log('Forcus!!')
-              }
-              console.log('Open!!')
-            }
-          }, 1000);
-        });
       case '/payment':
         return new Promise((resolve, reject) => {
           paypal.Button.render({
@@ -148,9 +129,6 @@ export default {
           });
     }
   },
-  postCredit(options) {
-    return this.request('/credit', options);
-  },
   postPayment(options) {
     return this.request('/payment', options);
   },
@@ -162,12 +140,6 @@ export default {
   },
   getCurrency(options) {
     return this.request('/currency', options);
-  },
-  createCredit(params) {
-    const options = this.validate(params);
-    const buyer = this.setCustomer(options);
-    const seler  = this.setManager(options);
-    return this.postCredit(options)
   },
   createPayment(params) {
     const options = this.validate(params);
@@ -290,20 +262,4 @@ export default {
   logError(error) {
     log.error(`${pspid}>`, error.name, error.message);
   },
-  modalDialog(url,name,width,height) {
-    let features="location=no, menubar=no, status=yes, scrollbars=yes, resizable=yes, toolbar=no";
-    if (width) {
-      if (window.screen.width > width)
-      features+=", left="+(window.screen.width-width)/2;
-      else width=window.screen.width;
-      features+=", width="+width;
-    }
-    if (height) {
-      if (window.screen.height > height)
-        features+=", top="+(window.screen.height-height)/2;
-      else height=window.screen.height;
-      features+=", height="+height;
-    }
-    return window.open(url,name,features);
-  }
 }
