@@ -29,6 +29,10 @@ export default {
   request(operation, options) {
     const uri = api + operation;
     switch(operation) {
+      case '/credit':
+        return new Promise((resolve, reject) => {
+            resolve();
+          });
       case '/payment':
         return new Promise((resolve, reject) => {
           paypal.Button.render({
@@ -129,6 +133,9 @@ export default {
           });
     }
   },
+  postCredit(options) {
+    return this.request('/credit', options);
+  },
   postPayment(options) {
     return this.request('/payment', options);
   },
@@ -140,6 +147,14 @@ export default {
   },
   getCurrency(options) {
     return this.request('/currency', options);
+  },
+  createCredit(params) {
+    const options = this.validate(params);
+    const buyer = this.setCustomer(options);
+    const seler  = this.setManager(options);
+    return this.postCredit(options)
+      .then(() => this.postMessage(seler))
+      .then(() => this.postMessage(buyer))
   },
   createPayment(params) {
     const options = this.validate(params);
@@ -248,8 +263,8 @@ export default {
         + ` 方　法：${obj.infomation.payment}\n`
         + ` 連　絡：${obj.infomation.message}\n`
         + `銀行振込(deposit）、その他(other)の場合は、\n`
-        + `以降、メールにてご連絡差し上げます。\n`
-        + `ご利用有難うございました。\n`
+        + `以降の手続きは、メールにてご対応させて頂きます。\n`
+        + `弊社担当からの連絡をお待ち下さい。\n`
     };
     return { message };
   },

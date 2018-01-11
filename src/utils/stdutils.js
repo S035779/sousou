@@ -5,6 +5,10 @@ import xml2js from 'xml2js';
 import js2xml from 'xmlbuilder';
 
 export default {
+  is(type, obj) {
+    var clas = Object.prototype.toString.call(obj).slice(8, -1);
+    return obj !== undefined && obj !== null && clas === type;
+  },
   /**
    * Copy the enumerable properties of p to o, and return o.
    * If o and p have a property by the same name, o's property is 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { log } from 'Utilities/webutils';
 
 const env = process.env.NODE_ENV || 'development';
 const host = process.env.TOP_URL || '';
@@ -17,14 +18,38 @@ if (env === 'development') {
   credit_url = paypal_production;
 }
 
+const pspid = 'CreditView';
+
 class Credit extends React.Component {
+  componentDidMount() {
+    window.form_iframe.submit();
+  }
+
+  handleClickButton(e) {
+    this.logInfo('handleClickButton');
+    e.preventDefault();
+    this.props.onCompleted();
+  }
+
+  logInfo(message) {
+    log.info(`${pspid}>`, 'Request:', message);
+  }
+
+  logTrace(message) {
+    log.trace(`${pspid}>`, 'Response:', message);
+  }
+
+  logError(error) {
+    log.error(`${pspid}>`, error.name, error.message);
+  }
+
   render() {
     const iframe_styles = {
       width: '100%', height: '470px', border: 'none', overflow: 'hidden'
     };
     const form_styles = { display: 'none' };
     const obj = this.props.options;
-    const isJP = obj.language === 'jp' ? true : false;
+    const isJP = this.props.language === 'jp' ? true : false;
     const language =  isJP ? 'JP' : 'US';
     const item_currency = obj.item.currency.join() !== '' 
       ? obj.item.currency : '';
@@ -168,10 +193,12 @@ class Credit extends React.Component {
       <input name='notify_url' type='hidden' value={notify_url}/>
       <input name='lc' type='hidden' value={language}/>
       </form>
-      <script type="text/javascript">
-        document.form_iframe.submit();
-      </script>
       </fieldset>
+      <div id="signup-next">
+      <input type="submit" value="SEND"
+        onClick={this.handleClickButton.bind(this)}
+        className="button-primary"/>
+      </div>
       </div>
       </div>;
   }

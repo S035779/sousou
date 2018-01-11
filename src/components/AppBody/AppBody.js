@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 import Credit from 'Components/Credit/Credit';
 import Modal from 'Components/ModalDialog/ModalDialog';
 import Radio from 'Components/Radio/Radio';
+import Notice from 'Components/Notice/Notice';
 import AppAction from 'Actions/AppAction';
 import std from 'Utilities/stdutils';
 import { log } from 'Utilities/webutils';
@@ -62,6 +63,26 @@ class AppBody extends React.Component {
     };
   }
 
+  handleClickButton(name, e) {
+    this.logInfo('handleClickButton');
+    switch(name) {
+      case 'credit':
+        this.setState({ showModalCredit: false });
+        const state = this.state;
+        const payment = this.payment;
+        const options = this.setOptions(state, payment);
+        AppAction.createCredit(options);
+        break;
+      case 'results':
+        this.setState({ results: null, showModalResults: false });
+        break;
+      default:
+        this.logError({ name: 'Error:'
+          , message: 'Unknown submit command.' });
+        break;
+    }
+  }
+
   handleChangeText(name, e) {
     let newState = {};
     newState[name] = e.target.value;
@@ -77,8 +98,12 @@ class AppBody extends React.Component {
   handleChangeRadio(name, e) {
     let newState = {};
     newState[name] = e.target.value;
-    const newAddress = this.setAddress(e.target.value);
-    this.setState(Object.assign({}, newState, newAddress));
+    if(name === 'delivery') {
+      const newAddress = this.setAddress(e.target.value);
+      this.setState(Object.assign({}, newState, newAddress));
+    } else {
+      this.setState(newState);
+    } 
   }
 
   handleChangeSelect(name, e) {
@@ -89,37 +114,72 @@ class AppBody extends React.Component {
       if(options[i].selected) values.push(options[i].value);
     }
     newState[name] = values;
-    this.setState(newState);
+    if(name === 'country_code') {
+      const newShippingState = this.setShippingState(values);
+      this.setState(Object.assign({}, newState, newShippingState));
+    } else if(name === 'payment') {
+      const newPayment = this.setPayment(values);
+      this.setState(Object.assign({}, newState, newPayment));
+    } else {
+      this.setState(newState);
+    }
+  }
+
+  setShippingState(values) {
+    return { state: [] };
+  }
+
+  setPayment(values) {
+    return { payment: [] };
   }
 
   handleSubmit(e) {
     e.preventDefault();
     const state = this.state;
     if(!this.isValid(state)) return;
-    const payment = this.payment;
-    const options = this.setOptions(state, payment);
     if(this.isCredit(state)) {
       this.setState({ showModalCredit: true });
     } else {
+      const payment = this.payment;
+      const options = this.setOptions(state, payment);
       AppAction.createMessage(options);
     }
     //this.logTrace(payment);
     //this.logTrace(state);
   }
 
-  setOptions(state, pay) {
+  setResults(results, isJP) {
+    let head, body = '';
+    if (results && results.accepted) {
+      head = isJP
+        ? 'ご利用ありがとうございました！'
+        : 'Thank you for using!';
+      body = isJP
+        ? 'ご依頼の商品の詳細は別途メールにてご連絡させて頂きます。'
+        : 'Details of the requested item will be notified separately'
+          + 'by e-mail.';
+    } else if (results && results.error) {
+      head = results.error.name;
+      body = std.is('Object', results.error.message)
+        ? isJP ? results.error.message.jp : results.error.message.en
+        : results.error.message;
+    } 
+    return { head, body };
+  }
+
+  setOptions(state, payment) {
     return {
-      total:          pay.total
-      , currency:       pay.total_currency
+      total:          payment.total
+      , currency:       payment.total_currency
       , details: {
-        subtotal:       pay.subtotal
-        , shipping:     pay.shipping
+        subtotal:       payment.subtotal
+        , shipping:     payment.shipping
       }
       , item: {
-        name:           pay.name
-        , description:  pay.description
+        name:           payment.name
+        , description:  payment.description
         , quantity:     state.quantity
-        , price:        pay.price
+        , price:        payment.price
         , currency:     state.currency
       }
       , shipping_address: {
@@ -215,22 +275,15 @@ class AppBody extends React.Component {
 
   componentWillUpdate(props, state) {
     if(!this.isValid(state)) return;
-    const price = this.isPrice(props.currency, state);
-    const shipping =
-      this.isShipping(props.shipping, props.currency, state);
-    const subtotal = price * state.quantity.join();
-    const total = subtotal + shipping;
-    const total_currency = state.currency;
-    const name = 'Myanmar Companies YearBook Vol.1';
-    const description = 'Myanmar Companies Yearbook';
     this.payment = {
-      price
-      , shipping
-      , subtotal
-      , total
-      , total_currency
-      , name
-      , description };
+      price:        this.isPrice(props.currency, state)
+      , shipping:   this.isShipping(props.shipping, props.currency, state)
+      , subtotal:   price * state.quantity.join()
+      , total:      subtotal + shipping
+      , total_currency: state.currency
+      , name:       'Myanmar Companies YearBook Vol.1'
+      , description:'Myanmar Companies Yearbook'
+    };
     //this.logTrace(this.payment);
   }
 
@@ -413,23 +466,6 @@ class AppBody extends React.Component {
     }
   }
 
-  setResults(results, isJP) {
-    let head, body = '';
-    if (results && results.accepted) {
-      head = isJP
-        ? 'ご利用ありがとうございました！'
-        : 'Thank you for using!';
-      body = isJP
-        ? 'ご依頼の商品の詳細は別途メールにてご連絡させて頂きます。'
-        : 'Details of the requested item will be notified separately'
-          + 'by e-mail.';
-    } else if (results && results.error) {
-      head = results.error.name;
-      body = isJP ? results.error.message.jp : results.error.message.en;
-    } 
-    return { head, body };
-  }
-
   logInfo(message) {
     log.info(`${pspid}>`, 'Request:', message);
   }
@@ -589,6 +625,7 @@ class AppBody extends React.Component {
     const results = this.setResults(this.state.results, isJP);
     const showModalCredit = !!this.state.showModalCredit;
     const showModalResults = !!this.state.showModalResults;
+    const options = this.setOptions(this.state, this.payment);
 
     return <div className="buynow_contactlast">
       <form id="user-sign-up" onSubmit={this.handleSubmit.bind(this)}>
@@ -1013,14 +1050,15 @@ class AppBody extends React.Component {
         {toggledButton}
         <div ref="signup_next"></div>
       </div>
-      </form>
-      <Modal showModal={showModalResults}>
-        <h3>{results.head}</h3>
-        <p>{results.body}</p>
-      </Modal>
-      <Modal showModal={showModalCredit}>
-        <Credit options={this.props.options}/>
-      </Modal>
+    </form>
+    <Modal showModal={showModalResults}>
+      <Notice message={results}
+        onCompleted={this.handleClickButton.bind(this, 'results')}/>
+    </Modal>
+    <Modal showModal={showModalCredit}>
+      <Credit language={language} options={options}
+        onCompleted={this.handleClickButton.bind(this, 'credit')}/>
+    </Modal>
     </div>;
   }
 };

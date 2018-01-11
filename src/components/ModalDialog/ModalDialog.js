@@ -1,5 +1,8 @@
 import React from 'react';
 import ReactModal from 'react-modal';
+import { log } from 'Utilities/webutils';
+
+const pspid = 'ModalDialogView';
 
 ReactModal.setAppElement('#app');
 ReactModal.defaultStyles = {
@@ -12,9 +15,9 @@ ReactModal.defaultStyles = {
   },
   content: {
     position: 'relative',
-    width: '60%',
-    margin: '25% auto 0',
-    padding: '5%',
+    width: '80%',
+    margin: '10% auto 0',
+    padding: '5% 0 0',
     borderRadius: '4px',
     background: '#fff'
   }
@@ -30,27 +33,40 @@ class ModalDialog extends React.Component {
     this.handleAfterOpen = this.handleAfterOpen.bind(this);
   }
 
+  logInfo(message) {
+    log.info(`${pspid}>`, 'Request:', message);
+  }
+
+  logTrace(message) {
+    log.trace(`${pspid}>`, 'Response:', message);
+  }
+
+  logError(error) {
+    log.error(`${pspid}>`, error.name, error.message);
+  }
+
   handleOpenModal() {
+    this.logInfo('handleOpenModal');
     this.setState({ showModal: true });
   }
 
   handleAfterOpen() {
-    console.log('handleAfterOpen!!');
+    this.logInfo('handleAfterOpen');
   }
 
   handleCloseModal() {
+    this.logInfo('handleCloseModal');
     this.setState({ showModal: false });
   }
 
   componentWillReceiveProps(nextProps) {
-    if(nextProps.showModal)
-      this.setState({ showModal: !!nextProps.showModal });
+    this.setState({ showModal: !!nextProps.showModal });
   }
 
   render() {
     return <ReactModal
-        //contentLabel="ModalDialog"
-        //ariaHideApp={true}
+        contentLabel="ModalDialog"
+        ariaHideApp={true}
         isOpen={this.state.showModal}
         onAfterOpen={this.handleAfterOpen}
         onRequestClose={this.handleCloseModal}
@@ -58,14 +74,10 @@ class ModalDialog extends React.Component {
         shouldCloseOnOverlayClick={true}
         shouldCloseOnEsc={true}
         shouldReturnFocusAfterClose={true}
-        //role="dialog"
-        //parentSelector={() => document.body}
-        //closeTimeoutMS={2}
-      >
+        role="dialog"
+        parentSelector={() => document.body}
+        closeTimeoutMS={0} >
       {this.props.children}
-      <input type="submit" value="SEND"
-        onClick={this.handleCloseModal}
-        className="button-primary"/>
       </ReactModal>;
   }
 };

@@ -1,13 +1,14 @@
 <html>
   <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
+  <title>PayPal Payment Form</title>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
   <script src="https://www.paypalobjects.com/api/checkout.js"></script>
+  <link href="/style.css" rel="stylesheet">
   <link rel="shortcut icon" href="/favicon.ico">
-  <link href="/style.css" rel="stylesheet"></head>
+  </head>
   <body>
     <div id="app"></div>
-    <div id="initialProps" data-json='{"language":"jp","length":"60","weight":"30","from":"東京都","usd":"600","jpy":"72000"}'></div>
-
-  <script type="text/javascript" src="/app.bundle.js" deffer></script>
+    <div id="initialProps" data-json='{"language":"jp","length":"60","weight":"1.5","from":"東京都","usd":"600","jpy":"72000"}'></div>
+    <script src="/app.bundle.js"></script>
 </html>

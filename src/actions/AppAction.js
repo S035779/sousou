@@ -1,10 +1,26 @@
-import { dispatch } from '../dispatcher';
+import { dispatch } from 'Main/dispatcher';
 import AppApiClient from 'Services/AppApiClient';
 import { log } from 'Utilities/webutils';
 
 const pspid = 'AppAction';
 
 export default {
+  createCredit(options) {
+    return AppApiClient.createCredit(options)
+      .then(results => {
+        dispatch({ type: 'item/create/credit', results, options });
+      }).catch(err => {
+        this.logError(err);
+        const results = { error: {
+          name: 'Credit payment API Error'
+          , message: {
+            jp: '入力手続きが完了しませんでした。'
+            , en: 'The input procedure was not completed.'
+          }
+        }};
+        dispatch({ type: 'item/create/credit', results, options });
+      });
+  },
   createPayment(options) {
     return AppApiClient.createPayment(options)
       .then(results => {

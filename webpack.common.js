@@ -27,7 +27,11 @@ module.exports = {
   },
   plugins: [
     new dotenv(),
-    new HtmlWebpackPlugin({ template: 'index.html', inject: false }),
+    new HtmlWebpackPlugin({
+      inject: false
+      , template: 'index.html'
+      , favicon: './assets/image/favicon.ico'
+    }),
     new CleanWebpackPlugin(['dist']),
     new ManifestPlugin(),
     new ExtractTextPlugin({ filename: 'style.css' }),
@@ -52,7 +56,7 @@ module.exports = {
           use: [ 'css-loader', 'postcss-loader' ]
         })
       },{
-        test: /\.(gif|jpg|png|svg)$/,
+        test: /\.(gif|jpg|png|svg|ico)$/,
         use: [ 'file-loader?name=[name].[ext]' ]
       },{
         test: /\.(woff|woff2|eot|ttf|otf)$/,
@@ -65,6 +69,7 @@ module.exports = {
   },
   resolve: {
     alias: {
+      Main: path.resolve(__dirname, 'src/'),
       Assets: path.resolve(__dirname, 'src/assets/'),
       Utilities: path.resolve(__dirname, 'src/utils/'),
       Stores: path.resolve(__dirname, 'src/stores'),

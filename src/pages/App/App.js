@@ -1,11 +1,11 @@
 import querystring from 'querystring';
 import React from 'react';
 import { Container } from 'flux/utils';
-import appStore from '../../stores/appStore';
-import AppAction from '../../actions/AppAction';
-import AppHeader from '../../components/AppHeader/AppHeader';
-import AppFooter from '../../components/AppFooter/AppFooter';
-import AppBody from '../../components/AppBody/AppBody';
+import appStore from 'Stores/appStore';
+import AppAction from 'Actions/AppAction';
+import AppHeader from 'Components/AppHeader/AppHeader';
+import AppFooter from 'Components/AppFooter/AppFooter';
+import AppBody from 'Components/AppBody/AppBody';
 
 class App extends React.Component {
   static getStores() {

@@ -1,6 +1,6 @@
 import { ReduceStore } from 'flux/utils';
-import dispatcher from '../dispatcher';
-import AppAction from '../actions/AppAction';
+import dispatcher from 'Main/dispatcher';
+import AppAction from 'Actions/AppAction';
 
 class AppStore extends ReduceStore<number> {
   getInitialState() {
@@ -57,6 +57,11 @@ class AppStore extends ReduceStore<number> {
   
   reduce(state, action) {
     switch (action.type) { 
+      case 'item/create/credit':
+        return Object.assign({}, state, {
+          results:    action.results
+          , options:  action.options
+        });
       case 'item/create/payment':
         return Object.assign({}, state, {
           results:    action.results

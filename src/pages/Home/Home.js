@@ -10,10 +10,12 @@ const jquery_path = 'https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.
 
 let path_to_js = ''; 
 let path_to_css = '';
+let path_to_img = '';
 if (env === 'development') {
 } else if (env === 'staging' || env === 'production') {
   path_to_js  = host + assets + '/js';
   path_to_css = host + assets + '/css';
+  path_to_img = host + assets + '/image';
 }
 
 class Home extends React.Component {
@@ -30,7 +32,7 @@ class Home extends React.Component {
       <head>
       <meta charSet="utf-8" />
       <title>PayPal Payment</title>
-      <link rel="shortcut icon" href={ path_to_css + "/favicon.ico" } />
+      <link rel="shortcut icon" href={ path_to_img + "/favicon.ico" } />
       <link rel="stylesheet"    href={ path_to_css + "/style.css" } />
       <script src={ paypal_path }></script>
       <script src={ jquery_path }></script>
