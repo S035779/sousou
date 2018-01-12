@@ -31,7 +31,7 @@ export default {
     switch(operation) {
       case '/credit':
         return new Promise((resolve, reject) => {
-          xhr.postJSON(uri, options
+          xhr.get(uri, options
             , obj => { resolve(obj); }
             , err => { reject(err); });
           });
