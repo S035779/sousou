@@ -26,4 +26,4 @@ cp dist/*.gif $ASSETS/image/
 cp dist/*.ico $ASSETS/image/
 
 mv $PLUGIN/paypal-shortcode.php $PLUGIN/paypal-shortcode_${TODAY}.php
-cp $PLUGIN/paypal-shortcode.php $PLUGIN/
+cp wordpress/paypal-shortcode.php $PLUGIN/
