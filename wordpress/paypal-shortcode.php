@@ -34,7 +34,7 @@ function display_paypal_payment($arr, $content="") {
     data-weight="<?php echo $opt['weight']; ?>"
     data-from="<?php echo $opt['from']; ?>"
   >This site is here!</a>
-  <script src="/assets/js/widget.js"></script>
+  <script src="/assets/js/widget.bundle.js"></script>
 </div>
 <?php  
   return ob_get_clean();

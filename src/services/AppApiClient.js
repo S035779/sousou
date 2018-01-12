@@ -31,7 +31,9 @@ export default {
     switch(operation) {
       case '/credit':
         return new Promise((resolve, reject) => {
-            resolve();
+          xhr.postJSON(uri, options
+            , obj => { resolve(obj); }
+            , err => { reject(err); });
           });
       case '/payment':
         return new Promise((resolve, reject) => {

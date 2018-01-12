@@ -68,6 +68,15 @@ router.route('/')
 .post((req, res, next)    => { next(new Error('not implemented')); })
 .delete((req, res, next)  => { next(new Error('not implemented')); });
 
+router.route('/credit')
+.get((req, res, next)     => {
+  const { paymentID } = req.query;
+  res.json({ data: { paymentID } });
+})
+.put((req, res, next)     => { next(new Error('not implemented')); })
+.post((req, res, next)    => { next(new Error('not implemented')); })
+.delete((req, res, next)  => { next(new Error('not implemented')); });
+
 router.route('/payment/create-payment')
 .get((req, res, next)     => { next(new Error('not implemented')); })
 .put((req, res, next)     => { next(new Error('not implemented')); })
