@@ -50,8 +50,8 @@ class PayPalPayment {
     switch(operation) {
       case '/ipnpb':
         return new Promise((resolve, reject) => {
-          net.postData2(ipn_api
-            , {}, body, (err, head, data) => {
+          net.postData2(ipn_api + std.encodeFormData(options);
+            , null, null, (err, head, data) => {
             if(err) reject(err);
             resolve(data);
           });
@@ -128,6 +128,7 @@ class PayPalPayment {
   }
 
   validateNotification(options) {
+    options['cmd'] = '_notify-validate';
     return this.getValidate(options)
       .map(R.tap(this.logInfo.bind(this)));
   }
