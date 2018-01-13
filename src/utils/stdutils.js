@@ -484,11 +484,26 @@ export default {
    * Function that return a character string encode 
    * from Associative array object.
    * 
-   * @param {objct} object - query parameter object.
+   * @param {objct} obj - query parameter object.
    * @return {string}
    */
-  urlencode_rfc3986(object) {
-    return querystring.stringify(object);
+  urlencode(obj) {
+    const keys = [];
+    for(let key in obj) {
+      if(obj.hasOwnProperty(key)) keys.push(key);
+    }
+    return keys.map((key, idx) => `${key}=${obj[key]}`).join('&');
+  },
+
+  /**
+   * Function that return a character string encode 
+   * from Associative array object.
+   * 
+   * @param {objct} obj - query parameter object.
+   * @return {string}
+   */
+  urlencode_rfc3986(obj) {
+    return querystring.stringify(obj);
   },
 
   /**

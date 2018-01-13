@@ -274,8 +274,6 @@ const postData2 = function(url, auth, body, callback) {
           break; 
         case 400: case 401: case 402: case 403: case 404:
           log.error(`HTTP Request Failed. Status Code: ${stat}`);
-          log.trace(`Header:`, head);
-          log.trace(`Body:`, body);
           if (callback) callback(new Error(body));
           return; 
         case 500: case 501: case 502: case 503: case 504: case 505:
@@ -367,8 +365,6 @@ const postJson2 = function(url, auth, body, callback) {
           break; 
         case 400: case 401: case 402: case 403: case 404:
           log.error(`HTTP Request Failed. Status Code: ${stat}`);
-          log.trace(`Header:`, head);
-          log.trace(`Body:`, body);
           if (callback) callback(new Error(body));
           return; 
         case 500: case 501: case 502: case 503: case 504: case 505:

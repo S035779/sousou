@@ -87,11 +87,7 @@ router.route('/payment/notify')
   PayPalPayment.of(paypal_keyset).validateNotification(body)
   .subscribe(
     data  => { log.info(data); }
-    , err => {
-      res.status(500)
-        .send({ error: { name: err.name, message: err.message } });
-      log.error(err.name, err.message);
-    }
+    , err => { log.error(err.name, err.message); }
     , ()  => { log.info('Completed to validate notification.'); }
   );
 })
