@@ -50,7 +50,7 @@ class PayPalPayment {
     switch(operation) {
       case '/ipnpb':
         return new Promise((resolve, reject) => {
-          net.postData2(ipn_api + std.encodeFormData(query)
+          net.postData2(ipn_api + '?' + std.urlencode(query)
             , null, null, (err, head, data) => {
             if(err) reject(err);
             resolve(data);
