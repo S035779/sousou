@@ -70,7 +70,8 @@ router.route('/')
 
 router.route('/credit')
 .get((req, res, next)     => {
-  res.status(200);
+  const { paymentID, payerID } = req.query;
+  res.json({ paymentID, payerID });
 })
 .put((req, res, next)     => { next(new Error('not implemented')); })
 .post((req, res, next)    => { next(new Error('not implemented')); })
@@ -82,9 +83,10 @@ router.route('/payment/notify')
 .post((req, res, next)    => {
   const body = req.body;
   log.info('Receive IPN message:', body);
+  res.status(200);
   PayPalPayment.of(paypal_keyset).validateNotification(body)
   .subscribe(
-    data  => { res.status(200); }
+    data  => { log.info(data); }
     , err => {
       res.status(500)
         .send({ error: { name: err.name, message: err.message } });
