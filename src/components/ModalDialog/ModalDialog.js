@@ -71,8 +71,8 @@ class ModalDialog extends React.Component {
         onAfterOpen={this.handleAfterOpen}
         onRequestClose={this.handleCloseModal}
         shouldFocusAfterRender={true}
-        shouldCloseOnOverlayClick={true}
-        shouldCloseOnEsc={true}
+        shouldCloseOnOverlayClick={false}
+        shouldCloseOnEsc={false}
         shouldReturnFocusAfterClose={true}
         role="dialog"
         parentSelector={() => document.body}

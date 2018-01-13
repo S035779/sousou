@@ -135,7 +135,7 @@ class AppBody extends React.Component {
       const options = this.setOptions(state, payment);
       AppAction.createMessage(options);
     }
-    this.logTrace(this.payment);
+    //this.logTrace(this.payment);
     //this.logTrace(this.state);
   }
 
@@ -328,7 +328,7 @@ class AppBody extends React.Component {
     const options = this.setOptions(state, payment);
     if(this.isPayPal(state)) {
       AppAction.createPayment(options);
-      this.logTrace(payment);
+      //this.logTrace(payment);
     }
   }
 
