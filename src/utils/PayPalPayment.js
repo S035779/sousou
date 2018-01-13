@@ -50,7 +50,7 @@ class PayPalPayment {
     switch(operation) {
       case '/ipnpb':
         return new Promise((resolve, reject) => {
-          net.postData2(ipn_api + std.encodeFormData(options)
+          net.postData2(ipn_api + std.encodeFormData(query)
             , null, null, (err, head, data) => {
             if(err) reject(err);
             resolve(data);
@@ -119,7 +119,10 @@ class PayPalPayment {
     return this.request('/v1/payments/payment', options);
   }
 
-  getValidate(options) {
+  getValidate(notice) {
+    const options = {
+      query: Object.assign({}, { cmd: '_notify-validate' }, notice)
+    };
     return this.request('/ipnpb', options);
   }
 
@@ -127,13 +130,12 @@ class PayPalPayment {
     return Rx.Observable.fromPromise(this.getToken());
   }
 
-  fetchValidate(options) {
-    return Rx.Observable.fromPromise(this.getValidate(options));
+  fetchValidate(notice) {
+    return Rx.Observable.fromPromise(this.getValidate(notice));
   }
 
-  validateNotification(options) {
-    options['cmd'] = '_notify-validate';
-    return this.fetchValidate(options)
+  validateNotification(notice) {
+    return this.fetchValidate(notice)
       //.map(R.tap(this.logInfo.bind(this)));
   }
 
