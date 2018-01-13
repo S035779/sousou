@@ -127,10 +127,14 @@ class PayPalPayment {
     return Rx.Observable.fromPromise(this.getToken());
   }
 
+  fetchValidate(options) {
+    return Rx.Observable.fromPromise(this.getValidate(options));
+  }
+
   validateNotification(options) {
     options['cmd'] = '_notify-validate';
-    return this.getValidate(options)
-      .map(R.tap(this.logInfo.bind(this)));
+    return this.fetchValidate(options)
+      //.map(R.tap(this.logInfo.bind(this)));
   }
 
   executePayment(options) {
