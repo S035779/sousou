@@ -73,7 +73,7 @@ router.route('/notify')
 .get((req, res, next)     => { next(new Error('not implemented')); })
 .put((req, res, next)     => { next(new Error('not implemented')); })
 .post((req, res, next)    => {
-  log.info(`Receive IPN message data: ${req.body}.`);
+  log.info('Receive IPN message:', req.body);
   res.status(200).send('').end();
 })
 .delete((req, res, next)  => { next(new Error('not implemented')); });
