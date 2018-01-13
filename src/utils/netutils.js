@@ -281,7 +281,7 @@ const postData2 = function(url, auth, body, callback) {
         case 500: case 501: case 502: case 503: case 504: case 505:
           process.stdout.write('x');
           log.warn(`HTTP Request Failed. Status Code: ${stat}`);
-          postData2(url, body, callback);
+          postData2(url, auth, body, callback);
           break;
         default:
           process.stdout.write('?');
@@ -374,7 +374,7 @@ const postJson2 = function(url, auth, body, callback) {
         case 500: case 501: case 502: case 503: case 504: case 505:
           process.stdout.write('x');
           log.warn(`HTTP Request Failed. Status Code: ${stat}`);
-          postJson2(url, body, callback);
+          postJson2(url, auth, body, callback);
           break;
         default:
           process.stdout.write('?');

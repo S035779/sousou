@@ -12,12 +12,12 @@ import Sendmail from './utils/Sendmail';
 import Home from './pages/Home/Home';
 import { logs as log } from './utils/logutils';
 
-const app = express();
-const router = express.Router();
-
 dotenv.config()
+const env = process.env.NODE_ENV || 'development';
 const http_host = process.env.API_HOST || '127.0.0.1';
 const http_port = process.env.API_PORT || 8080;
+const smtp_port = process.env.MMS_PORT || 2525;
+const ssmtp_port = process.env.MMS_SSL;
 const paypal_keyset = {
   access_key:         process.env.PAYPAL_ACCESS_KEY
   , secret_key:       process.env.PAYPAL_SECRET_KEY
@@ -25,8 +25,6 @@ const paypal_keyset = {
 const currency_keyset = {
   access_key:         process.env.CURRENCY_ACCESS_KEY
 };
-const smtp_port = process.env.MMS_PORT || 2525;
-const ssmtp_port = process.env.MMS_SSL;
 const isSSL = ssmtp_port ? true : false;
 const mail_keyset = {
   host:     process.env.MMS_HOST
@@ -38,16 +36,17 @@ const mail_keyset = {
   }
 };
 
-const env = process.env.NODE_ENV || 'development';
-if (env === 'development') 
+if (env === 'development') {
   log.config('console', 'color', 'webpay-api', 'TRACE');
-if (env === 'staging') 
+} else if (env === 'staging') {
   log.config('file', 'basic', 'webpay-api', 'DEBUG');
-if (env === 'production') 
+} else if (env === 'production') {
   log.config('file', 'json', 'webpay-api', 'INFO');
-
+}
 const pspid = 'ssr-server';
 
+const app = express();
+const router = express.Router();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(log.connect());
@@ -55,7 +54,7 @@ app.use(log.connect());
 router.route('/')
 .get((req, res, next)     => {
   const { language, length, weight, from, usd, jpy } = req.query;
-  if(!language) return res.status(404).send('Not found.').end();
+  if(!language) return res.status(404).send('Not found.');
   res.send('<!doctype html>\n'
     + ReactDOMServer.renderToStaticMarkup(<Home
     language={language}
@@ -69,22 +68,31 @@ router.route('/')
 .post((req, res, next)    => { next(new Error('not implemented')); })
 .delete((req, res, next)  => { next(new Error('not implemented')); });
 
-router.route('/notify')
-.get((req, res, next)     => { next(new Error('not implemented')); })
-.put((req, res, next)     => { next(new Error('not implemented')); })
-.post((req, res, next)    => {
-  log.info('Receive IPN message:', req.body);
-  res.status(200).send('').end();
-})
-.delete((req, res, next)  => { next(new Error('not implemented')); });
-
 router.route('/credit')
 .get((req, res, next)     => {
-  const { paymentID } = req.query;
-  res.json({ data: { paymentID } });
+  res.status(200);
 })
 .put((req, res, next)     => { next(new Error('not implemented')); })
 .post((req, res, next)    => { next(new Error('not implemented')); })
+.delete((req, res, next)  => { next(new Error('not implemented')); });
+
+router.route('/payment/notify')
+.get((req, res, next)     => { next(new Error('not implemented')); })
+.put((req, res, next)     => { next(new Error('not implemented')); })
+.post((req, res, next)    => {
+  const body = req.body;
+  log.info('Receive IPN message:', body);
+  PayPalPayment.of(paypal_keyset).validateNotification(body)
+  .subscribe(
+    data  => { res.status(200); }
+    , err => {
+      res.status(500)
+        .send({ error: { name: err.name, message: err.message } });
+      log.error(err.name, err.message);
+    }
+    , ()  => { log.info('Completed to validate notification.'); }
+  );
+})
 .delete((req, res, next)  => { next(new Error('not implemented')); });
 
 router.route('/payment/create-payment')
@@ -95,7 +103,8 @@ router.route('/payment/create-payment')
   .subscribe(
     data  => { res.json({ id: data.id }); }
     , err => {
-      res.json({ error: { name: err.name, message: err.message } });
+      res.status(500)
+        .send({ error: { name: err.name, message: err.message } });
       log.error(err.name, err.message);
     }
     , ()  => { log.info('Completed to create payment.'); }
@@ -112,7 +121,8 @@ router.route('/payment/execute-payment')
   .subscribe(
     data  => { res.json({ data }); }
     , err => {
-      res.json({ error: { name: err.name, message: err.message } });
+      res.status(500)
+        .send({ error: { name: err.name, message: err.message } });
       log.error(err.name, err.message);
     }
     , ()  => { log.info('Completed to execute payment.'); }
@@ -129,7 +139,8 @@ router.route('/sendmail')
   .subscribe(
     data  => { res.json(data); }
     , err => {
-      res.json({ error: { name: err.name, message: err.message } });
+      res.status(500)
+        .send({ error: { name: err.name, message: err.message } });
       log.error(err.name, err.message);
     }
     , ()  => { log.info('Completed to create message.'); }
@@ -144,7 +155,8 @@ router.route('/shipping')
   .subscribe(
     data  => { res.json(data); }
     , err => {
-      res.json({ error: { name: err.name, message: err.message } });
+      res.status(500)
+        .send({ error: { name: err.name, message: err.message } });
       log.error(err.name, err.message);
     }
     , ()  => { log.info('Completed to response shipping.'); }
@@ -161,7 +173,8 @@ router.route('/currency')
   .subscribe(
     data  => { res.json(data); }
     , err => {
-      res.json({ error: { name: err.name, message: err.message } });
+      res.status(500)
+        .send({ error: { name: err.name, message: err.message } });
       log.error(err.name, err.message);
     }
     , ()  => { log.info('Completed to responce currency.'); }
