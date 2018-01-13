@@ -1,15 +1,33 @@
+import dotenv from 'dotenv';
 import R from 'ramda';
 import Rx from 'rx';
 import std from './stdutils';
 import net from './netutils';
 import { logs as log } from './logutils';
 
-const productions = 'https://api.paypal.com';
-const development = 'https://api.sandbox.paypal.com';
+dotenv.config();
+const env          = process.env.NODE_ENV || 'development';
 const redirect_url = process.env.REDIRECT_URL;
 const canceled_url = process.env.CANCELED_URL;
+const pay_live    = 'https://api.paypal.com';
+const pay_sandbox = 'https://api.sandbox.paypal.com';
+const ipn_live    = 'https://ipnpb.paypal.com/cgi-bin/webscr';
+const ipn_sandbox = 'https://ipnpb.sandbox.paypal.com/cgi-bin/webscr';
 
+let pay_api = '';
+let ipn_api = '';
+if(env === 'development') {
+  pay_api = pay_sandbox;
+  ipn_api = ipn_sandbox;
+} else if(env === 'staging') {
+  pay_api = pay_sandbox;
+  ipn_api = ipn_sandbox;
+} else if(env === 'production') {
+  pay_api = pay_live;
+  ipn_api = ipn_live;
+}
 const pspid = 'paypal-api';
+
 /**
  * PayPalPayment Api Client class.
  *
@@ -29,25 +47,35 @@ class PayPalPayment {
   }
 
   request(operation, { query, auth, body }) {
-    const uri = development + operation;
     switch(operation) {
+      case '/ipnpb':
+        return new Promise((resolve, reject) => {
+          net.postData2(ipn_api
+            , {}, body, (err, head, data) => {
+            if(err) reject(err);
+            resolve(data);
+          });
+        });
       case '/v1/oauth2/token':
         return new Promise((resolve, reject) => {
-          net.postData2(uri, auth, body, (err, head, data) => {
+          net.postData2(pay_api + operation
+            , auth, body, (err, head, data) => {
             if(err) reject(err);
             resolve(JSON.parse(data));
           });
         });
       case '/v1/payments/payment':
         return new Promise((resolve, reject) => {
-          net.postJson2(uri, auth, body, (err, head, data) => {
+          net.postJson2(pay_api + operation
+            , auth, body, (err, head, data) => {
             if(err) reject(err);
             resolve(JSON.parse(data));
           });
         });
       default:
         return new Promise((resolve, reject) => {
-          net.postJson2(uri, auth, body, (err, head, data) => {
+          net.postJson2(pay_api + operation
+            , auth, body, (err, head, data) => {
             if(err) reject(err);
             resolve(JSON.parse(data));
           });
@@ -91,8 +119,17 @@ class PayPalPayment {
     return this.request('/v1/payments/payment', options);
   }
 
+  getValidate(options) {
+    return this.request('/ipnpb', options);
+  }
+
   fetchToken() {
     return Rx.Observable.fromPromise(this.getToken());
+  }
+
+  validateNotification(options) {
+    return this.getValidate(options)
+      .map(R.tap(this.logInfo.bind(this)));
   }
 
   executePayment(options) {
