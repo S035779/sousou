@@ -3,7 +3,7 @@ import { log } from 'Utilities/webutils';
 
 const env = process.env.NODE_ENV || 'development';
 const host = process.env.TOP_URL || '';
-const notify_url = host + '/api';
+const notify_url = host + '/api/notify';
 const redirect_url = process.env.REDIRECT_URL;
 const canceled_url = process.env.CANCELED_URL;
 const paypal_sandbox = 'https://securepayments.sandbox.paypal.com/webapps/HostedSoleSolutionApp/webflow/sparta/hostedSoleSolutionProcess';
