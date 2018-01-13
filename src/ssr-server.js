@@ -55,6 +55,7 @@ app.use(log.connect());
 router.route('/')
 .get((req, res, next)     => {
   const { language, length, weight, from, usd, jpy } = req.query;
+  if(!language) return next(new Error('not implemented'));
   res.send('<!doctype html>\n'
     + ReactDOMServer.renderToStaticMarkup(<Home
     language={language}

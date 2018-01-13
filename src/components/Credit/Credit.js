@@ -134,14 +134,18 @@ class Credit extends React.Component {
       <p>{ConfirmMessage}</p>
       <table>
       <tbody>
-      <tr><td><label>{contents.name.key}</label>
-        <span>{contents.name.value}</span></td></tr>
+      <tr><td><label>{contents.item.key}</label>
+        <span>{contents.item.value}</span></td></tr>
+      <tr><td><label>{contents.description.key}</label>
+        <span>{contents.description.value}</span></td></tr>
       <tr><td><label>{contents.subtotal.key}</label>
         <span>{contents.subtotal.value}</span></td></tr>
       <tr><td><label>{contents.shipping.key}</label>
         <span>{contents.shipping.value}</span></td></tr>
       <tr><td><label>{contents.total.key}</label>
         <span>{contents.total.value}</span></td></tr>
+      <tr><td><label>{contents.name.key}</label>
+        <span>{contents.name.value}</span></td></tr>
       <tr><td><label>{Shipping}</label>
         <span>{contents.postal_code.value}</span>
         <span>{contents.state.value}{contents.city.value}
