@@ -114,17 +114,17 @@ class Shipping {
   }
 
   setJppFiles(objs) {
-    const jpp_hokkaido = objs[13];
-    const jpp_touhoku = objs[14];
-    const jpp_kantou = objs[15];
-    const jpp_shinetsu = objs[16];
-    const jpp_hokuriku = objs[17];
-    const jpp_toukai = objs[18];
-    const jpp_kinki = objs[19];
-    const jpp_chuugoku = objs[20];
-    const jpp_shikoku = objs[21];
-    const jpp_kyuusyuu = objs[22];
-    const jpp_okinawa = objs[23];
+    const jpp_hokkaido = R.map(R.split(','),objs[13]);
+    const jpp_touhoku = R.map(R.split(','),objs[14]);
+    const jpp_kantou = R.map(R.split(','),objs[15]);
+    const jpp_shinetsu = R.map(R.split(','),objs[16]);
+    const jpp_hokuriku = R.map(R.split(','),objs[17]);
+    const jpp_toukai = R.map(R.split(','),objs[18]);
+    const jpp_kinki = R.map(R.split(','),objs[19]);
+    const jpp_chuugoku = R.map(R.split(','),objs[20]);
+    const jpp_shikoku = R.map(R.split(','),objs[21]);
+    const jpp_kyuusyuu = R.map(R.split(','),objs[22]);
+    const jpp_okinawa = R.map(R.split(','),objs[23]);
     const tmp_3 = R.map(R.split(','),objs[24]);
     const jpp_area = R.map(this.setJppArea, tmp_3);
     const tmp_4 = R.map(R.split(','),objs[25]);
@@ -177,73 +177,73 @@ class Shipping {
     const dst = jpp_area[src-1].destinations;
     return R.map(obj => Object.assign({}, obj, {
         source: src
-        , destination: this.from === obj.city ? 0 : dst[obj.code-1]
+        , destination: this.from === obj.name_jp ? 0 : dst[obj.code-1]
       }), objs);
   }
 
   setOkinawa(jpp_area, objs) {
     const area = R.map(city => (
-      { city, area: '沖縄', code: 11 }), jpp_area);
+      { name_jp: city[0], name_en: city[1], area: '沖縄', code: 11 }), jpp_area);
     return R.concat(objs, area);
   }
 
   setKyuusyuu(jpp_area, objs) {
     const area = R.map(city => (
-      { city, area: '九州', code: 10 }), jpp_area);
+      { name_jp: city[0], name_en: city[1], area: '九州', code: 10 }), jpp_area);
     return R.concat(objs, area);
   }
 
   setShikoku(jpp_area, objs) {
     const area = R.map(city => (
-      { city, area: '四国', code: 9 }), jpp_area);
+      { name_jp: city[0], name_en: city[1], area: '四国', code: 9 }), jpp_area);
     return R.concat(objs, area);
   }
 
   setChuugoku(jpp_area, objs) {
     const area = R.map(city => (
-      { city, area: '中国', code: 8 }), jpp_area);
+      { name_jp: city[0], name_en: city[1], area: '中国', code: 8 }), jpp_area);
     return R.concat(objs, area);
   }
 
   setKinki(jpp_area, objs) {
     const area = R.map(city => (
-      { city, area: '近畿', code: 7 }), jpp_area);
+      { name_jp: city[0], name_en: city[1], area: '近畿', code: 7 }), jpp_area);
     return R.concat(objs, area);
   }
 
   setToukai(jpp_area, objs) {
     const area = R.map(city => (
-      { city, area: '東海', code: 6 }), jpp_area);
+      { name_jp: city[0], name_en: city[1], area: '東海', code: 6 }), jpp_area);
     return R.concat(objs, area);
   }
 
   setHokuriku(jpp_area, objs) {
     const area = R.map(city => (
-      { city, area: '北陸', code: 5 }), jpp_area);
+      { name_jp: city[0], name_en: city[1], area: '北陸', code: 5 }), jpp_area);
     return R.concat(objs, area);
   }
 
   setShinetsu(jpp_area, objs) {
     const area = R.map(city => (
-      { city, area: '信越', code: 4 }), jpp_area);
+      { name_jp: city[0], name_en: city[1], area: '信越', code: 4 }), jpp_area);
     return R.concat(objs, area);
   }
 
   setKantou(jpp_area, objs) {
     const area = R.map(city => (
-      { city, area: '関東', code: 3 }), jpp_area);
+      { name_jp: city[0], name_en: city[1], area: '関東', code: 3 }), jpp_area);
     return R.concat(objs, area);
   }
 
   setTouhoku(jpp_area, objs) {
     const area = R.map(city => (
-      { city, area: '東北', code: 2 }), jpp_area);
+      { name_jp: city[0], name_en: city[1], area: '東北', code: 2 }), jpp_area);
     return R.concat(objs, area);
   }
 
   setHokkaido(jpp_area, objs) {
     const area = R.map(city => (
-      { city, area: '北海道', code: 1 }), jpp_area);
+      { name_jp: city[0], name_en: city[1], area: '北海道', code: 1 }), jpp_area);
     return R.concat(objs, area);
   }
 
@@ -323,7 +323,7 @@ class Shipping {
 
   isJppArea(objs) {
     for( let i=0; i<objs.length; i++ ) {
-      if(this.from === objs[i].city) return objs[i].code;
+      if(this.from === objs[i].name_jp) return objs[i].code;
     }
     return 0;
   }

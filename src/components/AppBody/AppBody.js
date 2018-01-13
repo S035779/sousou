@@ -86,8 +86,16 @@ class AppBody extends React.Component {
 
   handleChangeText(name, e) {
     let newState = {};
-    newState[name] = e.target.value;
-    this.setState(newState);
+    switch(name) {
+      case 'city':
+        newState[name] = e.target.value.toUpperCase();
+        this.setState(newState);
+        break;
+      default:
+        newState[name] = e.target.value;
+        this.setState(newState);
+        break;
+    }
   }
 
   handleChangeCheckbox(name, e) {
@@ -362,9 +370,9 @@ class AppBody extends React.Component {
   }
 
   isShipping(shipping, currency, state) {
-    //console.log(shipping);
+    console.log(shipping);
     const isJpp = obj => shipping.jpp.filter(jpp =>
-      jpp.city === obj.city)[0];
+      jpp.name_jp === obj.city || jpp.name_en === obj.city)[0];
     const isEms = obj => shipping.ems.filter(ems =>
       ems.code_2 === state.country_code.join())[0];
     const isPay = obj => shipping.ems.filter(ems =>
@@ -372,13 +380,15 @@ class AppBody extends React.Component {
     return this.isAreaJp(state)
       ? isJpp(state)
         ? this.isUSD(state)
-          ? Math.ceil(isJpp(state).price / currency.USDJPY)
-          : Number(isJpp(state).price)
+          ? Math.ceil(isJpp(state).price * state.quantity.join()
+            / currency.USDJPY)
+          : Number(isJpp(state).price) * state.quantity.join()
         : 0 
       : isEms(state) && isPay(state)
         ? this.isUSD(state)
-          ? Math.ceil(isEms(state).price / currency.USDJPY)
-          : Number(isEms(state).price)
+          ? Math.ceil(isEms(state).price * state.quantity.join()
+            / currency.USDJPY)
+          : Number(isEms(state).price) * state.quantity.join()
         : 0;
   }
 
@@ -839,6 +849,16 @@ class AppBody extends React.Component {
           <option value="8">8</option>
           <option value="9">9</option>
           <option value="10">10</option>
+          <option value="11">11</option>
+          <option value="12">12</option>
+          <option value="13">13</option>
+          <option value="14">14</option>
+          <option value="15">15</option>
+          <option value="16">16</option>
+          <option value="17">17</option>
+          <option value="18">18</option>
+          <option value="19">19</option>
+          <option value="20">20</option>
           </select>
           </span>
           <label>{label_quantity}</label>
