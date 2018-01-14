@@ -50,8 +50,7 @@ class PayPalPayment {
     switch(operation) {
       case '/ipnpb':
         return new Promise((resolve, reject) => {
-          net.postData2(ipn_api + '?' + std.urlencode(query)
-            , null, null, (err, head, data) => {
+          net.postData2(ipn_api, null, body, (err, head, data) => {
             if(err) reject(err);
             resolve(data);
           });
@@ -121,7 +120,7 @@ class PayPalPayment {
 
   getValidate(notice) {
     const options = {
-      query: Object.assign({}, { cmd: '_notify-validate' }, notice)
+      body: Object.assign({}, { cmd: '_notify-validate' }, notice)
     };
     return this.request('/ipnpb', options);
   }
@@ -135,8 +134,26 @@ class PayPalPayment {
   }
 
   validateNotification(notice) {
+    const isValid = R.curry(this.isValidate);
     return this.fetchValidate(notice)
+      .map(isValid(notice))
       //.map(R.tap(this.logInfo.bind(this)));
+  }
+
+  isValidate(req, res) {
+    if (res == 'VERIFIED') {
+      if (req.payment_status  == 'Completed') {
+        this.logInfo(`Verified IPN:`
+          , `IPN message for Transaction ID: ${req.txn_id} is verified.`);
+      } else {
+        this.logError('Payment status not Completed'); 
+      }
+    } else if(res === "INVALID"){
+      this.logError(`Invalid IPN:` 
+        , `IPN message for Transaction ID: ${req.txn_id} is invalid.`);
+    } else {
+      this.logError('Unexpected reponse body.');
+    }
   }
 
   executePayment(options) {
@@ -159,8 +176,16 @@ class PayPalPayment {
       //.map(R.tap(this.logTrace.bind(this)));
   }
 
+  logError(name, message) {
+    log.error(name, message);
+  }
+
+  logInfo(message) {
+    log.info('Request:', message);
+  }
+
   logTrace(message) {
-    log.trace(`${pspid}>`, 'Trace:', message);
+    log.trace('Response:', message);
   }
 
   parseXml(xml) {

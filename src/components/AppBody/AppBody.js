@@ -88,7 +88,7 @@ class AppBody extends React.Component {
     let newState = {};
     switch(name) {
       case 'city':
-        newState[name] = e.target.value.toUpperCase();
+        newState[name] = e.target.value;
         this.setState(newState);
         break;
       default:
@@ -107,13 +107,11 @@ class AppBody extends React.Component {
   handleChangeRadio(name, e) {
     let newState = {};
     newState[name] = e.target.value;
-    const state = this.state;
-    const isJP = this.isLangJp();
     switch(name) {
       case 'delivery':
-        const newShippingAddress
-          = this.setShippingAddress(e.target.value, isJP);
-        this.setState(Object.assign({}, newState, newShippingAddress));
+        const newAddress
+          = this.setShippingAddress(e.target.value, this.isLangJp());
+        this.setState(Object.assign({}, newState, newAddress));
         break;
       default:
         this.setState(newState);
@@ -129,7 +127,18 @@ class AppBody extends React.Component {
       if(options[i].selected) values.push(options[i].value);
     }
     newState[name] = values;
-    this.setState(newState);
+    switch(name) {
+      case 'country_code':
+        const shipping = this.props.shipping;
+        const newCountry
+          = this.setShippingCountry(values.join()
+            , this.props.shipping, this.isLangJp());
+        this.setState(Object.assign({}, newState, newCountry));
+        break;
+      default:
+        this.setState(newState);
+        break;
+    }
   }
 
   handleSubmit(e) {
@@ -139,8 +148,7 @@ class AppBody extends React.Component {
     if(this.isCredit(state)) {
       this.setState({ showModalCredit: true });
     } else {
-      const payment = this.payment;
-      const options = this.setOptions(state, payment);
+      const options = this.setOptions(state, this.payment);
       AppAction.createMessage(options);
     }
     //this.logTrace(this.payment);
@@ -303,6 +311,11 @@ class AppBody extends React.Component {
       };
   }
 
+  setShippingCountry(value, shipping, isLangJp) {
+    const ems =  shipping.ems.filter(obj => obj.code_2 === value);
+    return { state: isLangJp ? ems[0].name_jp : ems[0].name_en };
+  }
+
   componentWillReceiveProps(nextProps) {
     //log.trace(nextProps);
     if(nextProps.results) {
@@ -398,7 +411,8 @@ class AppBody extends React.Component {
   isShipping(shipping, currency, state) {
     console.log(shipping);
     const isJpp = obj => shipping.jpp.filter(jpp =>
-      jpp.name_jp === obj.city || jpp.name_en === obj.city)[0];
+      jpp.name_jp === obj.city.toUpperCase()
+        || jpp.name_en === obj.city.toUpperCase())[0];
     const isEms = obj => {
       const o = shipping.ems.filter(ems =>
       ems.code_2 === obj.country_code.join())[0];
@@ -1025,6 +1039,7 @@ class AppBody extends React.Component {
         */}
           <td>
           <input type="text" name="state" id="state"
+            value={this.state.state}
             onChange={this.handleChangeText.bind(this, 'state')}
             placeholder={state}
             className="required add-placeholder" />
@@ -1040,6 +1055,7 @@ class AppBody extends React.Component {
         */}
           <td>
           <input type="text" name="postal_code" id="postal_code"
+            value={this.state.postal_code}
             onChange={this.handleChangeText.bind(this, 'postal_code')}
             className=" add-placeholder required"
             placeholder={postal_code} />
@@ -1058,6 +1074,7 @@ class AppBody extends React.Component {
         */}
           <td>
           <input type="text" name="city" id="city"
+            value={this.state.city}
             onChange={this.handleChangeText.bind(this, 'city')}
             placeholder={city}
             className="required add-placeholder" />
@@ -1073,6 +1090,7 @@ class AppBody extends React.Component {
         */}
           <td>
           <input type="text" name="line1" id="line1"
+            value={this.state.line1}
             onChange={this.handleChangeText.bind(this, 'line1')}
             placeholder={line1}
             className="required add-placeholder" />
@@ -1088,6 +1106,7 @@ class AppBody extends React.Component {
         */}
           <td>
           <input type="text" name="line2" id="line2"
+            value={this.state.line2}
             onChange={this.handleChangeText.bind(this, 'line2')}
             placeholder={line2}
             className="required add-placeholder" />
@@ -1101,6 +1120,7 @@ class AppBody extends React.Component {
         */}
           <td>
           <input type="text" name="recipient_name" id="recipient_name"
+            value={this.state.recipient_name}
             onChange={this.handleChangeText.bind(this, 'recipient_name')}
             placeholder={recipient_name}
             className="add-placeholder"/>

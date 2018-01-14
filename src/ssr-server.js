@@ -81,10 +81,11 @@ router.route('/payment/notify')
 .get((req, res, next)     => { next(new Error('not implemented')); })
 .put((req, res, next)     => { next(new Error('not implemented')); })
 .post((req, res, next)    => {
-  const body = req.body;
-  log.info('Receive IPN message:', body);
-  res.status(200);
-  PayPalPayment.of(paypal_keyset).validateNotification(body)
+  log.info("IPN Notification Event Received");
+  log.info("IPN Notification Event received successfully.");
+  res.status(200).end;
+  log.info('Verifying IPN:', req.body);
+  PayPalPayment.of(paypal_keyset).validateNotification(req.body)
   .subscribe(
     data  => { log.info(data); }
     , err => { log.error(err.name, err.message); }

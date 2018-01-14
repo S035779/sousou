@@ -45,7 +45,7 @@ class Credit extends React.Component {
 
   render() {
     const iframe_styles = {
-      width: '100%', height: '470px', border: 'none', overflow: 'hidden'
+      width: '100%', height: '500px', border: 'none', overflow: 'hidden'
     };
     const form_styles = { display: 'none' };
     const obj = this.props.options;
