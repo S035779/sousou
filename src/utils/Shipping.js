@@ -34,6 +34,7 @@ const files = [
   , 'jpp_okinawa.csv'
   , 'jpp_matrix.csv'
   , 'jpp_price.csv'
+  , 'confirmed.csv'
 ];
 
 /**
@@ -96,6 +97,7 @@ class Shipping {
     const tmp_2 = R.map(R.split(','),objs[8]);
     const ems_price = R.map(this.setEmsPrice, tmp_2)
     const paypal_area = R.flatten(R.slice(9,14, objs))
+    const fwp_confirm = R.map(R.split(','),objs[26]);
 
     const Paypal = R.curry(this.setPaypal.bind(this));
     const Ems1 = R.curry(this.setEms1.bind(this));
@@ -103,7 +105,9 @@ class Shipping {
     const Ems2_2 = R.curry(this.setEms2_2.bind(this));
     const Ems3 = R.curry(this.setEms3.bind(this));
     const EmsPrices = R.curry(this.setEmsPrices.bind(this));
+    const FwpConfirm = R.curry(this.setFwpConfirm.bind(this));
     return  R.compose(
+      FwpConfirm(fwp_confirm),
       EmsPrices(ems_price),
       Ems3(ems_3),
       Ems2_2(ems_2_2),
@@ -166,6 +170,14 @@ class Shipping {
     return { ems, jpp };
   }
 
+  setFwpConfirm(fwp_confirm, objs) {
+    const confirm = this.isFwpConfirm(fwp_confirm);
+    return R.map(code =>
+      Object.assign({}, code, {
+        fwp: confirm[code.name_en] ? confirm[code.name_en] : 'NA'
+      }), objs);
+  }
+
   setJppPrices(jpp_prices, objs) {
     const prices = this.isJppPrice(jpp_prices);
     return R.map(obj => Object.assign({}, obj
@@ -182,68 +194,79 @@ class Shipping {
   }
 
   setOkinawa(jpp_area, objs) {
-    const area = R.map(city => (
-      { name_jp: city[0], name_en: city[1], area: '沖縄', code: 11 }), jpp_area);
+    const area = R.map(city => ({
+      name_jp: city[0], name_en: city[1], area: '沖縄', code: 11
+    }), jpp_area);
     return R.concat(objs, area);
   }
 
   setKyuusyuu(jpp_area, objs) {
-    const area = R.map(city => (
-      { name_jp: city[0], name_en: city[1], area: '九州', code: 10 }), jpp_area);
+    const area = R.map(city => ({
+      name_jp: city[0], name_en: city[1], area: '九州', code: 10
+    }), jpp_area);
     return R.concat(objs, area);
   }
 
   setShikoku(jpp_area, objs) {
-    const area = R.map(city => (
-      { name_jp: city[0], name_en: city[1], area: '四国', code: 9 }), jpp_area);
+    const area = R.map(city => ({
+      name_jp: city[0], name_en: city[1], area: '四国', code: 9
+    }), jpp_area);
     return R.concat(objs, area);
   }
 
   setChuugoku(jpp_area, objs) {
-    const area = R.map(city => (
-      { name_jp: city[0], name_en: city[1], area: '中国', code: 8 }), jpp_area);
+    const area = R.map(city => ({
+      name_jp: city[0], name_en: city[1], area: '中国', code: 8
+    }), jpp_area);
     return R.concat(objs, area);
   }
 
   setKinki(jpp_area, objs) {
-    const area = R.map(city => (
-      { name_jp: city[0], name_en: city[1], area: '近畿', code: 7 }), jpp_area);
+    const area = R.map(city => ({
+      name_jp: city[0], name_en: city[1], area: '近畿', code: 7
+    }), jpp_area);
     return R.concat(objs, area);
   }
 
   setToukai(jpp_area, objs) {
-    const area = R.map(city => (
-      { name_jp: city[0], name_en: city[1], area: '東海', code: 6 }), jpp_area);
+    const area = R.map(city => ({
+      name_jp: city[0], name_en: city[1], area: '東海', code: 6
+    }), jpp_area);
     return R.concat(objs, area);
   }
 
   setHokuriku(jpp_area, objs) {
-    const area = R.map(city => (
-      { name_jp: city[0], name_en: city[1], area: '北陸', code: 5 }), jpp_area);
+    const area = R.map(city => ({
+      name_jp: city[0], name_en: city[1], area: '北陸', code: 5
+    }), jpp_area);
     return R.concat(objs, area);
   }
 
   setShinetsu(jpp_area, objs) {
-    const area = R.map(city => (
-      { name_jp: city[0], name_en: city[1], area: '信越', code: 4 }), jpp_area);
+    const area = R.map(city => ({
+      name_jp: city[0], name_en: city[1], area: '信越', code: 4
+    }), jpp_area);
     return R.concat(objs, area);
   }
 
   setKantou(jpp_area, objs) {
-    const area = R.map(city => (
-      { name_jp: city[0], name_en: city[1], area: '関東', code: 3 }), jpp_area);
+    const area = R.map(city => ({
+      name_jp: city[0], name_en: city[1], area: '関東', code: 3
+    }), jpp_area);
     return R.concat(objs, area);
   }
 
   setTouhoku(jpp_area, objs) {
-    const area = R.map(city => (
-      { name_jp: city[0], name_en: city[1], area: '東北', code: 2 }), jpp_area);
+    const area = R.map(city => ({
+      name_jp: city[0], name_en: city[1], area: '東北', code: 2
+    }), jpp_area);
     return R.concat(objs, area);
   }
 
   setHokkaido(jpp_area, objs) {
-    const area = R.map(city => (
-      { name_jp: city[0], name_en: city[1], area: '北海道', code: 1 }), jpp_area);
+    const area = R.map(city => ({
+      name_jp: city[0], name_en: city[1], area: '北海道', code: 1
+    }), jpp_area);
     return R.concat(objs, area);
   }
 
@@ -294,6 +317,14 @@ class Shipping {
       ? Object.assign({}, code, { paypal: 'OK' })
       : Object.assign({}, code, { paypal: 'NO' })
     ), country_code);
+  }
+
+  isFwpConfirm(objs) {
+    let result = {};
+    for (let i=0; i<objs.length; i++) {
+      result[objs[i][0]] = objs[i][2];
+    }
+    return result;
   }
 
   isEmsPrices(code, prices) {

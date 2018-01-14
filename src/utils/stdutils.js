@@ -295,7 +295,12 @@ export default {
   sortObjUni(o, k) {
     if (!Array.isArray(o)) throw TypeError();
     const _o = o.filter(function(x){ return x });
-    return _o.sort();
+    return _o.sort(function(s, t) {
+      const a=s[k];
+      const b=t[k];
+      if(a<b) return -1;
+      if(a>b) return 1;
+    });
   },
 
   /**

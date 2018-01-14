@@ -147,31 +147,57 @@ class AppBody extends React.Component {
     //this.logTrace(this.state);
   }
 
+  setConfirm(shipping, state, isLangJp) {
+    if(!this.isValid(state)) return '';
+    const value = this.isConfirm(shipping, state);
+    let confirm = '';
+    switch(value) {
+      case 0:
+        confirm = isLangJp
+          ? '弊社未対応エリアの為、別途ご連絡差し上げます。'
+          : 'For our unsupported area, we will contact you separately.';
+        break;
+      case 1:
+        confirm = isLangJp
+          ? '弊社対応可能エリアです。'
+          : 'It is an area that we can handle.';
+        break;
+      case 2: case 3: default:
+        confirm = isLangJp
+          ? '弊社未対応エリアの場合は、別途ご連絡差し上げます。'
+          : 'In the case of our unsupported area,' 
+            + 'we will contact you separately.';
+        break;
+    }
+    return confirm;
+  }
+
   setNotice(state, isLangJp) {
     if(!this.isValid(state)) return '';
-    const isPayment = this.isCredit(state) || this.isPayPal(state);
     const value = this.state.payment.join();
     let notice = '';
     switch(value) {
       case 'paypal':
         notice = isLangJp
-          ? isPayment
+          ? this.isCredit(state) || this.isPayPal(state)
             ? 'EMS、PayPal対応エリアです。'
             : 'EMSまたはPayPal未対応エリアの為、別途ご連絡差し上げます。'
-          : isPayment
+          : this.isCredit(state) || this.isPayPal(state)
             ? 'It is an EMS or PayPal compatible area.'
             : 'It is an area not compliant with EMS or PayPal. ';
         break;
       case 'deposit':
         notice = isLangJp
-          ? '銀行振り込み方法について、記入してください。'
-          : 'Please contact me separately about bank transfer method.';
+          ? '銀行振り込み方法について、別途ご連絡差し上げます。'
+          : 'For bank transfer method, details will be contacted'
+            + ' separately.';
         break;
       case 'other':
         notice = isLangJp
           ? '購入数指定、支払い方法について、記入してください。'
           : 'Please contact us separately for number of entries and'
             + 'payment method.';
+        break;
       default:
         break;
     }
@@ -246,7 +272,7 @@ class AppBody extends React.Component {
       country_code:     [ 'JP' ]
       , state:          isLangJp ? '日本'         : 'Japan'
       , postal_code:    isLangJp ? '135-0046'     : '135-0046'
-      , city:           isLangJp ? '東京都'       : 'Tokyo'
+      , city:           isLangJp ? '東京都'       : 'TOKYO'
       , line1:          isLangJp ? '江東区'       : 'Koto-ku,'
       , line2:          isLangJp ? '牡丹1-2-2'
                                  : 'Address 1-2-2 Botan,'
@@ -373,10 +399,17 @@ class AppBody extends React.Component {
     console.log(shipping);
     const isJpp = obj => shipping.jpp.filter(jpp =>
       jpp.name_jp === obj.city || jpp.name_en === obj.city)[0];
-    const isEms = obj => shipping.ems.filter(ems =>
-      ems.code_2 === state.country_code.join())[0];
-    const isPay = obj => shipping.ems.filter(ems =>
-      ems.code_2 === state.country_code.join())[0].paypal === 'OK';
+    const isEms = obj => {
+      const o = shipping.ems.filter(ems =>
+      ems.code_2 === obj.country_code.join())[0];
+      return o.ems1 === 'OK' || o.ems2_1 === 'OK' || o.ems2_2 === 'OK' ||
+        o.ems3 ==='OK';
+    };
+    const isPay = obj => {
+      const o = shipping.ems.filter(ems =>
+      ems.code_2 === obj.country_code.join())[0];
+      return o.paypal === 'OK';
+    }
     return this.isAreaJp(state)
       ? isJpp(state)
         ? this.isUSD(state)
@@ -384,12 +417,23 @@ class AppBody extends React.Component {
             / currency.USDJPY)
           : Number(isJpp(state).price) * state.quantity.join()
         : 0 
-      : isEms(state) && isPay(state)
+      : isEms(state) && isPay(state) && this.isConfirm(shipping, state)
         ? this.isUSD(state)
           ? Math.ceil(isEms(state).price * state.quantity.join()
             / currency.USDJPY)
           : Number(isEms(state).price) * state.quantity.join()
         : 0;
+  }
+
+  isConfirm(shipping, state) {
+    const o = shipping.ems.filter(ems =>
+      ems.code_2 === state.country_code.join())[0];
+    switch(o.fwp) {
+      case 'NG':          return 0;
+      case 'OK':          return 1;
+      case 'RC':          return 2;
+      case 'NA': default: return 3;
+    }
   }
 
   isAreaJp(state) {
@@ -599,7 +643,8 @@ class AppBody extends React.Component {
       : 'Credit card issued by Myanmar can not be used.';
       //? 'クレジット決済の場合は PayPalアカウント が必要となります。'
       //: 'For credit card transactions, you need a PayPal account.';
-    const notes_message = this.setNotice(this.state, isJP);
+    const notes_notice = this.setNotice(this.state, isJP);
+    const notes_confirm = this.setConfirm(shipping, this.state, isJP);
 
     const opts_country = [
       {  name_en: 'Japan'    , name_jp: '日本'           , code_2: 'JP' }
@@ -1084,7 +1129,8 @@ class AppBody extends React.Component {
             onChange={this.handleChangeText.bind(this, 'message')}
             placeholder={message}
             className="add-placeholder"/>
-          <span className="notes">{notes_message}</span>
+          <span className="notes">{notes_notice}</span>
+          <span className="notes">{notes_confirm}</span>
           </td>
         </tr>
         </tbody></table>

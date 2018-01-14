@@ -1,5 +1,5 @@
-import Spinner from '../utils/spin';
-import Log4js from '../utils/log4js.min.js';
+import Spinner from 'Utilities/spin';
+import Log4js from 'Utilities/log4js.min.js'
 
 let Logger = null;
 let Spiner = null;
