@@ -9,7 +9,28 @@ jQuery(function($) {
   });
 
   // validate
+  $.validator.addMethod("phone", function(value, element) {
+    return this.optional(element)
+      || /^\d{11}$|^\d{3}-\d{4}-\d{4}$/.test(value);
+  }, "Please specify the correct phone number for your delivery");
+
+  $.validator.addMethod('postal_code', function (value, element) { 
+      return this.optional(element)
+      || /^((\d{3}-\d{4})|(\d{5})|(\d{5}-\d{4})|(\d{5})|([A-Z]\d[A-Z]\s\d[A-Z]\d))$/.test(value); 
+  }, 'Please enter a valid postal code.');
+
   $('#user-sign-up').validate({
+    rules: {
+      phone: {
+        phone: true
+      },
+      email: {
+        email: true
+      },
+      postal_code: {
+        postal_code: true
+      }
+    },
     groups: {
       usersname: 'first-name last-name'
       , quantitys: 'quantity currency'

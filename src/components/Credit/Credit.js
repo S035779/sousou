@@ -25,6 +25,12 @@ class Credit extends React.Component {
     window.form_iframe.submit();
   }
 
+  handleClickClose(e) {
+    this.logInfo('handleClickClose');
+    e.preventDefault();
+    this.props.onReturn();
+  }
+
   handleClickButton(e) {
     this.logInfo('handleClickButton');
     e.preventDefault();
@@ -128,6 +134,9 @@ class Credit extends React.Component {
     const ConfirmOrder = isJP
       ? '注文を確定する' : 'Confirm order';
     return <div className="buynow_contactlast">
+      <a href="#"
+        className="close-thik"
+        onClick={this.handleClickClose.bind(this)}></a>
       <div id="user-sign-up">
       <fieldset className="category-group">
       <legend>{Confirm}</legend>

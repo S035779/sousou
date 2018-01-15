@@ -64,6 +64,18 @@ class AppBody extends React.Component {
     };
   }
 
+  handleClickClose(name, e) {
+    this.logInfo('handleClickClose');
+    switch(name) {
+      case 'credit':
+        this.setState({ showModalCredit: false });
+      default:
+        this.logError({ name: 'Error:'
+          , message: 'Unknown submit command.' });
+        break;
+    }
+  }
+
   handleClickButton(name, e) {
     this.logInfo('handleClickButton');
     switch(name) {
@@ -151,8 +163,7 @@ class AppBody extends React.Component {
       const options = this.setOptions(state, this.payment);
       AppAction.createMessage(options);
     }
-    //this.logTrace(this.payment);
-    //this.logTrace(this.state);
+    this.logTrace(this.payment);
   }
 
   setConfirm(shipping, state, isLangJp) {
@@ -375,7 +386,7 @@ class AppBody extends React.Component {
     const options = this.setOptions(state, payment);
     if(this.isPayPal(state)) {
       AppAction.createPayment(options);
-      //this.logTrace(payment);
+      this.logTrace(payment);
     }
   }
 
@@ -390,12 +401,12 @@ class AppBody extends React.Component {
 
   isCredit(state) {
     return !this.isMail(state) && !this.isUSD(state)
-      && this.payment.shipping !== 0;
+      && this.payment.shipping !== -1;
   }
 
   isPayPal(state) {
     return !this.isMail(state) && this.isUSD(state)
-      && this.payment.shipping !== 0;
+      && this.payment.shipping !== -1;
   }
 
   isPrice(currency, state) {
@@ -413,30 +424,29 @@ class AppBody extends React.Component {
     const isJpp = obj => shipping.jpp.filter(jpp =>
       jpp.name_jp === obj.city.toUpperCase()
         || jpp.name_en === obj.city.toUpperCase())[0];
-    const isEms = obj => {
-      const o = shipping.ems.filter(ems =>
-      ems.code_2 === obj.country_code.join())[0];
-      return o.ems1 === 'OK' || o.ems2_1 === 'OK' || o.ems2_2 === 'OK' ||
-        o.ems3 ==='OK';
-    };
-    const isPay = obj => {
-      const o = shipping.ems.filter(ems =>
-      ems.code_2 === obj.country_code.join())[0];
-      return o.paypal === 'OK';
-    }
+    const isEms = obj => shipping.ems.filter(ems =>
+      ems.code_2 === obj.country_code.join()
+      && (ems.ems1 === 'OK' || ems.ems2_1 === 'OK' ||
+        ems.ems2_2 === 'OK' || ems.ems3   === 'OK') )[0];
+    const isPay = obj => shipping.ems.filter(ems =>
+      ems.code_2 === obj.country_code.join() && ems.paypal === 'OK' )[0];
     return this.isAreaJp(state)
-      ? isJpp(state)
-        ? this.isUSD(state)
-          ? Math.ceil(isJpp(state).price * state.quantity.join()
-            / currency.USDJPY)
-          : Number(isJpp(state).price) * state.quantity.join()
-        : 0 
-      : isEms(state) && isPay(state) && this.isConfirm(shipping, state)
-        ? this.isUSD(state)
-          ? Math.ceil(isEms(state).price * state.quantity.join()
-            / currency.USDJPY)
-          : Number(isEms(state).price) * state.quantity.join()
-        : 0;
+      ? state.delivery === 'japan'
+        ? 0
+        : isJpp(state)
+          ? this.isUSD(state)
+            ? Math.ceil(isJpp(state).price * state.quantity.join()
+              / currency.USDJPY)
+            : Number(isJpp(state).price) * state.quantity.join()
+          : -1
+      : state.delivery === 'myanmer'
+        ? 0
+        : isEms(state) && isPay(state) && this.isConfirm(shipping, state)
+          ? this.isUSD(state)
+            ? Math.ceil(isEms(state).price * state.quantity.join()
+              / currency.USDJPY)
+            : Number(isEms(state).price) * state.quantity.join()
+          : -1;
   }
 
   isConfirm(shipping, state) {
@@ -563,12 +573,21 @@ class AppBody extends React.Component {
 
   renderButton(state) {
     if ( this.isMail(state) || this.isCredit(state)
-    || !this.isValid(state) || this.payment.shipping === 0) {
+    || !this.isValid(state) || this.payment.shipping === -1) {
       return <input type="submit" value="SEND"
         className="button-primary"/>
     } else {
       return <div></div>;
     }
+  }
+
+  renderNotice(showModal, { head, body }) {
+    return showModal
+      ? <fieldset className="category-group">
+        <legend>{head}</legend>
+        <p>{body}</p>
+        </fieldset>
+      : <div></div>
   }
 
   logInfo(message) {
@@ -585,6 +604,7 @@ class AppBody extends React.Component {
    
   render() {
     this.logTrace(this.state);
+    this.logTrace(this.payment);
     const shipping = this.props.shipping;
     const language = this.props.language;
     const isJP = this.isLangJp();
@@ -1168,19 +1188,22 @@ class AppBody extends React.Component {
         </label>
       </div>
       { Agreement */}
-
+      {this.renderNotice(showModalResults, results)}
       {/* Confirm */}
       <div id="signup-next">
         {toggledButton}
         <div ref="signup_next"></div>
       </div>
     </form>
+    {/*
     <Modal showModal={showModalResults}>
       <Notice message={results}
         onCompleted={this.handleClickButton.bind(this, 'results')}/>
     </Modal>
+    */}
     <Modal showModal={showModalCredit}>
       <Credit language={language} options={options}
+        onReturn={this.handleClickClose.bind(this, 'credit')}
         onCompleted={this.handleClickButton.bind(this, 'credit')}/>
     </Modal>
     </div>;

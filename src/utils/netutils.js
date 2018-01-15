@@ -130,6 +130,96 @@ const get2 = function(url, query, callback) {
 module.exports.get2 = get2;
 
 /*
+ * HTTPS POST request with NV data as the request body
+ *
+ * @param {string} url - 
+ * @param {object} auth -
+ * @param {object} body -
+ * @param {function} callback -
+ */
+const post2 = function(url, auth, body, callback) {
+  url = require('url').parse(url);
+  let hostname  = url.hostname
+    , port      = url.port || 443
+    , path      = url.pathname
+    , query     = url.query;
+  if (query) path += '?' + query;
+  let type = '';
+  if (body == null) body = '';
+  if (body instanceof Buffer)         type = 'application/octet-stream';
+  else if (typeof body === 'string')  type = 'text/plain; charset=UTF-8';
+  else if (typeof body === 'object') {
+    body = std.urlencode(body);
+    type = 'application/x-www-form-urlencoded';
+  }
+  const headers = {
+    'Accept':             'application/json'
+    , 'Accept-Language':  'ja_JP'
+    , 'Content-Length':   Buffer.byteLength(body)
+    , 'Content-Type':     type
+  };
+  if(auth && auth.hasOwnProperty('user') && auth.hasOwnProperty('pass')) {
+    headers['Authorization'] = 'Basic ' 
+      + std.encode_base64(auth.user + ':' : auth.pass);
+  } else if (auth && auth.hasOwnProperty('bearer')) {
+    headers['Authorization'] =' Bearer ' 
+      + auth.bearer;
+  }
+  const client = require('https');
+  const req = client.request({
+    hostname: hostname,
+    port: port,
+    path: path,
+    method: 'POST',
+    headers: headers
+  }, function(res) {
+    const stat = res.statusCode;
+    const head = res.headers;
+    res.setEncoding('utf8');
+    let body = '';
+    res.on('data', function(chunk) { body += chunk; });
+    res.on('end', function() {
+      switch (stat) {
+        case 101: case 102: case 103: case 104: case 105: case 106:
+          log.error(`HTTP Request Failed. Status Code: ${stat}`);
+          if (callback) callback(new Error(body));
+          break; 
+        case 200: case 201: case 202: case 204:
+          process.stdout.write('-');
+          if (callback) callback(null, head, body);
+          break;
+        case 301: case 302:
+          log.error(`HTTP Request Failed. Status Code: ${stat}`);
+          if (callback) callback(new Error(body));
+          break; 
+        case 400: case 401: case 402: case 403: case 404:
+          log.error(`HTTP Request Failed. Status Code: ${stat}`);
+          if (callback) callback(new Error(body));
+          return; 
+        case 500: case 501: case 502: case 503: case 504: case 505:
+          process.stdout.write('x');
+          log.warn(`HTTP Request Failed. Status Code: ${stat}`);
+          postData2(url, auth, body, callback);
+          break;
+        default:
+          process.stdout.write('?');
+          log.warn(`HTTP Request Failed. Status Code: ${stat}`);
+          if (callback) callback(new Error(body));
+          break;
+      }
+    });
+  });
+  req.on('error', function(err) {
+    log.error(`Problem with HTTP Request: ${err.code}`);
+    log.trace(`${err.message}`);
+    log.trace(`${err.stack}`);
+    if (callback) callback(err);
+  });
+  req.write(body);
+  req.end();
+};
+module.exports.post2 = post2;
+/*
  * Simple HTTP POST request with data as the request body
  *
  * @param {string} url - 

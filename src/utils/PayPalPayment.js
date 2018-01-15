@@ -50,7 +50,7 @@ class PayPalPayment {
     switch(operation) {
       case '/ipnpb':
         return new Promise((resolve, reject) => {
-          net.postData2(ipn_api, null, body, (err, head, data) => {
+          net.post2(ipn_api, null, body, (err, head, data) => {
             if(err) reject(err);
             resolve(data);
           });
@@ -145,6 +145,7 @@ class PayPalPayment {
       if (req.payment_status  == 'Completed') {
         this.logInfo(`Verified IPN:`
           , `IPN message for Transaction ID: ${req.txn_id} is verified.`);
+        cache[res.custom] = req;
       } else {
         this.logError('Payment status not Completed'); 
       }
