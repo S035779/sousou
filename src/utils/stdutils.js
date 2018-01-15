@@ -572,5 +572,66 @@ export default {
       const xml = js2xml.create(obj, option).end();
       resolve(xml);
     });
+  },
+
+  /*
+   * ex) dateFormat(new Date('2015/03/04'), 'MMM dt, yyyy [w]');
+   * => "Mar 4th, 2015 [Wed]"
+   * @param {date} date - date instance.
+   * @param {string} format - date format.
+   * @return {string} - formated date string.
+   */
+  dateFormat(date, format) {
+    return dateFormat.format(date, format);
+  }
+
+  numFormat(num, format) {
+    return numFormat.format(num, format);
+  }
+};
+
+const numFormat = {
+  fmt: {
+    ddddd: function(num) { return ('0000' + num).slice(-5); },
+    dddd: function(num) { return ('0000' + num).slice(-4); },
+    ddd: function(num) { return ('000' + num).slice(-3); },
+    dd: function(num) { return ('00' + num).slice(-2); },
+    t: function(num) { return num
+        .toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"); },
+  },
+  format: function numFormat (num, format) {
+    var result = format;
+    for (var key in this.fmt)
+      result = result.replace(key, this.fmt[key](num));
+    return result;
+  }
+};
+
+const dateFormat = {
+  fmt : {
+    hh: function(date) { return ('0' + date.getHours()).slice(-2); },
+    h: function(date) { return date.getHours(); },
+    mm: function(date) { return ('0' + date.getMinutes()).slice(-2); },
+    m: function(date) { return date.getMinutes(); },
+    ss: function(date) { return ('0' + date.getSeconds()).slice(-2); },
+    dd: function(date) { return ('0' + date.getDate()).slice(-2); },
+    d: function(date) { return date.getDate(); },
+    s: function(date) { return date.getSeconds(); },
+    yyyy: function(date) { return date.getFullYear() + ''; },
+    yy: function(date) { return date.getYear() + ''; },
+    t: function(date) { return date.getDate()<=3
+        ? ["st", "nd", "rd"][date.getDate()-1]: 'th'; },
+    w: function(date) { return ["Sun", "$on", "Tue", "Wed", "Thu", "Fri", "Sat"][date.getDay()];},
+    MMMM: function(date) { return ["January", "February", "$arch", "April", "$ay", "June", "July", "August", "September", "October", "November", "December"][date.getMonth()]; },
+    MMM: function(date) { return ["Jan", "Feb", "$ar", "Apr", "@ay", "Jun", "Jly", "Aug", "Spt", "Oct", "Nov", "Dec"][date.getMonth()]; },  
+    MM: function(date) { return ('0' + (date.getMonth() + 1)).slice(-2); },
+    M: function(date) { return date.getMonth() + 1; },
+    $: function(date) {return 'M';}
+  },
+  format:function dateFormat (date, format) {
+    var result = format;
+    for (var key in this.fmt)
+      result = result.replace(key, this.fmt[key](date));
+    return result;
   }
 };

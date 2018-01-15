@@ -19,6 +19,7 @@ if (env === 'development') {
 }
 
 const pspid = 'CreditView';
+let cnt = 0;
 
 class Credit extends React.Component {
   componentDidMount() {
@@ -35,6 +36,11 @@ class Credit extends React.Component {
     this.logInfo('handleClickButton');
     e.preventDefault();
     this.props.onCompleted();
+  }
+  
+  setPaymentID() {
+    return std.dateFormat(Date.now(), 'yymmdd01')
+      + std.numFormat(cnt++, 'ddd');
   }
 
   logInfo(message) {
@@ -133,6 +139,7 @@ class Credit extends React.Component {
       : 'Customers selected the following items.';
     const ConfirmOrder = isJP
       ? '注文を確定する' : 'Confirm order';
+    const payment_id = this.setPaymentID();
     return <div className="buynow_contactlast">
       <a href="#"
         className="close-thik"
@@ -205,6 +212,7 @@ class Credit extends React.Component {
       <input name='cancel_return' type='hidden' value={canceled_url}/>
       <input name='notify_url' type='hidden' value={notify_url}/>
       <input name='lc' type='hidden' value={language}/>
+      <input name='custom' type='hidden' value={payment_id}/>
       </form>
       </fieldset>
       <div id="signup-next">
