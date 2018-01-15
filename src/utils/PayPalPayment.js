@@ -27,6 +27,7 @@ if(env === 'development') {
   ipn_api = ipn_live;
 }
 const pspid = 'paypal-api';
+let cache = {};
 
 /**
  * PayPalPayment Api Client class.
@@ -50,7 +51,8 @@ class PayPalPayment {
     switch(operation) {
       case '/ipnpb':
         return new Promise((resolve, reject) => {
-          net.post2(ipn_api, null, body, (err, head, data) => {
+          net.post2(ipn_api
+            , null, body, (err, head, data) => {
             if(err) reject(err);
             resolve(data);
           });
@@ -137,24 +139,29 @@ class PayPalPayment {
     const isValid = R.curry(this.isValidate);
     return this.fetchValidate(notice)
       .map(isValid(notice))
-      //.map(R.tap(this.logInfo.bind(this)));
+      //.map(R.tap(log.trace));
   }
 
   isValidate(req, res) {
-    if (res == 'VERIFIED') {
-      if (req.payment_status  == 'Completed') {
-        this.logInfo(`Verified IPN:`
-          , `IPN message for Transaction ID: ${req.txn_id} is verified.`);
-        cache[res.custom] = req;
-      } else {
-        this.logError('Payment status not Completed'); 
-      }
-    } else if(res === "INVALID"){
-      this.logError(`Invalid IPN:` 
-        , `IPN message for Transaction ID: ${req.txn_id} is invalid.`);
-    } else {
-      this.logError('Unexpected reponse body.');
+    switch(res) {
+      case 'VERIFIED':
+        if(req.payment_status === 'Completed') {
+          log.info('Verified IPN: IPN message for Transaction ID:'
+            , req.txn_id, 'is verified.');
+          cache[req.txn_id] = req;
+        } else {
+          log.error('Payment status not Completed'); 
+        }
+        break;
+      case 'INVALID':
+        log.error('Invalid IPN: IPN message for Transaction ID:'
+          , req.txn_id, 'is invalid.');
+        break;
+      default:
+        log.error('Unexpected reponse body.');
+        break;
     }
+    return req.custom ? req.custom : '';
   }
 
   executePayment(options) {
@@ -164,7 +171,7 @@ class PayPalPayment {
     return this.fetchToken()
       .map(oauth => oauth.access_token)
       .flatMap(payment)
-      //.map(R.tap(this.logTrace.bind(this)));
+      //.map(R.tap(log.trace));
   }
 
   createPayment(options) {
@@ -174,19 +181,7 @@ class PayPalPayment {
     return this.fetchToken()
       .map(oauth => oauth.access_token)
       .flatMap(payment)
-      //.map(R.tap(this.logTrace.bind(this)));
-  }
-
-  logError(name, message) {
-    log.error(name, message);
-  }
-
-  logInfo(message) {
-    log.info('Request:', message);
-  }
-
-  logTrace(message) {
-    log.trace('Response:', message);
+      //.map(R.tap(log.trace));
   }
 
   parseXml(xml) {

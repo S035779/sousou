@@ -1,4 +1,5 @@
 import React from 'react';
+import std from 'Utilities/stdutils';
 import { log } from 'Utilities/webutils';
 
 const env = process.env.NODE_ENV || 'development';
@@ -19,7 +20,6 @@ if (env === 'development') {
 }
 
 const pspid = 'CreditView';
-let cnt = 0;
 
 class Credit extends React.Component {
   componentDidMount() {
@@ -39,8 +39,7 @@ class Credit extends React.Component {
   }
   
   setPaymentID() {
-    return std.dateFormat(Date.now(), 'yymmdd01')
-      + std.numFormat(cnt++, 'ddd');
+    return std.dateFormat(new Date(), 'yyMMdd01ccc');
   }
 
   logInfo(message) {

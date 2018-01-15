@@ -583,7 +583,7 @@ export default {
    */
   dateFormat(date, format) {
     return dateFormat.format(date, format);
-  }
+  },
 
   numFormat(num, format) {
     return numFormat.format(num, format);
@@ -593,9 +593,9 @@ export default {
 const numFormat = {
   fmt: {
     ddddd: function(num) { return ('0000' + num).slice(-5); },
-    dddd: function(num) { return ('0000' + num).slice(-4); },
-    ddd: function(num) { return ('000' + num).slice(-3); },
-    dd: function(num) { return ('00' + num).slice(-2); },
+    dddd: function(num) { return ('000' + num).slice(-4); },
+    ddd: function(num) { return ('00' + num).slice(-3); },
+    dd: function(num) { return ('0' + num).slice(-2); },
     t: function(num) { return num
         .toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"); },
   },
@@ -614,11 +614,12 @@ const dateFormat = {
     mm: function(date) { return ('0' + date.getMinutes()).slice(-2); },
     m: function(date) { return date.getMinutes(); },
     ss: function(date) { return ('0' + date.getSeconds()).slice(-2); },
+    ccc: function(date) { return ('00' +date.getMilliseconds()).slice(-3); },
     dd: function(date) { return ('0' + date.getDate()).slice(-2); },
     d: function(date) { return date.getDate(); },
     s: function(date) { return date.getSeconds(); },
     yyyy: function(date) { return date.getFullYear() + ''; },
-    yy: function(date) { return date.getYear() + ''; },
+    yy: function(date) { return date.getFullYear()-2000 + ''; },
     t: function(date) { return date.getDate()<=3
         ? ["st", "nd", "rd"][date.getDate()-1]: 'th'; },
     w: function(date) { return ["Sun", "$on", "Tue", "Wed", "Thu", "Fri", "Sat"][date.getDay()];},

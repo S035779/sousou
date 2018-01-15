@@ -54,7 +54,7 @@ app.use(log.connect());
 router.route('/')
 .get((req, res, next)     => {
   const { language, length, weight, from, usd, jpy } = req.query;
-  if(!language) return res.status(404).send('Not found.');
+  if(!language) return res.sendStatus(404);
   res.send('<!doctype html>\n'
     + ReactDOMServer.renderToStaticMarkup(<Home
     language={language}
@@ -81,13 +81,12 @@ router.route('/payment/notify')
 .get((req, res, next)     => { next(new Error('not implemented')); })
 .put((req, res, next)     => { next(new Error('not implemented')); })
 .post((req, res, next)    => {
-  log.info("IPN Notification Event Received");
-  log.info("IPN Notification Event received successfully.");
-  res.status(200).end;
+  log.info("IPN Notification Event Received.");
+  res.sendStatus(200);
   log.info('Verifying IPN:', req.body);
   PayPalPayment.of(paypal_keyset).validateNotification(req.body)
   .subscribe(
-    data  => { log.info(data); }
+    data  => { log.info('Received PaymentID:', data); }
     , err => { log.error(err.name, err.message); }
     , ()  => { log.info('Completed to validate notification.'); }
   );

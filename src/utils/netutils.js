@@ -157,6 +157,7 @@ const post2 = function(url, auth, body, callback) {
     , 'Accept-Language':  'ja_JP'
     , 'Content-Length':   Buffer.byteLength(body)
     , 'Content-Type':     type
+    , 'User-Agent':       'Node-Script/1.0'
   };
   if(auth && auth.hasOwnProperty('user') && auth.hasOwnProperty('pass')) {
     headers['Authorization'] = 'Basic ' 

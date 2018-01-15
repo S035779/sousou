@@ -1188,12 +1188,13 @@ class AppBody extends React.Component {
         </label>
       </div>
       { Agreement */}
-      {this.renderNotice(showModalResults, results)}
+
       {/* Confirm */}
       <div id="signup-next">
         {toggledButton}
         <div ref="signup_next"></div>
       </div>
+      {this.renderNotice(showModalResults, results)}
     </form>
     {/*
     <Modal showModal={showModalResults}>
