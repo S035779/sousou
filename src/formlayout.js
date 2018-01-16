@@ -1,3 +1,4 @@
+import postal from 'Utilities/postCodeRegex';
 const host = process.env.TOP_URL || 'https://localhost:4443';
 
 jQuery(function($) {
@@ -16,7 +17,7 @@ jQuery(function($) {
 
   $.validator.addMethod('postal_code', function (value, element) { 
       return this.optional(element)
-      || /^((\d{3}-\d{4})|(\d{5})|(\d{5}-\d{4})|(\d{5})|([A-Z]\d[A-Z]\s\d[A-Z]\d))$/.test(value); 
+      || postal.regex($('[name=country_code]').val(), value)
   }, 'Please enter a valid postal code.');
 
   $('#user-sign-up').validate({

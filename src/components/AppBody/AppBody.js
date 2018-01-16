@@ -7,6 +7,7 @@ import Notice from 'Components/Notice/Notice';
 import AppAction from 'Actions/AppAction';
 import std from 'Utilities/stdutils';
 import { log } from 'Utilities/webutils';
+import postal from 'Utilities/postCodeRegex';
 
 const pspid = 'AppBodyView';
 
@@ -485,7 +486,8 @@ class AppBody extends React.Component {
       && state.phone          && !this.isNotNumber(state.phone)
       && state.email          && !this.isNotEmail(state.email)
       //&& state.confirm_email  && (state.email === state.confirm_email)
-      && state.postal_code    && !this.isNotNumber(state.postal_code)
+      && state.postal_code
+      && !this.isNotPostal(state.country_code.join(), state.postal_code)
       && state.line1
       && state.line2
       && state.delivery
@@ -534,6 +536,10 @@ class AppBody extends React.Component {
     return !/^[\d,-]+$/.test(val);
   }
 
+  isNotPostal(country_code, val) {
+    return !postal.regex(country_code, val);
+  }
+
   checkConfirmEmail(string, isLangJp) {
     return this.state.email !== string
         ? isLangJp
@@ -550,6 +556,14 @@ class AppBody extends React.Component {
       : '';
   }
   
+  //checkPostal(country_code, postal_code, isLangJp) {
+  //  return isNotPostal(country_code, postal_code)
+  //      ? isLangJp
+  //        ? '正しい郵便番号を入力してください。'
+  //        : 'Please enter the correct postal code.'
+  //      : '';
+  //}
+
   checkNumber(value1, value2, isLangJp) {
     return value2 != null
       ? ( this.isNotNumber(value1) || this.isNotNumber(value2) )
@@ -743,7 +757,8 @@ class AppBody extends React.Component {
     const check_phone
       = this.checkNumber(this.state.phone, null, isJP);
     //const check_postal_code
-    //  = this.checkNumber(this.state.postal_code, null, isJP);
+    //  = this.checkPostal(this.state.country_code.join()
+    //    , this.state.postal_code);
     //const check_birthday
     //  = this.checkNumber(this.state.year, this.state.day, isJP);
 
