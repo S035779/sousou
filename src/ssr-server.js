@@ -55,23 +55,31 @@ router.route('/')
 .get((req, res, next)     => {
   const { language, length, weight, from, usd, jpy } = req.query;
   if(!language) return res.sendStatus(404);
-  res.send('<!doctype html>\n'
-    + ReactDOMServer.renderToStaticMarkup(<Home
-    language={language}
-    length={length}
-    weight={weight}
-    from={from}
-    usd={usd}
-    jpy={jpy} />));
+  res.send('<!doctype html>\n' + ReactDOMServer.renderToStaticMarkup(
+    <Home language={language} length={length} weight={weight}
+      from={from} usd={usd} jpy={jpy} />));
 })
 .put((req, res, next)     => { next(new Error('not implemented')); })
 .post((req, res, next)    => { next(new Error('not implemented')); })
 .delete((req, res, next)  => { next(new Error('not implemented')); });
 
-router.route('/credit')
+router.route('/payment/credit')
 .get((req, res, next)     => {
-  const { paymentID, payerID } = req.query;
-  res.json({ paymentID, payerID });
+  log.info("Credit payment Event Received.");
+  log.info('Verifying Credit:', req.query);
+  PayPalPayment.of(paypal_keyset).validateCredit(req.query)
+  .subscribe(
+    data  => {
+      log.info('Received customID:', data);
+      res.json({ data });
+    }
+    , err => {
+      res.status(500)
+        .send({ error: { name: err.name, message: err.message } });
+      log.error(err.name, err.message);
+    }
+    , ()  => { log.info('Completed to validate credit payment.'); }
+  );
 })
 .put((req, res, next)     => { next(new Error('not implemented')); })
 .post((req, res, next)    => { next(new Error('not implemented')); })
@@ -82,12 +90,18 @@ router.route('/payment/notify')
 .put((req, res, next)     => { next(new Error('not implemented')); })
 .post((req, res, next)    => {
   log.info("IPN Notification Event Received.");
-  res.sendStatus(200);
   log.info('Verifying IPN:', req.body);
   PayPalPayment.of(paypal_keyset).validateNotification(req.body)
   .subscribe(
-    data  => { log.info('Received PaymentID:', data); }
-    , err => { log.error(err.name, err.message); }
+    data  => {
+      log.info('Received customID:', data);
+      res.sendStatus(200);
+    }
+    , err => {
+      res.status(500)
+        .send({ error: { name: err.name, message: err.message } });
+      log.error(err.name, err.message);
+    }
     , ()  => { log.info('Completed to validate notification.'); }
   );
 })
@@ -97,7 +111,7 @@ router.route('/payment/create-payment')
 .get((req, res, next)     => { next(new Error('not implemented')); })
 .put((req, res, next)     => { next(new Error('not implemented')); })
 .post((req, res, next)    => {
-  PayPalPayment.of(paypal_keyset).createPayment()
+  PayPalPayment.of(paypal_keyset).createExpress()
   .subscribe(
     data  => { res.json({ id: data.id }); }
     , err => {
@@ -115,7 +129,7 @@ router.route('/payment/execute-payment')
 .put((req, res, next)     => { next(new Error('not implemented')); })
 .post((req, res, next)    => {
   const { paymentID, payerID } = req.body;
-  PayPalPayment.of(paypal_keyset).executePayment({ paymentID, payerID })
+  PayPalPayment.of(paypal_keyset).executeExpress({ paymentID, payerID })
   .subscribe(
     data  => { res.json({ data }); }
     , err => {

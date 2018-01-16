@@ -29,13 +29,13 @@ export default {
   request(operation, options) {
     const uri = api + operation;
     switch(operation) {
-      case '/credit':
+      case '/payment/credit':
         return new Promise((resolve, reject) => {
           xhr.get(uri, options
             , obj => { resolve(obj); }
             , err => { reject(err); });
           });
-      case '/payment':
+      case '/payment/express':
         return new Promise((resolve, reject) => {
           paypal.Button.render({
             env: paypal_env
@@ -136,10 +136,10 @@ export default {
     }
   },
   postCredit(options) {
-    return this.request('/credit', options);
+    return this.request('/payment/credit', options);
   },
-  postPayment(options) {
-    return this.request('/payment', options);
+  postExpress(options) {
+    return this.request('/payment/express', options);
   },
   postMessage(options) {
     return this.request('/sendmail', options);
@@ -158,11 +158,11 @@ export default {
       .then(() => this.postMessage(seler))
       .then(() => this.postMessage(buyer))
   },
-  createPayment(params) {
+  createExpress(params) {
     const options = this.validate(params);
     const buyer = this.setCustomer(options);
     const seler  = this.setManager(options);
-    return this.postPayment(options)
+    return this.postExpress(options)
       .then(() => this.postMessage(seler))
       .then(() => this.postMessage(buyer))
   },

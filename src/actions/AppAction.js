@@ -22,7 +22,7 @@ export default {
       });
   },
   createPayment(options) {
-    return AppApiClient.createPayment(options)
+    return AppApiClient.createExpress(options)
       .then(results => {
         dispatch({ type: 'item/create/payment', results, options });
       }).catch(err => {
