@@ -382,7 +382,7 @@ class AppBody extends React.Component {
     const payment = this.payment;
     const options = this.setOptions(state, payment);
     if(this.isPayPal(state)) {
-      AppAction.createPayment(options);
+      AppAction.createExpress(options);
       this.logTrace(payment);
     }
   }
@@ -1200,12 +1200,13 @@ class AppBody extends React.Component {
       </div>
       { Agreement */}
 
+      {this.renderNotice(showModalResults, results)}
+
       {/* Confirm */}
       <div id="signup-next">
         {toggledButton}
         <div ref="signup_next"></div>
       </div>
-      {this.renderNotice(showModalResults, results)}
     </form>
     {/*
     <Modal showModal={showModalResults}>

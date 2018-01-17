@@ -67,6 +67,8 @@ router.route('/payment/credit')
 .get((req, res, next)    => { next(new Error('not implemented')); })
 .put((req, res, next)     => { next(new Error('not implemented')); })
 .post((req, res, next)     => {
+  log.info("Payment Event Received.");
+  log.info('Verifying Pay:', req.body);
   const { credit_validate } = req.body;
   PayPalPayment.of(paypal_keyset).validateCredit(credit_validate)
   .subscribe(
@@ -75,7 +77,7 @@ router.route('/payment/credit')
       res.status(500)
         .send({ error: { name: err.name, message: err.message } });
       log.error(err.name, err.message);
-    }
+     }
     , ()  => { log.info('Completed to validate credit payment.'); }
   );
 })

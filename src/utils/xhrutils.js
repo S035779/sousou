@@ -42,7 +42,7 @@ var get = function(url, data, success, error) {
     }
   };
   request.onerror = function(e) {
-    if(error) error(new Error(request.statusText));
+    if(error) error(request.statusText);
   };
   request.send(null);
 };
@@ -72,7 +72,7 @@ var post = function(url, data, success, error) {
     }
   };
   request.onerror = function(e) {
-    if(error) error(new Error(request.statusText));
+    if(error) error(request.statusText);
   };
   request.setRequestHeader("Content-Type"
     , "application/x-www-form-urlencoded");
@@ -104,7 +104,7 @@ var getData = function(url, data, success, error) {
     }
   };
   request.onerror = function(e) {
-    if(error) error(new Error(request.statusText));
+    if(error) error(request.statusText);
   };
   request.send(null);
 };
@@ -134,7 +134,7 @@ var postData = function(url, data, success, error) {
     }
   };
   request.onerror = function(e) {
-    if(error) error(new Error(request.statusText));
+    if(error) error(request.statusText);
   };
   request.setRequestHeader("Content-Type"
     , "application/x-www-form-urlencoded");
@@ -166,7 +166,7 @@ var postXML = function(url, data, success, error) {
     }
   };
   request.onerror = function(e) {
-    if(error) error(new Error(request.statusText));
+    if(error) error(request.statusText);
   };
   request.setRequestHeader("Content-Type", "text/xml; charset=UTF-8");
   for(var key in data.head) {
@@ -200,7 +200,7 @@ var postJSON = function(url, data, success, error) {
     }
   };
   request.onerror = function(e) {
-    if(error) error(new Error(request.statusText));
+    if(error) error(request.statusText);
   };
   request.setRequestHeader("Content-Type", "application/json");
   request.send(JSON.stringify(data));
@@ -223,7 +223,7 @@ var putJSON = function(url, data, success, error) {
         success(request);
   };
   request.onerror = function(e) {
-    if(error) error(new Error(request.statusText));
+    if(error) error(request.statusText);
   };
   request.setRequestHeader("Content-Type", "application/json");
   request.send(JSON.stringify(data));

@@ -27,7 +27,7 @@ if(env === 'development') {
   ipn_api = ipn_live;
 }
 const pspid = 'paypal-api';
-let cache = new Map();
+let cache = new Object();
 
 /**
  * PayPalPayment Api Client class.
@@ -49,6 +49,12 @@ class PayPalPayment {
 
   request(operation, { query, auth, body }) {
     switch(operation) {
+      case '/cache':
+        return new Promise((resolve, reject) => {
+          const data = cache[body];
+          if(!data) reject(new Error('INVALID'));
+          resolve(data);
+        });
       case '/ipnpb':
         return new Promise((resolve, reject) => {
           net.post2(ipn_api
@@ -120,35 +126,45 @@ class PayPalPayment {
     return this.request('/v1/payments/payment', options);
   }
 
-  getValidate(notice) {
+  getNotify(notice) {
     const options = {
       body: Object.assign({}, { cmd: '_notify-validate' }, notice)
     };
     return this.request('/ipnpb', options);
   }
 
+  getCache(custom) {
+    const options = {
+      body: custom
+    };
+    return this.request('/cache', options);
+  }
+
   fetchToken() {
     return Rx.Observable.fromPromise(this.getToken());
   }
 
-  fetchValidate(notice) {
-    return Rx.Observable.fromPromise(this.getValidate(notice));
+  fetchNotify(notice) {
+    return Rx.Observable.fromPromise(this.getNotify(notice));
   }
 
-  validateCredit(payment) {
-    return this.isComplete(payment);
+  fetchCache(custom) {
+    return Rx.Observable.fromPromise(this.getCache(custom));
   }
 
   validateNotification(notice) {
-    const validate = R.curry(this.isValidate);
-    return this.fetchValidate(notice)
+    const validate = R.curry(this.isNotify);
+    return this.fetchNotify(notice)
       .map(validate(notice))
-      //.map(R.tap(log.trace));
   }
 
-  isComplete({ custom, receiver_email, mc_gross, mc_currency }) {
-    const data = cache.get(custom);
-    if(data) return new Error('INVALID');
+  validateCredit({ custom, receiver_email, mc_gross, mc_currency }) {
+    const validate = R.curry(this.isCredit);
+    return this.fetchCache(custom)
+    .map(validate(receiver_email, mc_gross, mc_currency));
+  }
+
+  isCredit(receiver_email, mc_gross, mc_currency, data) {
     const isReceiver = receiver_email === data.receiver_email;
     const isMcGross = mc_gross === data.mc_gross;
     const isMcCurrency = mc_currency === data.mc_currency;
@@ -157,7 +173,7 @@ class PayPalPayment {
     return 'VERIFIED';
   }
 
-  isValidate(req, res) {
+  isNotify(req, res) {
     let result = ''
     const isComplete = req.payment_status === 'Completed';
     switch(res) {
@@ -165,7 +181,7 @@ class PayPalPayment {
         if(isComplete) {
           log.info('Verified IPN: IPN message for Transaction ID:'
             , req.txn_id, 'is verified.');
-          cache.set = (req.custom, req);
+          cache[req.custom] = req;
           result = 'VERIFIED';
         } else {
           log.error('Payment status not Completed'); 

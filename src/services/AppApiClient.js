@@ -131,7 +131,7 @@ export default {
           });
       default:
         return new Promise((resolve, reject) => {
-            reject(new Error('Unknown Operation.'));
+            reject('Unknown Operation.');
           });
     }
   },
