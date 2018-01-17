@@ -52,7 +52,7 @@ class PayPalPayment {
       case '/cache':
         return new Promise((resolve, reject) => {
           const data = cache[body];
-          if(!data) reject(new Error('INVALID'));
+          if(!data) reject(new Error('UNKNOWN'));
           resolve(data);
         });
       case '/ipnpb':
@@ -168,8 +168,8 @@ class PayPalPayment {
     const isReceiver = receiver_email === data.receiver_email;
     const isMcGross = mc_gross === data.mc_gross;
     const isMcCurrency = mc_currency === data.mc_currency;
-    if(!isReceiver || !isMcGross || !isMcCurrency)
-      return new Error('INVALID');
+    if(!isReceiver || !isMcGross || !isMcCurrency) 
+      throw new Error('INVALID');
     return 'VERIFIED';
   }
 

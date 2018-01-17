@@ -12,7 +12,7 @@ export default {
       }).catch(err => {
         this.logError(err);
         const results = { error: {
-          name: 'PayPal payment API Error'
+          name: 'Credit Payment API Error'
           , message: {
             jp: '入力手続きが完了しませんでした。'
             , en: 'The input procedure was not completed.'
@@ -67,7 +67,7 @@ export default {
             , en: 'The shipping fee calculation procedure was not completed.'
           }
         }};
-        dispatch({ type: 'item/fetch/shipping', results, options });
+        dispatch({ type: 'item/fetch/shipping', results });
       });
   },
   fetchCurrency({ usd, jpy }) {
@@ -84,7 +84,7 @@ export default {
             , en: 'The currency calculation procedure was not completed.'
           }
         }};
-        dispatch({ type: 'item/fetch/currency', results, options });
+        dispatch({ type: 'item/fetch/currency', results });
       });
   },
   logInfo(request) {
