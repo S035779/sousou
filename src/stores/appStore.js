@@ -52,7 +52,14 @@ class AppStore extends ReduceStore<number> {
           , message: ''
         //  , agreement: false
         }
-      }};
+        , credit_validate: {
+          custom: ''
+          , receiver_email: ''
+          , mc_gross: 0
+          , mc_currency: 0
+        }
+      }
+    };
   }
   
   reduce(state, action) {
@@ -62,7 +69,7 @@ class AppStore extends ReduceStore<number> {
           results:    action.results
           , options:  action.options
         });
-      case 'item/create/payment':
+      case 'item/create/express':
         return Object.assign({}, state, {
           results:    action.results
           , options:  action.options

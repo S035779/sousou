@@ -1,4 +1,5 @@
 import React from 'react';
+import AppAction from 'Actions/AppAction'
 import std from 'Utilities/stdutils';
 import { log } from 'Utilities/webutils';
 
@@ -23,6 +24,16 @@ if (env === 'development') {
 const pspid = 'CreditView';
 
 class Credit extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      custom: std.dateFormat(new Date(), 'yyMMdd01ccc')
+      , receiver_email: receiver_email
+      , mc_gross: props.options.total
+      , mc_currency: props.options.currency.join()
+    };
+  }
+
   componentDidMount() {
     window.form_iframe.submit();
   }
@@ -36,11 +47,104 @@ class Credit extends React.Component {
   handleClickButton(e) {
     this.logInfo('handleClickButton');
     e.preventDefault();
+    AppAction.createCredit(Object.assign({}, this.props.options
+      , { credit_validate: this.state }));
     this.props.onCompleted();
   }
   
-  setCustomID() {
-    return std.dateFormat(new Date(), 'yyMMdd01ccc');
+  setPrices(obj, isLangJp) {
+    const item_currency = obj.item.currency.join() !== '' 
+      ? obj.item.currency : ''
+    const total_currency = obj.currency.join() !== ''
+        ? obj.currency : ''
+    return {
+      subtotal_price: this.item_currency !== ''
+        ? isLangJp
+          ? Number(obj.details.subtotal).toLocaleString('ja-JP'
+            , { style: 'currency', currency: item_currency})
+          : Number(obj.details.subtotal).toLocaleString('en-US'
+            , { style: 'currency', currency: item_currency})
+        : 0
+      , shipping_price: this.total_currency !== ''
+        ? isLangJp
+          ? Number(obj.details.shipping).toLocaleString('ja-JP'
+            , { style: 'currency', currency: total_currency})
+          : Number(obj.details.shipping).toLocaleString('en-US'
+            , { style: 'currency', currency: total_currency})
+        : 0
+      , total_price: this.total_currency !== ''
+        ? isLangJp 
+          ? Number(obj.total).toLocaleString('ja-JP'
+            , { style: 'currency', currency: total_currency})
+          : Number(obj.total).toLocaleString('en-US'
+            , { style: 'currency', currency: total_currency})
+        : 0
+    };
+  }
+
+  setContents(obj, isLangJp) {
+    const prices = this.setPrices(obj, isLangJp);
+    return {
+      email: {
+        key: isLangJp ? '　メール： ' : '              Email : '
+        , value: `${obj.infomation.email}`                              },
+      name: {
+        key: isLangJp ? '　名　前： ' : '               Name : '
+        , value: isLangJp
+          ? `${obj.infomation.last_name} ${obj.infomation.first_name}`
+          : `${obj.infomation.first_name} ${obj.infomation.last_name}`  },
+      item: {
+        key: isLangJp ? '　商品名： ' : '            Product : '
+        , value: `${obj.item.name}`                                     },
+      description: {
+        key: isLangJp ? '　概　要： ' : '        Description : '
+        , value: `${obj.item.description}`                              },
+      price: {
+        key: isLangJp ? '　単　価： ' : '              Price : '
+        , value: `${obj.item.price} ${prices.item_currency}`            },
+      quantity: {
+        key: isLangJp ? '　数　量： ' : '           Quantity : '
+        , value: `${obj.item.quantity}`                                 },
+      subtotal: {
+        key: isLangJp ? '　小　計： ' : '           Subtotal : '
+        , value: prices.subtotal_price                                  },
+      shipping: {
+        key: isLangJp ? '　配送料： ' : '       Shipping fee : '
+        , value: prices.shipping_price                                  },
+      total: {
+        key: isLangJp ? '　合　計： ' : '              Total : '
+        , value: prices.total_price                                     },
+      postal_code: {
+        key: isLangJp ? '郵便番号： ' : '                Zip : '
+        , value: `${obj.shipping_address.postal_code}`                  },
+      state: {
+        key: isLangJp ? '　州　名： ' : '              State : '
+        , value: `${obj.shipping_address.state}`                        },
+      city: {
+        key: isLangJp ? '　都市名： ' : '               City : '
+        , value: `${obj.shipping_address.city}`                         },
+      line1: {
+        key: isLangJp ? '都道府県： ' : '       Municipality : '
+        , value: `${obj.shipping_address.line1}`                        },
+      line2: {
+        key: isLangJp ? '市区町村： ' : 'A lot / Room Number : '
+        , value: `${obj.shipping_address.line2}`                        },
+      recipient: {
+        key: isLangJp ? '　受取人： ' : '     Recipient Name : '
+        , value: `${obj.shipping_address.recipient_name}`               },
+      phone: {
+        key: isLangJp ? '電話番号： ' : '              Phone : '
+        , value: `${obj.shipping_address.phone}`                        },
+      country_code: {
+        key: isLangJp ? '国コード： ' : '       Country code : '
+        , value: `${obj.shipping_address.country_code}`                 },
+      payment: {
+        key: isLangJp ? '支払方法： ' : '     Payment method : '
+        , value: `${obj.infomation.payment}`                            },
+      message: {
+        key: isLangJp ? '連絡事項： ' : '            Message : '
+        , value: `${obj.infomation.message}`                            },
+    };
   }
 
   logInfo(message) {
@@ -56,90 +160,26 @@ class Credit extends React.Component {
   }
 
   render() {
+    console.log(this.state);
     const iframe_styles = {
       width: '100%', height: '500px', border: 'none', overflow: 'hidden'
     };
     const form_styles = { display: 'none' };
     const obj = this.props.options;
-    const isJP = this.props.language === 'jp' ? true : false;
-    const language =  isJP ? 'JP' : 'US';
-    const item_currency = obj.item.currency.join() !== '' 
-      ? obj.item.currency : '';
-    const total_currency = obj.currency.join() !== ''
-      ? obj.currency : '';
-    const subtotal_price = item_currency !== ''
-      ? isJP
-          ? Number(obj.details.subtotal).toLocaleString('ja-JP'
-              , { style: 'currency', currency: item_currency})
-          : Number(obj.details.subtotal).toLocaleString('en-US'
-              , { style: 'currency', currency: item_currency})
-      : 0;
-    const shipping_price = total_currency !== ''
-      ? isJP
-          ? Number(obj.details.shipping).toLocaleString('ja-JP'
-              , { style: 'currency', currency: total_currency})
-          : Number(obj.details.shipping).toLocaleString('en-US'
-              , { style: 'currency', currency: total_currency})
-      : 0;
-    const total_price = total_currency !== ''
-      ? isJP 
-          ? Number(obj.total).toLocaleString('ja-JP'
-              , { style: 'currency', currency: total_currency})
-          : Number(obj.total).toLocaleString('en-US'
-              , { style: 'currency', currency: total_currency})
-      : 0;
-    const contents = {
-      email:       { key: isJP ? '　メール： ' : '              Email : '
-        , value: `${obj.infomation.email}` },
-      name:        { key: isJP ? '　名　前： ' : '               Name : '
-        , value: isJP
-          ? `${obj.infomation.last_name} ${obj.infomation.first_name}`
-          : `${obj.infomation.first_name} ${obj.infomation.last_name}`
-      },
-      item:        { key: isJP ? '　商品名： ' : '            Product : '
-        , value: `${obj.item.name}` },
-      description: { key: isJP ? '　概　要： ' : '        Description : '
-        , value: `${obj.item.description}` },
-      price:       { key: isJP ? '　単　価： ' : '              Price : '
-        , value: `${obj.item.price} ${item_currency}` },
-      quantity:    { key: isJP ? '　数　量： ' : '           Quantity : '
-        , value: `${obj.item.quantity}`},
-      subtotal:    { key: isJP ? '　小　計： ' : '           Subtotal : '
-        , value: subtotal_price },
-      shipping:    { key: isJP ? '　配送料： ' : '       Shipping fee : '
-        , value: shipping_price },
-      total:       { key: isJP ? '　合　計： ' : '              Total : '
-        , value: total_price },
-      postal_code: { key: isJP ? '郵便番号： ' : '                Zip : '
-        , value: `${obj.shipping_address.postal_code}` },
-      state:       { key: isJP ? '　州　名： ' : '              State : '
-        , value: `${obj.shipping_address.state}` },
-      city:        { key: isJP ? '　都市名： ' : '               City : '
-        , value: `${obj.shipping_address.city}` },
-      line1:       { key: isJP ? '都道府県： ' : '       Municipality : '
-        , value: `${obj.shipping_address.line1}` },
-      line2:       { key: isJP ? '市区町村： ' : 'A lot / Room Number : '
-        , value: `${obj.shipping_address.line2}` },
-      recipient:   { key: isJP ? '　受取人： ' : '     Recipient Name : '
-        , value: `${obj.shipping_address.recipient_name}` },
-      phone:       { key: isJP ? '電話番号： ' : '              Phone : '
-        , value: `${obj.shipping_address.phone}` },
-      country_code:{ key: isJP ? '国コード： ' : '       Country code : '
-        , value: `${obj.shipping_address.country_code}` },
-      payment:     { key: isJP ? '支払方法： ' : '     Payment method : '
-        , value: `${obj.infomation.payment}` },
-      message:     { key: isJP ? '連絡事項： ' : '            Message : '
-        , value: `${obj.infomation.message}` },
-    };
-    const Shipping = isJP      ? '　配送先： ' : '   Delivery address : ';
-    const Confirm = isJP
+    const isLangJp = this.props.language === 'jp' ? true : false;
+    const contents = this.setContents(obj, isLangJp);
+    const Shipping = isLangJp
+      ? '　配送先： ' : '   Delivery address : ';
+    const Confirm = isLangJp
       ? 'ご注文内容の確認' : 'Confirmation of your order';
-    const ConfirmMessage = isJP
+    const ConfirmMessage = isLangJp
       ? 'お客様は以下の商品を選択しました。'
       : 'Customers selected the following items.';
-    const ConfirmOrder = isJP
+    const ConfirmOrder = isLangJp
       ? '注文を確定する' : 'Confirm order';
-    const custom_id = this.setCustomID();
+    const language =  isLangJp ? 'JP' : 'US';
+    const custom = this.state.custom;
+    const receiver = this.state.receiver_email
     return <div className="buynow_contactlast">
       <a href="#"
         className="close-thik"
@@ -190,7 +230,7 @@ class Credit extends React.Component {
       <input name='shipping' type='hidden'
         value={obj.details.shipping}/>
       <input name='currency_code' type='hidden'
-        value={total_currency}/>
+        value={obj.currency.join()}/>
       <input name='billing_zip' type='hidden'
         value={obj.shipping_address.postal_code}/>
       <input name='billing_state' type='hidden'
@@ -204,15 +244,15 @@ class Credit extends React.Component {
       <input name='night_phone_b' type='hidden'
         value={obj.shipping_address.phone}/>
       <input name='billing_country' type='hidden'
-        value={obj.shipping_address.country_code}/>
-      <input name='business' type='hidden' value={receiver_email}/>
+        value={obj.shipping_address.country_code.join()}/>
+      <input name='business' type='hidden' value={receiver}/>
       <input name='paymentaction' type='hidden' value='sale'/>
       <input name='template' type='hidden' value='templateD'/>
       <input name='return' type='hidden' value={redirect_url}/>
       <input name='cancel_return' type='hidden' value={canceled_url}/>
       <input name='notify_url' type='hidden' value={notify_url}/>
       <input name='lc' type='hidden' value={language}/>
-      <input name='custom' type='hidden' value={custom_id}/>
+      <input name='custom' type='hidden' value={custom}/>
       </form>
       </fieldset>
       <div id="signup-next">

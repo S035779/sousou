@@ -82,10 +82,6 @@ class AppBody extends React.Component {
     switch(name) {
       case 'credit':
         this.setState({ showModalCredit: false });
-        const state = this.state;
-        const payment = this.payment;
-        const options = this.setOptions(state, payment);
-        AppAction.createCredit(options);
         break;
       case 'results':
         this.setState({ results: null, showModalResults: false });
@@ -245,7 +241,7 @@ class AppBody extends React.Component {
   }
 
   setOptions(state, payment) {
-    return {
+    return Object.assign({}, this.props.options, {
       total:          payment.total
       , currency:       payment.total_currency
       , details: {
@@ -283,7 +279,7 @@ class AppBody extends React.Component {
         , message:      state.message
       //  , agreement:    state.agreement
       }
-    }
+    });
   }
 
   setShippingAddress(value, isLangJp) {

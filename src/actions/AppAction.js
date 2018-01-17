@@ -12,7 +12,7 @@ export default {
       }).catch(err => {
         this.logError(err);
         const results = { error: {
-          name: 'Credit payment API Error'
+          name: 'PayPal payment API Error'
           , message: {
             jp: '入力手続きが完了しませんでした。'
             , en: 'The input procedure was not completed.'
@@ -21,10 +21,10 @@ export default {
         dispatch({ type: 'item/create/credit', results, options });
       });
   },
-  createPayment(options) {
+  createExpress(options) {
     return AppApiClient.createExpress(options)
       .then(results => {
-        dispatch({ type: 'item/create/payment', results, options });
+        dispatch({ type: 'item/create/express', results, options });
       }).catch(err => {
         this.logError(err);
         const results = { error: {
@@ -34,7 +34,7 @@ export default {
             , en: 'The input procedure was not completed.'
           }
         }};
-        dispatch({ type: 'item/create/payment', results, options });
+        dispatch({ type: 'item/create/express', results, options });
       });
   },
   createMessage(options) {
