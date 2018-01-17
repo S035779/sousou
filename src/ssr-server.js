@@ -64,15 +64,15 @@ router.route('/')
 .delete((req, res, next)  => { next(new Error('not implemented')); });
 
 router.route('/payment/credit')
-.get((req, res, next)     => {
-  log.info("Credit payment Event Received.");
-  log.info('Verifying Credit:', req.query);
-  PayPalPayment.of(paypal_keyset).validateCredit(req.query)
+.get((req, res, next)    => { next(new Error('not implemented')); })
+.put((req, res, next)     => { next(new Error('not implemented')); })
+.post((req, res, next)     => {
+  log.info("Payment Event Received.");
+  log.info('Verifying Pay:', req.body);
+  const { validate } = req.body;
+  PayPalPayment.of(paypal_keyset).validateCredit(validate)
   .subscribe(
-    data  => {
-      log.info('Received customID:', data);
-      res.json({ data });
-    }
+    data  => { log.info('Verified Pay:', data); }
     , err => {
       res.status(500)
         .send({ error: { name: err.name, message: err.message } });
@@ -81,8 +81,6 @@ router.route('/payment/credit')
     , ()  => { log.info('Completed to validate credit payment.'); }
   );
 })
-.put((req, res, next)     => { next(new Error('not implemented')); })
-.post((req, res, next)    => { next(new Error('not implemented')); })
 .delete((req, res, next)  => { next(new Error('not implemented')); });
 
 router.route('/payment/notify')
@@ -90,13 +88,11 @@ router.route('/payment/notify')
 .put((req, res, next)     => { next(new Error('not implemented')); })
 .post((req, res, next)    => {
   log.info("IPN Notification Event Received.");
+  res.sendStatus(200);
   log.info('Verifying IPN:', req.body);
   PayPalPayment.of(paypal_keyset).validateNotification(req.body)
   .subscribe(
-    data  => {
-      log.info('Received customID:', data);
-      res.sendStatus(200);
-    }
+    data  => { log.info('Verified IPN:', data); }
     , err => {
       res.status(500)
         .send({ error: { name: err.name, message: err.message } });

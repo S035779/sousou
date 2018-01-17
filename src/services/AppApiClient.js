@@ -29,12 +29,6 @@ export default {
   request(operation, options) {
     const uri = api + operation;
     switch(operation) {
-      case '/payment/credit':
-        return new Promise((resolve, reject) => {
-          xhr.get(uri, options
-            , obj => { resolve(obj); }
-            , err => { reject(err); });
-          });
       case '/payment/express':
         return new Promise((resolve, reject) => {
           paypal.Button.render({
@@ -80,7 +74,7 @@ export default {
             }
           }, '#paypal-button');
         });
-      case '/payment_':
+      case '/payment':
         return new Promise((resolve, reject) => {
           paypal.Button.render({
             env: paypal_env
@@ -111,6 +105,12 @@ export default {
             }
           }, '#paypal-button');
         });
+      case '/payment/credit':
+        return new Promise((resolve, reject) => {
+          xhr.postJSON(uri, options
+            , obj => { resolve(obj); }
+            , err => { reject(err); });
+          });
       case '/sendmail':
         return new Promise((resolve, reject) => {
           xhr.postJSON(uri, options

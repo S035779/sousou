@@ -2,6 +2,7 @@ import React from 'react';
 import std from 'Utilities/stdutils';
 import { log } from 'Utilities/webutils';
 
+const receiver_email = process.env.PAYPAL_ID;
 const env = process.env.NODE_ENV || 'development';
 const host = process.env.TOP_URL || '';
 const notify_url = host + '/api/payment/notify';
@@ -38,7 +39,7 @@ class Credit extends React.Component {
     this.props.onCompleted();
   }
   
-  setPaymentID() {
+  setCustomID() {
     return std.dateFormat(new Date(), 'yyMMdd01ccc');
   }
 
@@ -138,7 +139,7 @@ class Credit extends React.Component {
       : 'Customers selected the following items.';
     const ConfirmOrder = isJP
       ? '注文を確定する' : 'Confirm order';
-    const payment_id = this.setPaymentID();
+    const custom_id = this.setCustomID();
     return <div className="buynow_contactlast">
       <a href="#"
         className="close-thik"
@@ -204,14 +205,14 @@ class Credit extends React.Component {
         value={obj.shipping_address.phone}/>
       <input name='billing_country' type='hidden'
         value={obj.shipping_address.country_code}/>
-      <input name='business' type='hidden' value='KX2RHNPRB34RN'/>
+      <input name='business' type='hidden' value={receiver_email}/>
       <input name='paymentaction' type='hidden' value='sale'/>
       <input name='template' type='hidden' value='templateD'/>
       <input name='return' type='hidden' value={redirect_url}/>
       <input name='cancel_return' type='hidden' value={canceled_url}/>
       <input name='notify_url' type='hidden' value={notify_url}/>
       <input name='lc' type='hidden' value={language}/>
-      <input name='custom' type='hidden' value={payment_id}/>
+      <input name='custom' type='hidden' value={custom_id}/>
       </form>
       </fieldset>
       <div id="signup-next">
