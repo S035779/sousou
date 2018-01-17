@@ -12,7 +12,7 @@ jQuery(function($) {
   // validate
   $.validator.addMethod("phone", function(value, element) {
     return this.optional(element)
-      || /^\d{11}$|^\d{3}-\d{4}-\d{4}$/.test(value);
+      || /^[\d,-]+$/.test(value);
   }, "Please specify the correct phone number for your delivery");
 
   $.validator.addMethod('postal_code', function (value, element) { 
