@@ -68,10 +68,13 @@ class PayPalPayment {
     switch(operation) {
       case '/cache':
         return new Promise((resolve, reject) => {
-          std.invoke2(() => cache.store[body]
-            , data => resolve(data)
-            , err => reject(new Error('UNKNOWN'))
-            , 0, 5 * 1000, 30 * 1000);
+          const data = cache.store[body].content;
+          if(!data) reject(new Error('UNKNOWN'));
+          resolve(data);
+          //std.invoke2(() => cache.store[body].content
+          //  , data => resolve(data)
+          //  , err => reject(new Error('UNKNOWN'))
+          //  , 0, 5 * 1000, 30 * 1000);
         });
       case '/ipnpb':
         return new Promise((resolve, reject) => {
@@ -184,9 +187,10 @@ class PayPalPayment {
 
   isCredit(receiver_email, mc_gross, mc_currency, data) {
     const isReceiver = receiver_email === data.receiver_email;
-    const isMcGross = mc_gross === data.mc_gross;
+    const isMcGross = mc_gross === Number(data.mc_gross);
     const isMcCurrency = mc_currency === data.mc_currency;
-    if(!isReceiver || !isMcGross || !isMcCurrency) 
+    log.info(isReceiver, isMcGross, isMcCurrency);
+    if(!isReceiver || !isMcGross || !isMcCurrency)
       throw new Error('INVALID');
     return 'VERIFIED';
   }
