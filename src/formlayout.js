@@ -1,7 +1,23 @@
-import postal from 'Utilities/postCodeRegex';
+import std from 'Utilities/stdutils';
+import jQuery from 'jquery';
+import {} from 'jquery-jpostal-ja';
 const host = process.env.TOP_URL || 'https://localhost:4443';
 
 jQuery(function($) {
+  // jpostal-ja
+  $('#postal_code').jpostal({   
+    postcode : [
+      '#postal_code'
+    ],
+    address : {
+      '#state':           '%3',
+      '#city':            '%4',
+      '#line1':           '%5',
+      '#line2':           '%6',
+      '#recipient_name':  '%7'
+    }
+  });
+
   // ah-placeholder
   $('.add-placeholder').ahPlaceholder({
     placeholderColor: 'silver',
@@ -10,15 +26,20 @@ jQuery(function($) {
   });
 
   // validate
-  $.validator.addMethod("phone", function(value, element) {
+  $.validator.addMethod('email', function(value, element) {
     return this.optional(element)
-      || /^[\d,-]+$/.test(value);
-  }, "Please specify the correct phone number for your delivery");
+      || std.regexEmail(value);
+  }, "Please specify the correct email address.");
+
+  $.validator.addMethod('phone', function(value, element) {
+    return this.optional(element)
+      || std.regexNumber(value);
+  }, "Please specify the correct phone number.");
 
   $.validator.addMethod('postal_code', function (value, element) { 
       return this.optional(element)
-      || postal.regex($('[name=country_code]').val(), value)
-  }, 'Please enter a valid postal code.');
+      || std.regexZip(value, $('[name=country_code]').val())
+  }, 'Please specify thie correct postal code.');
 
   $('#user-sign-up').validate({
     rules: {
@@ -50,7 +71,7 @@ jQuery(function($) {
   });
 
   // exresize
-  $('div#app').exResize({
+  $('#app').exResize({
     contentsWatch : true,
     callback: function(api){
       const app = api.getSize();

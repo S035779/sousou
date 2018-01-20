@@ -1,10 +1,13 @@
-import { dispatch } from 'Main/dispatcher';
-import AppApiClient from 'Services/AppApiClient';
-import { log } from 'Utilities/webutils';
+import { dispatch } from '../dispatcher';
+import AppApiClient from '../services/AppApiClient';
+import { log } from '../utils/webutils';
 
 const pspid = 'AppAction';
 
 export default {
+  rehydrate(state) {
+    dispatch({ type: 'config/rehydrate', state: state.appStore });
+  },
   createCredit(options) {
     return AppApiClient.createCredit(options)
       .then(results => {
@@ -67,7 +70,7 @@ export default {
             , en: 'The shipping fee calculation procedure was not completed.'
           }
         }};
-        dispatch({ type: 'item/fetch/shipping', results });
+        dispatch({ type: 'config/fetch/shipping', results });
       });
   },
   fetchCurrency({ usd, jpy }) {
@@ -84,7 +87,7 @@ export default {
             , en: 'The currency calculation procedure was not completed.'
           }
         }};
-        dispatch({ type: 'item/fetch/currency', results });
+        dispatch({ type: 'config/fetch/currency', results });
       });
   },
   logInfo(request) {
@@ -93,7 +96,7 @@ export default {
   logTrace(response) {
     log.trace(`${pspid}>`, 'Response:', response);
   },
-  logError(error) {
-    log.error(`${pspid}>`, error.name, error.message);
+  logError({ error }) {
+    log.error(`${pspid}>`, error.name, ':', error.message);
   }
-}
+};

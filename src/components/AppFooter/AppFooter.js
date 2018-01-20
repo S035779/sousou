@@ -1,5 +1,5 @@
 import React from 'react';
-import Photo from 'Assets/image/myanmaphoto.png';
+import Photo from '../../assets/image/myanmaphoto.png';
 
 const env = process.env.NODE_ENV || 'development';
 const host = process.env.TOP_URL;

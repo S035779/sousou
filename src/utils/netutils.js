@@ -29,19 +29,19 @@ const get = function(url, query, callback) {
       switch (stat) {
         case 101: case 102: case 103: case 104: case 105: case 106:
           log.error(`HTTP Request Failed. Status Code: ${stat}`);
-          if (callback) callback(new Error(body));
+          callback({ error: { name: stat, message: body }});
           break; 
         case 200: case 201: case 202: case 204:
           process.stdout.write('-');
-          if (callback) callback(null, head, body);
+          callback(null, head, body);
           break;
         case 301: case 302:
           log.error(`HTTP Request Failed. Status Code: ${stat}`);
-          if (callback) callback(new Error(body));
+          callback({ error: { name: stat, message: body }});
           break; 
         case 400: case 401: case 402: case 403: case 404:
           log.error(`HTTP Request Failed. Status Code: ${stat}`);
-          if (callback) callback(new Error(body));
+          callback({ error: { name: stat, message: body }});
           break; 
         case 500: case 501: case 502: case 503: case 504: case 505:
           process.stdout.write('x');
@@ -51,19 +51,79 @@ const get = function(url, query, callback) {
         default:
           process.stdout.write('?');
           log.warn(`HTTP Request Failed. Status Code: ${stat}`);
-          if (callback) callback(new Error(body));
+          callback({ error: { name: stat, message: body }});
           break;
       }
     });
   });
   req.on('error', function(err) {
     log.error(`Problem with HTTP Request: ${err.code}`);
-    log.trace(`${err.message}`);
-    log.trace(`${err.stack}`);
-    if (callback) callback(err);
+    callback({ error: { name: err.code, message: err.message }});
   });
 };
 module.exports.get = get;
+
+/*
+ * Simple HTTP GET request
+ *
+ * @param {string} url - 
+ * @param {object} query -
+ * @param {function} callback -
+ */
+const getJSON = function(url, query, callback) {  
+  url = require('url').parse(url);
+  let hostname  = url.hostname
+    , port      = url.port || 80
+    , path      = url.pathname;
+  if (query) path += '?' + require('querystring').stringify(query);
+  const client = require('http');
+  const req = client.get({
+    host: hostname
+    , port: port
+    , path: path
+  }, function(res) {
+    const stat = res.statusCode;
+    const head = res.headers;
+    res.setEncoding('utf8');
+    let body = '';
+    res.on('data', function(chunk) { body += chunk; });
+    res.on('end', function() {
+      switch (stat) {
+        case 101: case 102: case 103: case 104: case 105: case 106:
+          log.error(`HTTP Request Failed. Status Code: ${stat}`);
+          callback({ error: { name: stat, message: JSON.parse(body) }});
+          break; 
+        case 200: case 201: case 202: case 204:
+          process.stdout.write('-');
+          callback(null, head, JSON.parse(body));
+          break;
+        case 301: case 302:
+          log.error(`HTTP Request Failed. Status Code: ${stat}`);
+          callback({ error: { name: stat, message: JSON.parse(body) }});
+          break; 
+        case 400: case 401: case 402: case 403: case 404:
+          log.error(`HTTP Request Failed. Status Code: ${stat}`);
+          callback({ error: { name: stat, message: body }});
+          break; 
+        case 500: case 501: case 502: case 503: case 504: case 505:
+          process.stdout.write('x');
+          log.warn(`HTTP Request Failed. Status Code: ${stat}`);
+          get(url, callback);
+          break;
+        default:
+          process.stdout.write('?');
+          log.warn(`HTTP Request Failed. Status Code: ${stat}`);
+          callback({ error: { name: stat, message: JSON.parse(body) }});
+          break;
+      }
+    });
+  });
+  req.on('error', function(err) {
+    log.error(`Problem with HTTP Request: ${err.code}`);
+    callback({ error: { name: err.code, message: err.message }});
+  });
+};
+module.exports.getJSON = getJSON;
 
 /*
  * HTTPS GET request
@@ -93,19 +153,19 @@ const get2 = function(url, query, callback) {
       switch (stat) {
         case 101: case 102: case 103: case 104: case 105: case 106:
           log.error(`HTTP Request Failed. Status Code: ${stat}`);
-          if (callback) callback(new Error(body));
+          callback({ error: { name: stat, message: body }});
           break; 
         case 200: case 201: case 202: case 204:
           process.stdout.write('-');
-          if (callback) callback(null, head, body);
+          callback(null, head, body);
           break;
         case 301: case 302:
           log.error(`HTTP Request Failed. Status Code: ${stat}`);
-          if (callback) callback(new Error(body));
+          callback({ error: { name: stat, message: body }});
           break; 
         case 400: case 401: case 402: case 403: case 404:
           log.error(`HTTP Request Failed. Status Code: ${stat}`);
-          if (callback) callback(new Error(body));
+          callback({ error: { name: stat, message: body }});
           break; 
         case 500: case 501: case 502: case 503: case 504: case 505:
           process.stdout.write('x');
@@ -115,19 +175,79 @@ const get2 = function(url, query, callback) {
         default:
           process.stdout.write('?');
           log.warn(`HTTP Request Failed. Status Code: ${stat}`);
-          if (callback) callback(new Error(body));
+          callback({ error: { name: stat, message: body }});
           break;
       }
     });
   });
   req.on('error', function(err) {
     log.error(`Problem with HTTP Request: ${err.code}`);
-    log.trace(`${err.message}`);
-    log.trace(`${err.stack}`);
-    if (callback) callback(err);
+    callback({ error: { name: err.code, message: err.message }});
   });
 };
 module.exports.get2 = get2;
+
+/*
+ * HTTPS GET request
+ *
+ * @param {string} url - 
+ * @param {object} query -
+ * @param {function} callback -
+ */
+const getJSON2 = function(url, query, callback) {  
+  url = require('url').parse(url);
+  let hostname  = url.hostname
+    , port      = url.port || 443
+    , path      = url.pathname;
+  if (query) path += '?' + require('querystring').stringify(query);
+  const client = require('https');
+  const req = client.get({
+    host: hostname
+    , port: port
+    , path: path
+  }, function(res) {
+    const stat = res.statusCode;
+    const head = res.headers;
+    res.setEncoding('utf8');
+    let body = '';
+    res.on('data', function(chunk) { body += chunk; });
+    res.on('end', function() {
+      switch (stat) {
+        case 101: case 102: case 103: case 104: case 105: case 106:
+          log.error(`HTTP Request Failed. Status Code: ${stat}`);
+          callback({ error: { name: stat, message: JSON.parse(body) }});
+          break; 
+        case 200: case 201: case 202: case 204:
+          process.stdout.write('-');
+          callback(null, head, JSON.parse(body));
+          break;
+        case 301: case 302:
+          log.error(`HTTP Request Failed. Status Code: ${stat}`);
+          callback({ error: { name: stat, message: JSON.parse(body) }});
+          break; 
+        case 400: case 401: case 402: case 403: case 404:
+          log.error(`HTTP Request Failed. Status Code: ${stat}`);
+          callback({ error: { name: stat, message: JSON.parse(body) }});
+          break; 
+        case 500: case 501: case 502: case 503: case 504: case 505:
+          process.stdout.write('x');
+          log.warn(`HTTP Request Failed. Status Code: ${stat}`);
+          get2(url, callback);
+          break;
+        default:
+          process.stdout.write('?');
+          log.warn(`HTTP Request Failed. Status Code: ${stat}`);
+          callback({ error: { name: stat, message: JSON.parse(body) }});
+          break;
+      }
+    });
+  });
+  req.on('error', function(err) {
+    log.error(`Problem with HTTP Request: ${err.code}`);
+    callback({ error: { name: err.code, message: err.message }});
+  });
+};
+module.exports.getJSON2 = getJSON2;
 
 /*
  * HTTPS POST request with NV data as the request body
@@ -183,19 +303,19 @@ const post2 = function(url, auth, body, callback) {
       switch (stat) {
         case 101: case 102: case 103: case 104: case 105: case 106:
           log.error(`HTTP Request Failed. Status Code: ${stat}`);
-          if (callback) callback(new Error(body));
+          callback({ error: { name: stat, message: body }});
           break; 
         case 200: case 201: case 202: case 204:
           process.stdout.write('-');
-          if (callback) callback(null, head, body);
+          callback(null, head, body);
           break;
         case 301: case 302:
           log.error(`HTTP Request Failed. Status Code: ${stat}`);
-          if (callback) callback(new Error(body));
+          callback({ error: { name: stat, message: body }});
           break; 
         case 400: case 401: case 402: case 403: case 404:
           log.error(`HTTP Request Failed. Status Code: ${stat}`);
-          if (callback) callback(new Error(body));
+          callback({ error: { name: stat, message: body }});
           return; 
         case 500: case 501: case 502: case 503: case 504: case 505:
           process.stdout.write('x');
@@ -205,16 +325,14 @@ const post2 = function(url, auth, body, callback) {
         default:
           process.stdout.write('?');
           log.warn(`HTTP Request Failed. Status Code: ${stat}`);
-          if (callback) callback(new Error(body));
+          callback({ error: { name: stat, message: body }});
           break;
       }
     });
   });
   req.on('error', function(err) {
     log.error(`Problem with HTTP Request: ${err.code}`);
-    log.trace(`${err.message}`);
-    log.trace(`${err.stack}`);
-    if (callback) callback(err);
+    callback({ error: { name: err.code, message: err.message }});
   });
   req.write(body);
   req.end();
@@ -262,19 +380,19 @@ const postData = function(url, body, callback) {
       switch (stat) {
         case 101: case 102: case 103: case 104: case 105: case 106:
           log.error(`HTTP Request Failed. Status Code: ${stat}`);
-          if (callback) callback(new Error(body));
+          callback({ error: { name: stat, message: body }});
           break; 
         case 200: case 201: case 202: case 204:
           process.stdout.write('-');
-          if (callback) callback(null, head, body);
+          callback(null, head, body);
           break;
         case 301: case 302:
           log.error(`HTTP Request Failed. Status Code: ${stat}`);
-          if (callback) callback(new Error(body));
+          callback({ error: { name: stat, message: body }});
           break; 
         case 400: case 401: case 402: case 403: case 404:
           log.error(`HTTP Request Failed. Status Code: ${stat}`);
-          if (callback) callback(new Error(body));
+          callback({ error: { name: stat, message: body }});
           return; 
         case 500: case 501: case 502: case 503: case 504: case 505:
           process.stdout.write('x');
@@ -284,16 +402,14 @@ const postData = function(url, body, callback) {
         default:
           process.stdout.write('?');
           log.warn(`HTTP Request Failed. Status Code: ${stat}`);
-          if (callback) callback(new Error(body));
+          callback({ error: { name: stat, message: body }});
           break;
       }
     });
   });
   req.on('error', function(err) {
     log.error(`Problem with HTTP Request: ${err.code}`);
-    log.trace(`${err.message}`);
-    log.trace(`${err.stack}`);
-    if (callback) callback(err);
+    callback({ error: { name: err.code, message: err.message }});
   });
   req.write(body);
   req.end();
@@ -353,19 +469,19 @@ const postData2 = function(url, auth, body, callback) {
       switch (stat) {
         case 101: case 102: case 103: case 104: case 105: case 106:
           log.error(`HTTP Request Failed. Status Code: ${stat}`);
-          if (callback) callback(new Error(body));
+          callback({ error: { name: stat, message: body }});
           break; 
         case 200: case 201: case 202: case 204:
           process.stdout.write('-');
-          if (callback) callback(null, head, body);
+          callback(null, head, body);
           break;
         case 301: case 302:
           log.error(`HTTP Request Failed. Status Code: ${stat}`);
-          if (callback) callback(new Error(body));
+          callback({ error: { name: stat, message: body }});
           break; 
         case 400: case 401: case 402: case 403: case 404:
           log.error(`HTTP Request Failed. Status Code: ${stat}`);
-          if (callback) callback(new Error(body));
+          callback({ error: { name: stat, message: body }});
           return; 
         case 500: case 501: case 502: case 503: case 504: case 505:
           process.stdout.write('x');
@@ -375,16 +491,14 @@ const postData2 = function(url, auth, body, callback) {
         default:
           process.stdout.write('?');
           log.warn(`HTTP Request Failed. Status Code: ${stat}`);
-          if (callback) callback(new Error(body));
+          callback({ error: { name: stat, message: body }});
           break;
       }
     });
   });
   req.on('error', function(err) {
     log.error(`Problem with HTTP Request: ${err.code}`);
-    log.trace(`${err.message}`);
-    log.trace(`${err.stack}`);
-    if (callback) callback(err);
+    callback({ error: { name: err.code, message: err.message }});
   });
   req.write(body);
   req.end();
@@ -444,19 +558,19 @@ const postJson2 = function(url, auth, body, callback) {
       switch (stat) {
         case 101: case 102: case 103: case 104: case 105: case 106:
           log.error(`HTTP Request Failed. Status Code: ${stat}`);
-          if (callback) callback(new Error(body));
+          callback({ error: { name: stat, message: body }});
           break; 
         case 200: case 201: case 202: case 204:
           process.stdout.write('-');
-          if (callback) callback(null, head, body);
+          callback(null, head, body);
           break;
         case 301: case 302:
           log.error(`HTTP Request Failed. Status Code: ${stat}`);
-          if (callback) callback(new Error(body));
+          callback({ error: { name: stat, message: body }});
           break; 
         case 400: case 401: case 402: case 403: case 404:
           log.error(`HTTP Request Failed. Status Code: ${stat}`);
-          if (callback) callback(new Error(body));
+          callback({ error: { name: stat, message: body }});
           return; 
         case 500: case 501: case 502: case 503: case 504: case 505:
           process.stdout.write('x');
@@ -466,16 +580,14 @@ const postJson2 = function(url, auth, body, callback) {
         default:
           process.stdout.write('?');
           log.warn(`HTTP Request Failed. Status Code: ${stat}`);
-          if (callback) callback(new Error(body));
+          callback({ error: { name: stat, message: body }});
           break;
       }
     });
   });
   req.on('error', function(err) {
     log.error(`Problem with HTTP Request: ${err.code}`);
-    log.trace(`${err.message}`);
-    log.trace(`${err.stack}`);
-    if (callback) callback(err);
+    callback({ error: { name: err.code, message: err.message }});
   });
   req.write(body);
   req.end();

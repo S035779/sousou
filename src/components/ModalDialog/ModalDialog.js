@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactModal from 'react-modal';
-import { log } from 'Utilities/webutils';
+import { log } from '../../utils/webutils';
 
 const pspid = 'ModalDialogView';
 
@@ -46,16 +46,16 @@ class ModalDialog extends React.Component {
   }
 
   handleOpenModal() {
-    this.logInfo('handleOpenModal');
+    //this.logInfo('handleOpenModal');
     this.setState({ showModal: true });
   }
 
   handleAfterOpen() {
-    this.logInfo('handleAfterOpen');
+    //this.logInfo('handleAfterOpen');
   }
 
   handleCloseModal() {
-    this.logInfo('handleCloseModal');
+    //this.logInfo('handleCloseModal');
     this.setState({ showModal: false });
   }
 

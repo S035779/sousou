@@ -1,7 +1,7 @@
 import React from 'react';
-import AppAction from 'Actions/AppAction'
-import std from 'Utilities/stdutils';
-import { log } from 'Utilities/webutils';
+import AppAction from '../../actions/AppAction'
+import std from '../../utils/stdutils';
+import { log } from '../../utils/webutils';
 
 const receiver_email = process.env.PAYPAL_ID;
 const env = process.env.NODE_ENV || 'development';
@@ -27,7 +27,7 @@ class Credit extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      custom: std.dateFormat(new Date(), 'yyMMdd01ccc')
+      custom: std.formatDate(new Date(), 'yyMMdd01ccc')
       , receiver_email: receiver_email
       , mc_gross: props.options.total
       , mc_currency: props.options.currency.join()
@@ -39,13 +39,13 @@ class Credit extends React.Component {
   }
 
   handleClickClose(e) {
-    this.logInfo('handleClickClose');
+    //this.logInfo('handleClickClose');
     e.preventDefault();
     this.props.onReturn();
   }
 
   handleClickButton(e) {
-    this.logInfo('handleClickButton');
+    //this.logInfo('handleClickButton');
     e.preventDefault();
     AppAction.createCredit(Object.assign({}, this.props.options
       , { credit_validate: this.state }));
@@ -160,7 +160,7 @@ class Credit extends React.Component {
   }
 
   render() {
-    console.log(this.state);
+    //console.log(this.state);
     const iframe_styles = {
       width: '100%', height: '500px', border: 'none', overflow: 'hidden'
     };

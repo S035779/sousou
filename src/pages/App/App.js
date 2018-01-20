@@ -1,29 +1,36 @@
 import querystring from 'querystring';
 import React from 'react';
 import { Container } from 'flux/utils';
-import appStore from 'Stores/appStore';
-import AppAction from 'Actions/AppAction';
-import AppHeader from 'Components/AppHeader/AppHeader';
-import AppFooter from 'Components/AppFooter/AppFooter';
-import AppBody from 'Components/AppBody/AppBody';
+import AppAction from '../../actions/AppAction';
+import { getStores, getState } from '../../stores';
+import AppHeader from '../../components/AppHeader/AppHeader';
+import AppFooter from '../../components/AppFooter/AppFooter';
+import AppBody from '../../components/AppBody/AppBody';
 
 class App extends React.Component {
   static getStores() {
-    return [appStore];
+    return getStores(['appStore']);
   }
 
   static calculateState() {
-    return appStore.getState();
+    return getState('appStore');
+  }
+
+  static prefetch() {
+    const { length, weight, from, usd, jpy } = JSON.parse(
+      document.getElementById('initial-data').getAttribute('data-init'));
+    AppAction.fetchShipping({ length, weight, from });
+    AppAction.fetchCurrency({ usd, jpy });
+    return;
   }
 
   componentDidMount() {
-    const { length, weight, from, usd, jpy } = this.props;
-    AppAction.fetchShipping({ length, weight, from });
-    AppAction.fetchCurrency({ usd, jpy });
+    App.prefetch();
   }
 
   render() {
-    const { language } = this.props;
+    const { language } = JSON.parse(
+      document.getElementById('initial-data').getAttribute('data-init'));
     return <div>
       <AppHeader language={language} />
       <AppBody

@@ -1,8 +1,6 @@
 import { ReduceStore } from 'flux/utils';
-import dispatcher from 'Main/dispatcher';
-import AppAction from 'Actions/AppAction';
 
-class AppStore extends ReduceStore<number> {
+class AppStore extends ReduceStore {
   getInitialState() {
     return { 
       length: 0
@@ -64,6 +62,8 @@ class AppStore extends ReduceStore<number> {
   
   reduce(state, action) {
     switch (action.type) { 
+      case 'config/rehydrate':
+        return action.state;
       case 'item/create/credit':
         return Object.assign({}, state, {
           results:    action.results
@@ -81,14 +81,16 @@ class AppStore extends ReduceStore<number> {
         });
       case 'config/fetch/shipping':
         return Object.assign({}, state, {
-          length:     action.length
+          results:    action.results
+          , length:     action.length
           , weight:   action.weight
           , from:     action.from
           , shipping: action.shipping
         });
       case 'config/fetch/currency':
         return Object.assign({}, state, {
-          usd:      action.usd
+          results:    action.results
+          , usd:      action.usd
           , jpy:    action.jpy
           , currency: action.currency
         });
@@ -97,4 +99,4 @@ class AppStore extends ReduceStore<number> {
     } 
   } 
 }
-export default new AppStore(dispatcher);
+export default AppStore;

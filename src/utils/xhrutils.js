@@ -41,7 +41,7 @@ var get = function(url, data, success, error) {
           success(request.responseText);
         }
       } else {
-        error(request.statusText);
+        error(request.responseText);
       }
     }
   };
@@ -51,6 +51,40 @@ var get = function(url, data, success, error) {
   request.send(null);
 };
 module.exports.get = get;
+
+/**
+ * getJSON
+ *
+ * @param {string} url
+ * @param {object} data 
+ * @param {function} success 
+ * @param {function} error 
+ */
+var getJSON = function(url, data, success, error) {
+  var request = new XMLHttpRequest();
+  request.open("GET", url + "?" + encodeFormData(data));
+  request.onreadystatechange = function() {
+    if (request.readyState === 4) {
+      if (request.status === 200) {
+        var type = request.getResponseHeader("Content-Type");
+        if (type.indexOf("xml") !== -1 && request.responseXML) {
+          success(request.responseXML);
+        } else if (type === "application/json; charset=utf-8") {
+          success(JSON.parse(request.responseText));
+        } else {
+          success(request.responseText);
+        }
+      } else {
+        error(JSON.parse(request.responseText));
+      }
+    }
+  };
+  request.onerror = function(e) {
+    error(JSON.parse(request.statusText));
+  };
+  request.send(null);
+};
+module.exports.getJSON = getJSON;
 
 /**
  * post
@@ -75,7 +109,7 @@ var post = function(url, data, success, error) {
           success(request.responseText);
         }
       } else {
-        error(request.statusText);
+        error(request.responseText);
       }
     }
   };
@@ -111,7 +145,7 @@ var getData = function(url, data, success, error) {
           success(request.responseText);
         }
       } else {
-        error(request.statusText);
+        error(request.responseText);
       }
     }
   };
@@ -145,7 +179,7 @@ var postData = function(url, data, success, error) {
           success(request.responseText);
         }
       } else {
-        error(request.statusText);
+        error(request.responseText);
       }
     }
   };
@@ -181,7 +215,7 @@ var postXML = function(url, data, success, error) {
           success(request.responseText);
         }
       } else {
-        error(request.statusText);
+        error(request.responseText);
       }
     }
   };
@@ -219,7 +253,7 @@ var postJSON = function(url, data, success, error) {
           success(request.responseText);
         }
       } else {
-        error(request.statusText);
+        error(JSON.parse(request.responseText));
       }
     }
   };
@@ -247,7 +281,7 @@ var putJSON = function(url, data, success, error) {
       if (request.status === 200) {
         success(request);
       } else {
-        error(request.statusText);
+        error(request.responseText);
       }
     }
   };

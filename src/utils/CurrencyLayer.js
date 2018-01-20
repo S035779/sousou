@@ -30,44 +30,62 @@ class CurrencyLayer {
     switch(operation) {
       case 'list':
         return new Promise((resolve, reject) => {
-          net.get(url, query, (err, head, body) => {
+          net.getJSON(url, query, (err, head, body) => {
             if(err) reject(err);
-            resolve(JSON.parse(body));
+            if(!body.success)
+              reject({ name: `Error(${body.error.code})`
+                , message: body.error.info});
+            resolve(body);
           });
         });
       case 'live':
         return new Promise((resolve, reject) => {
-          net.get(url, query, (err, head, body) => {
+          net.getJSON(url, query, (err, head, body) => {
             if(err) reject(err);
-            resolve(JSON.parse(body));
+            //if(!body.success)
+            //  reject({ name: `Error(${body.error.code})`
+            //    , message: body.error.info});
+            resolve(body);
           });
         });
       case 'historical':
         return new Promise((resolve, reject) => {
-          net.get(url, query, (err, head, body) => {
+          net.getJSON(url, query, (err, head, body) => {
             if(err) reject(err);
-            resolve(JSON.parse(body));
+            if(!body.success)
+              reject({ name: `Error(${body.error.code})`
+                , message: body.error.info});
+            resolve(body);
           });
         });
       case 'convert':
         return new Promise((resolve, reject) => {
-          net.get2(url, query, (err, head, body) => {
+          net.getJSON2(url, query, (err, head, body) => {
             if(err) reject(err);
-            resolve(JSON.parse(body));
+            if(!body.success)
+              reject({ name: `Error(${body.error.code})`
+                , message: body.error.info});
+            resolve(body);
           });
         });
       case 'timeframe':
         return new Promise((resolve, reject) => {
-          net.get2(url, query, (err, head, body) => {
+          net.getJSON2(url, query, (err, head, body) => {
             if(err) reject(err);
-            resolve(JSON.parse(body));
+            if(!body.success)
+              reject({ name: `Error(${body.error.code})`
+                , message: body.error.info});
+            resolve(body);
           });
         });
       case 'change':
         return new Promise((resolve, reject) => {
-          net.get2(url, query, (err, head, body) => {
+          net.getJSON2(url, query, (err, head, body) => {
             if(err) reject(err);
-            resolve(JSON.parse(body));
+            if(!body.success)
+              reject({ name: `Error(${body.error.code})`
+                , message: body.error.info});
+            resolve(body);
           });
         });
       default:
@@ -148,12 +166,12 @@ class CurrencyLayer {
 
   fetchCurrency({ usd, jpy }) {
     return Rx.Observable.fromPromise(this.getLive('JPY', 'USD'))
-      .map(obj => obj.quotes.USDJPY)
+      //.map(R.tap(this.logTrace.bind(this)))
+      .map(obj => 110 /*obj.quotes.USDJPY*/)
       .map(val => ({
         USDJPY: val
         , USD: Number(usd)*val
-        , JPY: Number(jpy) }))
-      //.map(R.tap(this.logTrace.bind(this)));
+        , JPY: Number(jpy) }));
   }
 
   logTrace(message) {

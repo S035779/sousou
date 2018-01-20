@@ -27,7 +27,23 @@ if(env === 'development') {
   ipn_api = ipn_live;
 }
 const pspid = 'paypal-api';
-let cache = new Object();
+let cache = {
+  store: {},
+  maxAge:     5400 * 1000,  // 1.5 hour
+  cleanAfter: 7200 * 1000,  // 2.0 hour
+  cleanedAt:  0,            // 
+  clean: function(now) {
+    if(now - this.cleanAfter > this.cleanedAt) {
+      this.cleanedAt = now;
+      const that = this;
+      Object.keys(this.store).forEach( id => {
+        if(now > that.store[id].timestamp + that.maxAge) {
+          delete that.store[id];
+        }
+      });
+    }
+  }
+};
 
 /**
  * PayPalPayment Api Client class.
@@ -48,12 +64,14 @@ class PayPalPayment {
   }
 
   request(operation, { query, auth, body }) {
+    cache.clean(Date.now());
     switch(operation) {
       case '/cache':
         return new Promise((resolve, reject) => {
-          const data = cache[body];
-          if(!data) reject(new Error('UNKNOWN'));
-          resolve(data);
+          std.invoke2(() => cache.store[body]
+            , data => resolve(data)
+            , err => reject(new Error('UNKNOWN'))
+            , 0, 5 * 1000, 30 * 1000);
         });
       case '/ipnpb':
         return new Promise((resolve, reject) => {
@@ -181,7 +199,8 @@ class PayPalPayment {
         if(isComplete) {
           log.info('Verified IPN: IPN message for Transaction ID:'
             , req.txn_id, 'is verified.');
-          cache[req.custom] = req;
+          cache.store[req.custom]
+            = { content: req, timestamp: Date.now() };
           result = 'VERIFIED';
         } else {
           log.error('Payment status not Completed'); 

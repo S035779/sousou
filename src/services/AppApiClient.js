@@ -1,6 +1,6 @@
-import std from 'Utilities/stdutils';
-import xhr from 'Utilities/xhrutils';
-import { log } from 'Utilities/webutils';
+import std from '../utils/stdutils';
+import xhr from '../utils/xhrutils';
+import { log } from '../utils/webutils';
 
 const env = process.env.NODE_ENV || 'development';
 const productions_access_key = process.env.PAYPAL_ACCESS_KEY;
@@ -23,7 +23,7 @@ if (env === 'development') {
   log.config('console', 'json', 'webpay-renderer', 'INFO');
 }
 log.info(`${pspid}>`, 'Paypal Environment:', paypal_env);
-log.info(`${pspid}>`, 'Paypal Payment URI:', api);
+log.info(`${pspid}>`, 'PayPal Payment API URI:', api);
 
 export default {
   request(operation, options) {
@@ -119,13 +119,13 @@ export default {
           });
       case '/shipping':
         return new Promise((resolve, reject) => {
-          xhr.get(uri, options
+          xhr.getJSON(uri, options
             , obj => { resolve(obj); }
             , err => { reject(err); });
           });
       case '/currency':
         return new Promise((resolve, reject) => {
-          xhr.get(uri, options
+          xhr.getJSON(uri, options
             , obj => { resolve(obj); }
             , err => { reject(err); });
           });
@@ -272,11 +272,14 @@ export default {
   },
   logInfo(request) {
     log.info(`${pspid}>`, 'Request:', request);
+    //console.info(`${pspid}>`, 'Request:', request);
   },
   logTrace(response) {
     log.trace(`${pspid}>`, 'Response:', response);
+    //console.trace(`${pspid}>`, 'Response:', response);
   },
-  logError(error) {
-    log.error(`${pspid}>`, error.name, error.message);
+  logError({ error }) {
+    log.error(`${pspid}>`, error.name, ':', error.message);
+    //console.error(`${pspid}>`, error.name, error.message);
   },
 }

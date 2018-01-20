@@ -1,13 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom'
-import Credit from 'Components/Credit/Credit';
-import Modal from 'Components/ModalDialog/ModalDialog';
-import Radio from 'Components/Radio/Radio';
-import Notice from 'Components/Notice/Notice';
-import AppAction from 'Actions/AppAction';
-import std from 'Utilities/stdutils';
-import { log } from 'Utilities/webutils';
-import postal from 'Utilities/postCodeRegex';
+import AppAction from '../../actions/AppAction';
+import Credit from '../../components/Credit/Credit';
+import Modal from '../../components/ModalDialog/ModalDialog';
+import Radio from '../../components/Radio/Radio';
+import Notice from '../../components/Notice/Notice';
+import std from '../../utils/stdutils';
+import { log } from '../../utils/webutils';
 
 const pspid = 'AppBodyView';
 
@@ -66,19 +65,17 @@ class AppBody extends React.Component {
   }
 
   handleClickClose(name, e) {
-    this.logInfo('handleClickClose');
+    //this.logInfo('handleClickClose');
     switch(name) {
       case 'credit':
         this.setState({ showModalCredit: false });
       default:
-        this.logError({ name: 'Error:'
-          , message: 'Unknown submit command.' });
         break;
     }
   }
 
   handleClickButton(name, e) {
-    this.logInfo('handleClickButton');
+    //this.logInfo('handleClickButton');
     switch(name) {
       case 'credit':
         this.setState({ showModalCredit: false });
@@ -87,8 +84,6 @@ class AppBody extends React.Component {
         this.setState({ results: null, showModalResults: false });
         break;
       default:
-        this.logError({ name: 'Error:'
-          , message: 'Unknown submit command.' });
         break;
     }
   }
@@ -96,8 +91,16 @@ class AppBody extends React.Component {
   handleChangeText(name, e) {
     let newState = {};
     switch(name) {
-      case 'city':
-        newState[name] = e.target.value;
+      case 'postal_code':
+        newState ={
+          postal_code: e.target.value
+          , state:    document.getElementById('state').value
+          , city:   document.getElementById('city').value
+          , line1:  document.getElementById('line1').value
+          , line2:  document.getElementById('line2').value
+          , recipient_name:
+                    document.getElementById('recipient_name').value
+        };
         this.setState(newState);
         break;
       default:
@@ -107,22 +110,44 @@ class AppBody extends React.Component {
     }
   }
 
+  handleFocusText(name, e) {
+    let newState = {};
+    switch(name) {
+      default:
+        newState ={
+          state:    document.getElementById('state').value
+          , city:   document.getElementById('city').value
+          , line1:  document.getElementById('line1').value
+          , line2:  document.getElementById('line2').value
+          , recipient_name:
+                    document.getElementById('recipient_name').value
+        };
+        this.setState(newState);
+        break;
+    }
+  }
+
   handleChangeCheckbox(name, e) {
     let newState = {};
-    newState[name] = e.target.checked;
-    this.setState(newState);
+    switch(name) {
+      default:
+        newState[name] = e.target.checked;
+        this.setState(newState);
+        break;
+    }
   }
 
   handleChangeRadio(name, e) {
     let newState = {};
-    newState[name] = e.target.value;
     switch(name) {
       case 'delivery':
+        newState[name] = e.target.value;
         const newAddress
           = this.setShippingAddress(e.target.value, this.isLangJp());
         this.setState(Object.assign({}, newState, newAddress));
         break;
       default:
+        newState[name] = e.target.value;
         this.setState(newState);
         break;
     }
@@ -135,22 +160,24 @@ class AppBody extends React.Component {
     for( let i=0; i<options.length; i++) {
       if(options[i].selected) values.push(options[i].value);
     }
-    newState[name] = values;
     switch(name) {
-      case 'country_code':
-        const shipping = this.props.shipping;
-        const newCountry
-          = this.setShippingCountry(values.join()
-            , this.props.shipping, this.isLangJp());
-        this.setState(Object.assign({}, newState, newCountry));
-        break;
+      //case 'country_code':
+      //  newState[name] = values;
+      //  const shipping = this.props.shipping;
+      //  const newCountry
+      //    = this.setShippingCountry(values.join()
+      //      , this.props.shipping, this.isLangJp());
+      //  this.setState(Object.assign({}, newState, newCountry));
+      //  break;
       default:
+        newState[name] = values;
         this.setState(newState);
         break;
     }
   }
 
   handleSubmit(e) {
+    //this.logInfo('handleSubmit');
     e.preventDefault();
     const state = this.state;
     if(!this.isValid(state)) return;
@@ -286,25 +313,21 @@ class AppBody extends React.Component {
     let newAddress = {};
     newAddress['japan'] = {
       country_code:     [ 'JP' ]
-      , state:          isLangJp ? '日本'         : 'Japan'
       , postal_code:    isLangJp ? '135-0046'     : '135-0046'
-      , city:           isLangJp ? '東京都'       : 'TOKYO'
-      , line1:          isLangJp ? '江東区'       : 'Koto-ku,'
-      , line2:          isLangJp ? '牡丹1-2-2'
-                                 : 'Address 1-2-2 Botan,'
-      , recipient_name: isLangJp ? '東京オフィス' : 'TOKYO OFFICE'
+      , state:          isLangJp ? '東京都'       : 'TOKYO'
+      , city:           isLangJp ? '江東区'       : 'Koto-ku,'
+      , line1:          isLangJp ? '牡丹'
+                                 : 'Botan,'
+      , line2:          isLangJp ? '1-2-2, 東京オフィス'
+                                 : 'Address 1-2-2, TOKYO OFFICE'
     };
     newAddress['myanmer'] = {
       country_code:     [ 'MM' ]
-      , state:          isLangJp ? 'ミャンマー'   : 'Myanmer'
-      , postal_code:    isLangJp ? '11181'        : '11181'
-      , city:           isLangJp ? 'YANGON'       : 'YANGON'
-      , line1:          isLangJp ? 'Hledan Center, Kamayut Tsp'
-                                 : 'Hledan Center, Kamayut Tsp'
-      , line2:          isLangJp ? '#307, 3rd Floor'
-                                 : '#307, 3rd Floor'
-      , recipient_name: isLangJp ? 'ミャンマーオフィス'
-                                 : 'MYANMER OFFICE'
+      , postal_code:    '11181'
+      , state:          'YANGON'
+      , city:           'Kamayut Tsp'
+      , line1:          'Hledan Center'
+      , line2:          '#307, 3rd Floor, MYANMER OFFICE'
     };
     return value === 'japan' || value === 'myanmer'
       ? newAddress[value]
@@ -319,10 +342,10 @@ class AppBody extends React.Component {
       };
   }
 
-  setShippingCountry(value, shipping, isLangJp) {
-    const ems =  shipping.ems.filter(obj => obj.code_2 === value);
-    return { state: isLangJp ? ems[0].name_jp : ems[0].name_en };
-  }
+  //setShippingCountry(value, shipping, isLangJp) {
+  //  const ems =  shipping.ems.filter(obj => obj.code_2 === value);
+  //  return { state: isLangJp ? ems[0].name_jp : ems[0].name_en };
+  //}
 
   componentWillReceiveProps(nextProps) {
     //log.trace(nextProps);
@@ -343,7 +366,7 @@ class AppBody extends React.Component {
       this.setState({ usd: nextProps.usd, jpy: nextProps.jpy });
   }
 
-  componentDidMount() {
+  componentDidMount(prevProps, prevState) {
     const buttonNode = ReactDOM.findDOMNode(this.refs.signup_next);
     const el = this.el = document.createElement('div');
     el.setAttribute('id','paypal-button');
@@ -417,10 +440,9 @@ class AppBody extends React.Component {
   }
 
   isShipping(shipping, currency, state) {
-    console.log(shipping);
     const isJpp = obj => shipping.jpp.filter(jpp =>
-      jpp.name_jp === obj.city.toUpperCase()
-        || jpp.name_en === obj.city.toUpperCase())[0];
+      jpp.name_jp === obj.state.toUpperCase()
+        || jpp.name_en === obj.state.toUpperCase())[0];
     const isEms = obj => shipping.ems.filter(ems =>
       ems.code_2 === obj.country_code.join()
       && (ems.ems1 === 'OK' || ems.ems2_1 === 'OK' ||
@@ -479,11 +501,11 @@ class AppBody extends React.Component {
       && state.payment        && (state.payment.join() !== '')
       && state.first_name
       && state.last_name
-      && state.phone          && !this.isNotNumber(state.phone)
+      && state.phone          && !this.isNotPhone(state.phone)
       && state.email          && !this.isNotEmail(state.email)
       //&& state.confirm_email  && (state.email === state.confirm_email)
       && state.postal_code
-      && !this.isNotPostal(state.country_code.join(), state.postal_code)
+      && !this.isNotPostal(state.postal_code, state.country_code.join())
       && state.line1
       && state.line2
       && state.delivery
@@ -525,24 +547,28 @@ class AppBody extends React.Component {
   */
 
   isNotEmail(val) {
-    return !/^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i.test(val);
+    return !std.regexEmail(val);
   }
 
-  isNotNumber(val) {
-    return !/^[\d,-]+$/.test(val);
+  //isNotNumber(val) {
+  //  return !/^[\d,-]+$/.test(val);
+  //}
+
+  isNotPhone(val) {
+    return !std.regexNumber(val);
   }
 
-  isNotPostal(country_code, val) {
-    return !postal.regex(country_code, val);
+  isNotPostal(val, country_code) {
+    return !std.regexZip(val, country_code);
   }
 
-  checkConfirmEmail(string, isLangJp) {
-    return this.state.email !== string
-        ? isLangJp
-          ? 'メールアドレスを再入力してください。'
-          : 'Type password again.'
-        : '';
-  }
+  //checkConfirmEmail(string, isLangJp) {
+  //  return this.state.email !== string
+  //      ? isLangJp
+  //        ? 'メールアドレスを再入力してください。'
+  //        : 'Type password again.'
+  //      : '';
+  //}
 
   checkEmail(value, isLangJp) {
     return this.isNotEmail(value)
@@ -553,26 +579,34 @@ class AppBody extends React.Component {
   }
   
   //checkPostal(country_code, postal_code, isLangJp) {
-  //  return isNotPostal(country_code, postal_code)
+  //  return isNotPostal(postal_code, country_code)
   //      ? isLangJp
   //        ? '正しい郵便番号を入力してください。'
   //        : 'Please enter the correct postal code.'
   //      : '';
   //}
 
-  checkNumber(value1, value2, isLangJp) {
-    return value2 != null
-      ? ( this.isNotNumber(value1) || this.isNotNumber(value2) )
-        ? isLangJp
-          ? '半角数字を入力して下さい。' 
-          : 'Please enter a number.'
-        : ''
-      : ( this.isNotNumber(value1) )
+  checkPhone(value, isLangJp) {
+    return this.isNotPhone(value)
         ? isLangJp
           ? '半角数字を入力して下さい。'
           : 'Please enter a number.'
         : '';
   }
+
+  //checkNumber(value1, value2, isLangJp) {
+  //  return value2 != null
+  //    ? ( this.isNotNumber(value1) || this.isNotNumber(value2) )
+  //      ? isLangJp
+  //        ? '半角数字を入力して下さい。' 
+  //        : 'Please enter a number.'
+  //      : ''
+  //    : ( this.isNotNumber(value1) )
+  //      ? isLangJp
+  //        ? '半角数字を入力して下さい。'
+  //        : 'Please enter a number.'
+  //      : '';
+  //}
 
   renderSelect(objs, key, value) {
     if(!objs) return null;
@@ -609,12 +643,12 @@ class AppBody extends React.Component {
   }
    
   logError(error) {
-    log.error(`${pspid}>`, error.name, error.message);
+    log.error(`${pspid}>`, error.name, ':', error.message);
   }
    
   render() {
     this.logTrace(this.state);
-    this.logTrace(this.payment);
+    //this.logTrace(this.payment);
     const shipping = this.props.shipping;
     const language = this.props.language;
     const isJP = this.isLangJp();
@@ -635,11 +669,11 @@ class AppBody extends React.Component {
     const confirm_email =isJP ? 'メールアドレス 確認' : 'Confirm E-Mail';
     const delivery = isJP ? 'お届け先' : 'Delivery address';
     const country_code = isJP ? '国名' : 'Country';
-    const state = isJP ? '州名' : 'State';
     const postal_code = isJP ? '郵便番号' : 'Zip Code';
-    const city = isJP ? '都市名' : 'City';
-    const line1 = isJP ? '市区町村名' : 'Municipality';
-    const line2 = isJP ? '地番・部屋番号' : 'A lot / Room Number';
+    const state = isJP ? '都道府県' : 'State';
+    const city = isJP ? '市区町村名' : 'City';
+    const line1 = isJP ? '地域' : 'Municipality';
+    const line2 = isJP ? '番地・部屋番号' : 'A lot / Room Number';
     const recipient_name = isJP ? '受取人名義' : 'Recipient Name';
     const quantity = isJP ? 'ご購入数' : 'Quantity';
     const currency = isJP ? '通貨' : 'Currency';
@@ -751,7 +785,7 @@ class AppBody extends React.Component {
     //const check_confirm_email
     //  = this.checkConfirmEmail(this.state.confirm_email, isJP);
     const check_phone
-      = this.checkNumber(this.state.phone, null, isJP);
+      = this.checkPhone(this.state.phone, isJP);
     //const check_postal_code
     //  = this.checkPostal(this.state.country_code.join()
     //    , this.state.postal_code);
@@ -1063,22 +1097,6 @@ class AppBody extends React.Component {
         <tr>
         {/*
           <th>
-          <label htmlFor="state">
-          {state} <span className="required-mark">required</span>
-          </label>
-          </th>
-        */}
-          <td>
-          <input type="text" name="state" id="state"
-            value={this.state.state}
-            onChange={this.handleChangeText.bind(this, 'state')}
-            placeholder={state}
-            className="required add-placeholder" />
-          </td>
-        </tr>
-        <tr>
-        {/*
-          <th>
           <label htmlFor="postal_code">
           {postal_code} <span className="required-mark">required</span>
           </label>
@@ -1088,11 +1106,29 @@ class AppBody extends React.Component {
           <input type="text" name="postal_code" id="postal_code"
             value={this.state.postal_code}
             onChange={this.handleChangeText.bind(this, 'postal_code')}
+            onFocus={this.handleFocusText.bind(this, 'postal_code')}
             className=" add-placeholder required"
             placeholder={postal_code} />
         {/*
           <span className="notes">{check_postal_code}</span>
         */}
+          </td>
+        </tr>
+        <tr>
+        {/*
+          <th>
+          <label htmlFor="state">
+          {state} <span className="required-mark">required</span>
+          </label>
+          </th>
+        */}
+          <td>
+          <input type="text" name="state" id="state"
+            value={this.state.state}
+            onChange={this.handleChangeText.bind(this, 'state')}
+            onFocus={this.handleFocusText.bind(this, 'state')}
+            placeholder={state}
+            className="required add-placeholder" />
           </td>
         </tr>
         <tr>
@@ -1107,6 +1143,7 @@ class AppBody extends React.Component {
           <input type="text" name="city" id="city"
             value={this.state.city}
             onChange={this.handleChangeText.bind(this, 'city')}
+            onFocus={this.handleFocusText.bind(this, 'city')}
             placeholder={city}
             className="required add-placeholder" />
           </td>
@@ -1123,6 +1160,7 @@ class AppBody extends React.Component {
           <input type="text" name="line1" id="line1"
             value={this.state.line1}
             onChange={this.handleChangeText.bind(this, 'line1')}
+            onFocus={this.handleFocusText.bind(this, 'line1')}
             placeholder={line1}
             className="required add-placeholder" />
           </td>
@@ -1139,6 +1177,7 @@ class AppBody extends React.Component {
           <input type="text" name="line2" id="line2"
             value={this.state.line2}
             onChange={this.handleChangeText.bind(this, 'line2')}
+            onFocus={this.handleFocusText.bind(this, 'line2')}
             placeholder={line2}
             className="required add-placeholder" />
           </td>
@@ -1153,6 +1192,7 @@ class AppBody extends React.Component {
           <input type="text" name="recipient_name" id="recipient_name"
             value={this.state.recipient_name}
             onChange={this.handleChangeText.bind(this, 'recipient_name')}
+            onFocus={this.handleFocusText.bind(this, 'recipient_name')}
             placeholder={recipient_name}
             className="add-placeholder"/>
           </td>

@@ -4,12 +4,16 @@ import path from 'path';
 import express from 'express';
 import bodyParser from 'body-parser';
 import React from 'react';
-import ReactDOMServer from 'react-dom/server';
+import { renderToStaticMarkup } from 'react-dom/server';
+//import { matchRoutes } from 'react-router-config';
+import Home from './pages/Home/Home';
+//import getRoutes from './routes';
+import { dehydrateState, getStores, createStores } from './stores';
+import { createDispatcher } from './dispatcher';
 import PayPalPayment from './utils/PayPalPayment';
 import CurrencyLayer from './utils/CurrencyLayer';
 import Shipping from './utils/Shipping';
 import Sendmail from './utils/Sendmail';
-import Home from './pages/Home/Home';
 import { logs as log } from './utils/logutils';
 
 dotenv.config()
@@ -53,11 +57,17 @@ app.use(log.connect());
 
 router.route('/')
 .get((req, res, next)     => {
-  const { language, length, weight, from, usd, jpy } = req.query;
-  if(!language) return res.sendStatus(404);
-  res.send('<!doctype html>\n' + ReactDOMServer.renderToStaticMarkup(
-    <Home language={language} length={length} weight={weight}
-      from={from} usd={usd} jpy={jpy} />));
+  //const branch = matchRouter(getRoutes(), req.originalUrl);
+  //const promises = branch.map(({ route, match }) =>
+  //  route.prefetch ? route.prefetch(match) : Promise.resolve(null));
+  const dispatcher = createDispatcher();
+  createStores(dispatcher);
+  //Promise.all(promises).then(() => {
+    const init = req.query;
+    const stat = dehydrateState();
+    res.send('<!doctype html>\n'
+      + renderToStaticMarkup(<Home init={init} stat={stat}/>));
+  //});
 })
 .put((req, res, next)     => { next(new Error('not implemented')); })
 .post((req, res, next)    => { next(new Error('not implemented')); })
@@ -76,7 +86,7 @@ router.route('/payment/credit')
     , err => {
       res.status(500)
         .send({ error: { name: err.name, message: err.message } });
-      log.error(err.name, err.message);
+      log.error(err.name, ':', err.message);
      }
     , ()  => { log.info('Completed to validate credit payment.'); }
   );
@@ -96,7 +106,7 @@ router.route('/payment/notify')
     , err => {
       res.status(500)
         .send({ error: { name: err.name, message: err.message } });
-      log.error(err.name, err.message);
+      log.error(err.name, ':', err.message);
     }
     , ()  => { log.info('Completed to validate notification.'); }
   );
@@ -113,7 +123,7 @@ router.route('/payment/create-payment')
     , err => {
       res.status(500)
         .send({ error: { name: err.name, message: err.message } });
-      log.error(err.name, err.message);
+      log.error(err.name, ':', err.message);
     }
     , ()  => { log.info('Completed to create payment.'); }
   );
@@ -131,7 +141,7 @@ router.route('/payment/execute-payment')
     , err => {
       res.status(500)
         .send({ error: { name: err.name, message: err.message } });
-      log.error(err.name, err.message);
+      log.error(err.name, ':', err.message);
     }
     , ()  => { log.info('Completed to execute payment.'); }
   );
@@ -149,7 +159,7 @@ router.route('/sendmail')
     , err => {
       res.status(500)
         .send({ error: { name: err.name, message: err.message } });
-      log.error(err.name, err.message);
+      log.error(err.name, ':', err.message);
     }
     , ()  => { log.info('Completed to create message.'); }
   );
@@ -165,7 +175,7 @@ router.route('/shipping')
     , err => {
       res.status(500)
         .send({ error: { name: err.name, message: err.message } });
-      log.error(err.name, err.message);
+      log.error(err.name, ':', err.message);
     }
     , ()  => { log.info('Completed to response shipping.'); }
   );
@@ -183,7 +193,7 @@ router.route('/currency')
     , err => {
       res.status(500)
         .send({ error: { name: err.name, message: err.message } });
-      log.error(err.name, err.message);
+      log.error(err.name, ':', err.message);
     }
     , ()  => { log.info('Completed to responce currency.'); }
   );

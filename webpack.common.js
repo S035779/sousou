@@ -41,12 +41,20 @@ module.exports = {
   output: {
     filename: '[name].bundle.js',
     path: path.resolve(__dirname, 'dist'),
-    publicPath: '/'
+    publicPath: '/',
+  },
+  externals: {
+    jquery: 'jQuery',
+    react: 'React',
+    'react-dom': 'ReactDOM',
+//    'react-router': 'ReactRouter',
+//    'react-router-dom': 'ReactRouterDOM',
+//    'react-router-config': 'ReactRouterConfig'
   },
   module: {
-    rules: [{ 
-        test: require.resolve('./src/utils/log4js.min.js'),
-        loader: 'exports-loader?Log4js'
+    rules: [{
+        test: require.resolve('./src/assets/js/log4js.min.js'),
+        use: 'exports-loader?Log4js'
       },{ 
         test: /\.js$/,
         loader: [ 'babel-loader' ]
