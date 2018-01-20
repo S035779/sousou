@@ -67,7 +67,9 @@ export default {
                 });
             }
             , onCancel: function() {
-              reject('Buyer cancelled the payment.');
+              reject({ error:
+                { name: 'Error', message: 'Buyer cancelled the payment.' }
+              });
             }
             , onError: function(err) {
               reject(err);
@@ -98,7 +100,9 @@ export default {
               });
             }
             , onCancel: function() {
-              reject('Buyer cancelled the payment.');
+              reject({ error:
+                { name: 'Error', message: 'Buyer cancelled the payment.' }
+              });
             }
             , onError: function(err) {
               reject(err);
