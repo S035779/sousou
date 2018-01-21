@@ -45,6 +45,7 @@ class AppStore extends ReduceStore {
         //  , day: ''
           , email: ''
         //  , confirm_email: ''
+          , area: 'domestic'
           , delivery: 'address'
           , payment: []
           , message: ''

@@ -236,10 +236,24 @@ label.error:before {
 	margin-right: 0.5em;
 }
 
+.category-group .area-field label {
+  display: inline-block;
+	padding: 0.375em;
+	margin-right: 0.5em;
+}
+
 .category-group .delivery-field label {
   display: inline-block;
 	padding: 0.375em;
 	margin-right: 0.5em;
+}
+
+/* area menu */
+.buynow_contactlast div.area {
+}
+
+.buynow_contactlast div.non-area {
+  display: none;
 }
 
 /* delivery menu */

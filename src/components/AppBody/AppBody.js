@@ -51,6 +51,7 @@ class AppBody extends React.Component {
     //  , day:            infomation.day
       , email:          infomation.email
     //  , confirm_email:  infomation.confirm_email
+      , area:           infomation.area
       , delivery:       infomation.delivery
       , payment:        infomation.payment
     //  , agreement:      infomation.agreement
@@ -301,6 +302,7 @@ class AppBody extends React.Component {
       //  , day:          state.day
         , email: state.email
       //  , confirm_email:  state.confirm_email
+        , area:         state.area
         , delivery:     state.delivery
         , payment:      state.payment
         , message:      state.message
@@ -508,6 +510,7 @@ class AppBody extends React.Component {
       && !this.isNotPostal(state.postal_code, state.country_code.join())
       && state.line1
       && state.line2
+      && state.area
       && state.delivery
       //&& state.agreement
     );
@@ -525,6 +528,7 @@ class AppBody extends React.Component {
       && next.phone         === prev.phone       
       && next.email         === prev.email       
       //&& next.confirm_email === prev.confirm_email
+      && next.area          === prev.area
       && next.delivery      === prev.delivery
       && next.country_code  === prev.country_code
       && next.state         === prev.state
@@ -655,18 +659,19 @@ class AppBody extends React.Component {
     
     const Information = isJP ? 'お客様の情報' : 'Your Information';
     const Delivery = isJP ? 'お引き渡し場所' : 'Place of delivery';
-    const Shipping = isJP ? 'お届け先' : 'Delivery address';
+    const Area = isJP ? '配送先' : 'Delivery address';
     const Quantity = isJP
       ? 'ご購入数と通貨' : 'Purchasing quantities and currency'; 
     const HowToBuy = isJP ? 'お支払い方法' : 'Payment method'; 
     const Message = isJP ? 'メッセージ' : 'Message';
 
     const name = isJP ? 'お名前' : 'Name';
-    const gender = isJP ? '性別' : 'Gender';
-    const birthday = isJP ? '誕生日' : 'Birthday';
+    //const gender = isJP ? '性別' : 'Gender';
+    //const birthday = isJP ? '誕生日' : 'Birthday';
     const phone = isJP ? '電話番号' : 'Phone';
     const email = isJP ? 'メールアドレス' : 'E-Mail';
-    const confirm_email =isJP ? 'メールアドレス 確認' : 'Confirm E-Mail';
+    //const confirm_email =isJP ? 'メールアドレス 確認' : 'Confirm E-Mail';
+    const area = isJP ? '配送先' : 'Delivery address';
     const delivery = isJP ? 'お届け先' : 'Delivery address';
     const country_code = isJP ? '国名' : 'Country';
     const postal_code = isJP ? '郵便番号' : 'Zip Code';
@@ -688,7 +693,9 @@ class AppBody extends React.Component {
     const year = isJP ? '年' : 'Year';
     const month = isJP ? '月' : 'Month';
     const day = isJP ? '日' : 'Day';
-    const delivery_address = isJP? '指定場所' : 'Delivery Address';
+    const area_domestic = isJP ? '日本国内' : 'Domestic delivery';
+    const area_oversea = isJP ? 'それ以外' : 'Oversea delivery';
+    const delivery_address = isJP ? '指定場所' : 'Delivery Address';
     const delivery_japan = isJP ? '日本本社' : 'Japan office';
     const delivery_myanmer = isJP ? 'ミャンマー支社' : 'Myanmar office';
     const delivery_check = isJP ? '住所を確認する' : 'Check the address';
@@ -777,6 +784,8 @@ class AppBody extends React.Component {
       ? this.renderSelect(opts_payment, 'name_jp', 'value')
       : this.renderSelect(opts_payment, 'name_en', 'value')
 
+    const select_area = this.state.area === 'domestic'
+      ? 'non-area' : 'area';
     const select_delivery = this.state.delivery === 'address'
       ? 'delivery' : 'non-delivery';
 
@@ -942,6 +951,67 @@ class AppBody extends React.Component {
       </fieldset>
       {/* Your Informatin */}
 
+      {/* Your Delivery Address */}
+      <fieldset className="category-group">
+        <legend>{Area}</legend>
+        <table><tbody>
+        <tr>
+        <th>
+        {/*
+          <label htmlFor="area">
+          {area} <span className="required-mark">required</span>
+          </label>
+        */}
+        </th>
+        <td>
+        <div className="area-field">
+        <Radio name="area"
+            value={this.state.area}
+            onChange={this.handleChangeRadio.bind(this, 'area')} >
+            <option value="domestic"
+              id="area_domestic"> {area_domestic} </option>
+            <option value="oversea"
+              id="area_oversea"> {area_oversea} </option>
+        </Radio>
+        </div>
+        </td>
+        </tr>
+        </tbody></table>
+      </fieldset>
+      {/* Your Shipping Address */}
+
+      {/* How to Buy */}
+      <div className={select_area}>
+      <fieldset className="category-group">
+        <legend>{HowToBuy}</legend>
+        <table><tbody>
+        <tr>
+        {/*
+          <th>
+          <label htmlFor="payment">
+          {payment} <span className="required-mark">required</span>
+          </label>
+          </th>
+        */}
+          <td>
+          <div>
+          <select name="payment" id="payment"
+            multiple={false}
+            value={this.state.payment}
+            onChange={this.handleChangeSelect.bind(this, 'payment')}
+            className="middle-field required">
+          <option value="">{payment}</option>
+          {select_payment}
+          </select>
+          </div>
+          <span className="notes">{notes_payment}</span>
+          </td>
+        </tr>
+        </tbody></table>
+      </fieldset>
+      </div>
+      {/* How to buy */}
+
       {/* Quantity & Currency */}
       <fieldset className="category-group">
         <legend>{Quantity}</legend>
@@ -1006,36 +1076,6 @@ class AppBody extends React.Component {
       </fieldset>
       {/* Quantity & Currency */}
 
-      {/* How to Buy */}
-      <fieldset className="category-group">
-        <legend>{HowToBuy}</legend>
-        <table><tbody>
-        <tr>
-        {/*
-          <th>
-          <label htmlFor="payment">
-          {payment} <span className="required-mark">required</span>
-          </label>
-          </th>
-        */}
-          <td>
-          <div>
-          <select name="payment" id="payment"
-            multiple={false}
-            value={this.state.payment}
-            onChange={this.handleChangeSelect.bind(this, 'payment')}
-            className="middle-field required">
-          <option value="">{payment}</option>
-          {select_payment}
-          </select>
-          </div>
-          <span className="notes">{notes_payment}</span>
-          </td>
-        </tr>
-        </tbody></table>
-      </fieldset>
-      {/* How to buy */}
-
       {/* Delivery */}
       <fieldset className="category-group">
         <legend>{Delivery}</legend>
@@ -1067,13 +1107,7 @@ class AppBody extends React.Component {
         </td>
         </tr>
         </tbody></table>
-      </fieldset>
-      {/* Delivery */}
-
-      {/* Your Shipping Address */}
       <div className={select_delivery}>
-      <fieldset className="category-group">
-        <legend>{Shipping}</legend>
         <table><tbody>
         <tr>
         {/*
@@ -1198,9 +1232,9 @@ class AppBody extends React.Component {
           </td>
         </tr>
         </tbody></table>
-      </fieldset>
       </div>
-      {/* Your Shipping Address */}
+      </fieldset>
+      {/* Delivery */}
 
       {/* Message */}
       <fieldset className="category-group">
