@@ -31,7 +31,7 @@ let cache = {
   store: {},
   maxAge:     5400 * 1000,  // 1.5 hour
   cleanAfter: 7200 * 1000,  // 2.0 hour
-  cleanedAt:  0,            // 
+  cleanedAt:  0,            // cleaned at this time.
   clean: function(now) {
     if(now - this.cleanAfter > this.cleanedAt) {
       this.cleanedAt = now;
@@ -68,13 +68,16 @@ class PayPalPayment {
     switch(operation) {
       case '/cache':
         return new Promise((resolve, reject) => {
-          const data = cache.store[body].content;
-          if(!data) reject(new Error('UNKNOWN'));
-          resolve(data);
-          //std.invoke2(() => cache.store[body].content
-          //  , data => resolve(data)
-          //  , err => reject(new Error('UNKNOWN'))
-          //  , 0, 5 * 1000, 30 * 1000);
+          //const data = cache.store[body].content;
+          //if(!data) reject(new Error('UNKNOWN'));
+          //resolve(data);
+          std.invoke2(
+            ( ) => cache.store[body].content ? true : false,
+            val => log.info(val),
+            err => reject(err),
+            ( ) => resolve(cache.store[body].content),
+            1000, 1000, 30000
+          );
         });
       case '/ipnpb':
         return new Promise((resolve, reject) => {

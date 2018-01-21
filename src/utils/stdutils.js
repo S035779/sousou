@@ -368,26 +368,30 @@ export default {
     }
   },
 
-  invoke2(fn, rs, rj, s, i, e) {
+  invoke2(fn, rs, rj, ed, s, i, e) {
     if (!s) s = 0;
     setTimeout(() => {
-      if(fn) rs(fn);
+      const _a = fn();
+      rs(_a);
+      if(_a) return ed();
+      if(!e) return rj({ error: { name: 'Error', message: 'TIME OUT!'}});
     }, s);
-    if (arguments.length >= 5) {
+    if (arguments.length >= 6) {
+      let _b = 0;
       setTimeout(() => {
         const h = setInterval(() => {
-          if(fn) {
+          const _a = fn();
+          rs(_a);
+          if(_a) {
             clearInterval(h);
-            rs(fn);
+            return ed();
+          }
+          if((e-s) <= (i*++_b)) {
+            clearInterval(h);
+            return rj({ error: { name: 'Error', message: 'TIME OUT!'}});
           }
         }, i);
-        if (e) setTimeout(() => {
-          clearInterval(h);
-          rj('TIME OUT!');
-        }, e);
       }, s);
-    } else {
-      rj('TIME OUT!');
     }
   },
 
