@@ -248,14 +248,6 @@ label.error:before {
 	margin-right: 0.5em;
 }
 
-/* area menu */
-.buynow_contactlast div.area {
-}
-
-.buynow_contactlast div.non-area {
-  display: none;
-}
-
 /* delivery menu */
 .buynow_contactlast div.delivery {
 }

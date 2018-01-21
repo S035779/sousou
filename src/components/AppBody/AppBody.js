@@ -45,6 +45,7 @@ class AppBody extends React.Component {
       , state:          shipping_address.state
       , first_name:     infomation.first_name
       , last_name:      infomation.last_name
+      , company:        infomation.company
     //  , gender:         infomation.gender
     //  , year:           infomation.year
     //  , month:          infomation.month
@@ -70,7 +71,6 @@ class AppBody extends React.Component {
     switch(name) {
       case 'credit':
         this.setState({ showModalCredit: false });
-      default:
         break;
     }
   }
@@ -83,8 +83,6 @@ class AppBody extends React.Component {
         break;
       case 'results':
         this.setState({ results: null, showModalResults: false });
-        break;
-      default:
         break;
     }
   }
@@ -114,7 +112,11 @@ class AppBody extends React.Component {
   handleFocusText(name, e) {
     let newState = {};
     switch(name) {
-      default:
+      case 'postal_code':
+      case 'state':
+      case 'city':
+      case 'line1':
+      case 'line2':
         newState ={
           state:    document.getElementById('state').value
           , city:   document.getElementById('city').value
@@ -128,27 +130,27 @@ class AppBody extends React.Component {
     }
   }
 
-  handleChangeCheckbox(name, e) {
-    let newState = {};
-    switch(name) {
-      default:
-        newState[name] = e.target.checked;
-        this.setState(newState);
-        break;
-    }
-  }
+  //handleChangeCheckbox(name, e) {
+  //  let newState = {};
+  //  newState[name] = e.target.checked;
+  //  this.setState(newState);
+  //}
 
   handleChangeRadio(name, e) {
     let newState = {};
+    newState[name] = e.target.value;
     switch(name) {
+      case 'area':
+        newState['currency'] = e.target.value === 'domestic'
+          ? ['JPY'] : [];
+        this.setState(newState);
+        break;
       case 'delivery':
-        newState[name] = e.target.value;
         const newAddress
           = this.setShippingAddress(e.target.value, this.isLangJp());
         this.setState(Object.assign({}, newState, newAddress));
         break;
       default:
-        newState[name] = e.target.value;
         this.setState(newState);
         break;
     }
@@ -296,6 +298,7 @@ class AppBody extends React.Component {
       , infomation: {
         first_name:     state.first_name
         , last_name:    state.last_name
+        , company:      state.company
       //  , gender:       state.gender
       //  , year:         state.year
       //  , month:        state.month
@@ -510,8 +513,6 @@ class AppBody extends React.Component {
       && !this.isNotPostal(state.postal_code, state.country_code.join())
       && state.line1
       && state.line2
-      && state.area
-      && state.delivery
       //&& state.agreement
     );
   }
@@ -521,6 +522,7 @@ class AppBody extends React.Component {
     return (
       next.first_name       === prev.first_name  
       && next.last_name     === prev.last_name   
+      && next_company       === prev.company
       //&& next.gender        === prev.gender
       //&& next.year          === prev.year
       //&& next.month         === prev.month
@@ -657,23 +659,27 @@ class AppBody extends React.Component {
     const language = this.props.language;
     const isJP = this.isLangJp();
     
-    const Information = isJP ? 'お客様の情報' : 'Your Information';
+    //const Information = isJP ? 'お客様の情報' : 'Your Information';
     const Delivery = isJP ? 'お引き渡し場所' : 'Place of delivery';
     const Area = isJP ? '配送先' : 'Delivery address';
     const Quantity = isJP
       ? 'ご購入数と通貨' : 'Purchasing quantities and currency'; 
     const HowToBuy = isJP ? 'お支払い方法' : 'Payment method'; 
-    const Message = isJP ? 'メッセージ' : 'Message';
+    //const Message = isJP ? 'メッセージ' : 'Message';
 
-    const name = isJP ? 'お名前' : 'Name';
+    //const name = isJP ? 'お名前' : 'Name';
+    const first_name = isJP ? '姓' : 'First';
+    const last_name = isJP ? '名' : 'Last';
+    const company = isJP ? '会社名' : 'Company';
     //const gender = isJP ? '性別' : 'Gender';
     //const birthday = isJP ? '誕生日' : 'Birthday';
     const phone = isJP ? '電話番号' : 'Phone';
     const email = isJP ? 'メールアドレス' : 'E-Mail';
-    //const confirm_email =isJP ? 'メールアドレス 確認' : 'Confirm E-Mail';
+    //const confirm_email = isJP
+    //  ? 'メールアドレス 確認' : 'Confirm E-Mail';
     const area = isJP ? '配送先' : 'Delivery address';
     const delivery = isJP ? 'お届け先' : 'Delivery address';
-    const country_code = isJP ? '国名' : 'Country';
+    //const country_code = isJP ? '国名' : 'Country';
     const postal_code = isJP ? '郵便番号' : 'Zip Code';
     const state = isJP ? '都道府県' : 'State';
     const city = isJP ? '市区町村名' : 'City';
@@ -684,15 +690,13 @@ class AppBody extends React.Component {
     const currency = isJP ? '通貨' : 'Currency';
     const payment = isJP ? 'お支払い方法' : 'Payment';
     const message = isJP ? 'ご連絡事項' : 'Message';
-    const agreement = ' Agree to our terms of us and privacy policy. ';
+    //const agreement = ' Agree to our terms of us and privacy policy. ';
 
-    const first_name = isJP ? '名' : 'First';
-    const last_name = isJP ? '姓' : 'Last';
-    const gender_male = isJP ? '男性' : 'Male';
-    const gender_female = isJP ? '女性' : 'Female';
-    const year = isJP ? '年' : 'Year';
-    const month = isJP ? '月' : 'Month';
-    const day = isJP ? '日' : 'Day';
+    //const gender_male = isJP ? '男性' : 'Male';
+    //const gender_female = isJP ? '女性' : 'Female';
+    //const year = isJP ? '年' : 'Year';
+    //const month = isJP ? '月' : 'Month';
+    //const day = isJP ? '日' : 'Day';
     const area_domestic = isJP ? '日本国内' : 'Domestic delivery';
     const area_oversea = isJP ? 'それ以外' : 'Oversea delivery';
     const delivery_address = isJP ? '指定場所' : 'Delivery Address';
@@ -700,10 +704,10 @@ class AppBody extends React.Component {
     const delivery_myanmer = isJP ? 'ミャンマー支社' : 'Myanmar office';
     const delivery_check = isJP ? '住所を確認する' : 'Check the address';
 
-    const notes_delivery = isJP 
-      ? '配送先で送料が異なります。送料はメールでお知らせします。'
-      : 'Shipping fee differs depending on shipping destination.'
-        + 'Shipping fee will be notified by E-mail.';
+    //const notes_delivery = isJP 
+    //  ? '配送先で送料が異なります。送料はメールでお知らせします。'
+    //  : 'Shipping fee differs depending on shipping destination.'
+    //    + 'Shipping fee will be notified by E-mail.';
     const label_quantity = isJP
       ? '冊 x '
       : 'book(s) x '
@@ -712,20 +716,20 @@ class AppBody extends React.Component {
       : '(tax included / shipping fee is separately)';
 
     const notes_quantity = isJP
-      ? '日本国外への配送はUS '
+      ? '日本円でのお支払いの場合、US '
         + Number(this.state.usd).toLocaleString('en-US'
           , { style: 'currency', currency: 'USD' })
-        + ' を当日レートで日本円に換算した金額のご請求となります。'
-      : 'Shipping outside of Japan will be charged for US '
+        + ' を当日レートで日本円にしてご請求いたします。'
+      : 'In case of payment in Japanese yen, US '
         + Number(this.state.usd).toLocaleString('en-US'
       , { style: 'currency', currency: 'USD' })
-        + ' into Japanese yen at the current rate.';
+        + ' will be charged as Japanese yen at the current day\'s rate.';
     const notes_currency = isJP
       ? 'US $ での支払の場合、PayPalアカウントが必要です。'
       : 'For payment with US $, a PayPal account is required.';
-    const notes_payment = isJP
-      ? 'ミャンマー発行のクレジットカードはご使用になれません。'
-      : 'Credit card issued by Myanmar can not be used.';
+    //const notes_payment = isJP
+    //  ? 'ミャンマー発行のクレジットカードはご使用になれません。'
+    //  : 'Credit card issued by Myanmar can not be used.';
       //? 'クレジット決済の場合は PayPalアカウント が必要となります。'
       //: 'For credit card transactions, you need a PayPal account.';
     const notes_notice = this.setNotice(this.state, isJP);
@@ -773,8 +777,8 @@ class AppBody extends React.Component {
       : this.renderSelect(opts_currency, 'name_en', 'value')
 
     const opts_payment = [
-      {   name_en: 'Credit card (Paypal)'
-        , name_jp: 'クレジットカード（PayPal）', value: 'paypal'  }
+      {   name_en: 'Credit card'
+        , name_jp: 'クレジットカード', value: 'paypal'  }
       , { name_en: 'Bank transfer (prepayment)'
         , name_jp: '銀行振り込み（前払い）'    , value: 'deposit' }
       , { name_en: 'Other'
@@ -784,9 +788,12 @@ class AppBody extends React.Component {
       ? this.renderSelect(opts_payment, 'name_jp', 'value')
       : this.renderSelect(opts_payment, 'name_en', 'value')
 
-    const select_area = this.state.area === 'domestic'
-      ? 'non-area' : 'area';
-    const select_delivery = this.state.delivery === 'address'
+    const isDomestic = this.state.area === 'domestic'
+      ? true : false;
+    const isAddress = this.state.delivery === 'address'
+      ? true : false;
+    const isDelivery = this.state.delivery === 'address'
+      && this.state.country_code.join()
       ? 'delivery' : 'non-delivery';
 
     const check_email
@@ -811,7 +818,9 @@ class AppBody extends React.Component {
       <form id="user-sign-up" onSubmit={this.handleSubmit.bind(this)}>
       {/* Your Informatin */}
       <fieldset className="category-group">
+        {/*
         <legend>{Information}</legend>
+        */}
         <table><tbody>
         <tr>
         {/*
@@ -838,6 +847,21 @@ class AppBody extends React.Component {
             placeholder={last_name}
             className="name-field add-placeholder required"/>
           </div>
+          </td>
+        </tr>
+        <tr>
+        {/*
+          <th>
+          <label htmlFor="company">
+          {company}
+          </label>
+          </th>
+        */}
+          <td>
+          <input type="text" name="company" id="company"
+            onChange={this.handleChangeText.bind(this, 'company')}
+            placeholder={company}
+            className=" add-placeholder"/>
           </td>
         </tr>
       {/*
@@ -964,16 +988,16 @@ class AppBody extends React.Component {
         */}
         </th>
         <td>
-        <div className="area-field">
-        <Radio name="area"
+          <div className="area-field">
+          <Radio name="area"
             value={this.state.area}
-            onChange={this.handleChangeRadio.bind(this, 'area')} >
+            onChange={this.handleChangeRadio.bind(this, 'area')}>
             <option value="domestic"
               id="area_domestic"> {area_domestic} </option>
             <option value="oversea"
               id="area_oversea"> {area_oversea} </option>
-        </Radio>
-        </div>
+          </Radio>
+          </div>
         </td>
         </tr>
         </tbody></table>
@@ -981,7 +1005,6 @@ class AppBody extends React.Component {
       {/* Your Shipping Address */}
 
       {/* How to Buy */}
-      <div className={select_area}>
       <fieldset className="category-group">
         <legend>{HowToBuy}</legend>
         <table><tbody>
@@ -1004,12 +1027,13 @@ class AppBody extends React.Component {
           {select_payment}
           </select>
           </div>
+          {/*
           <span className="notes">{notes_payment}</span>
+          */}
           </td>
         </tr>
         </tbody></table>
       </fieldset>
-      </div>
       {/* How to buy */}
 
       {/* Quantity & Currency */}
@@ -1058,6 +1082,7 @@ class AppBody extends React.Component {
           <label>{label_quantity}</label>
           <span className="quantity-field">
           <select name="currency" id="currency"
+            disabled={isDomestic}
             multiple={false}
             value={this.state.currency}
             onChange={this.handleChangeSelect.bind(this, 'currency')}
@@ -1068,8 +1093,8 @@ class AppBody extends React.Component {
           </span>
           <label>{label_currency}</label>
           </div>
-          <span className="notes">{notes_quantity}</span>
           <span className="notes">{notes_currency}</span>
+          <span className="notes">{notes_quantity}</span>
           </td>
         </tr>
         </tbody></table>
@@ -1081,34 +1106,33 @@ class AppBody extends React.Component {
         <legend>{Delivery}</legend>
         <table><tbody>
         <tr>
-        <th>
         {/*
+          <th>
           <label htmlFor="delivery">
           {delivery} <span className="required-mark">required</span>
           </label>
+          </th>
         */}
-        </th>
         <td>
-        <div className="delivery-field">
-        <Radio name="delivery"
+          <div className="delivery-field">
+          <Radio name="delivery"
             value={this.state.delivery}
-            onChange={this.handleChangeRadio.bind(this, 'delivery')} >
+            onChange={this.handleChangeRadio.bind(this, 'delivery')}>
             <option value="address"
               id="delivery_address"> {delivery_address} </option>
             <option value="japan"
               id="delivery_japan"> {delivery_japan} </option>
             <option value="myanmer"
               id="delivery_myanmer"> {delivery_myanmer} </option>
-        </Radio>
-        <a className="btn btn-default" href="#"
-            data-featherlight="#fl1">{delivery_check}</a>
-        </div>
-        <span className="notes">{notes_delivery}</span>
-        </td>
+          </Radio>
+          <a className="btn btn-default" href="#"
+              data-featherlight="#fl1">{delivery_check}</a>
+          </div>
+          {/*
+          <span className="notes">{notes_delivery}</span>
+          */}
+          </td>
         </tr>
-        </tbody></table>
-      <div className={select_delivery}>
-        <table><tbody>
         <tr>
         {/*
           <th>
@@ -1119,15 +1143,19 @@ class AppBody extends React.Component {
         */}
           <td>
           <select name="country_code" id="country_code"
+            disabled={!isAddress}
             multiple={false}
             value={this.state.country_code}
             onChange={this.handleChangeSelect.bind(this, 'country_code')}
             className="required">
-          <option value="">{country_code}</option>
+          <option value="">{delivery}</option>
           {select_country}
           </select>
           </td>
         </tr>
+        </tbody></table>
+      <div className={isDelivery}>
+        <table><tbody>
         <tr>
         {/*
           <th>
@@ -1238,7 +1266,9 @@ class AppBody extends React.Component {
 
       {/* Message */}
       <fieldset className="category-group">
+        {/*
         <legend>{Message}</legend>
+        */}
         <table><tbody>
         <tr>
         {/*

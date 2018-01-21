@@ -374,7 +374,7 @@ export default {
       const _a = fn();
       rs(_a);
       if(_a) return ed();
-      if(!e) return rj({ error: { name: 'Error', message: 'TIME OUT!'}});
+      if(!e) return rj({ name: 'Error', message: 'TIME OUT!' });
     }, s);
     if (arguments.length >= 6) {
       let _b = 0;
@@ -388,7 +388,7 @@ export default {
           }
           if((e-s) <= (i*++_b)) {
             clearInterval(h);
-            return rj({ error: { name: 'Error', message: 'TIME OUT!'}});
+            return rj({ name: 'Error', message: 'TIME OUT!' });
           }
         }, i);
       }, s);

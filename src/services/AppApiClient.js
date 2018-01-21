@@ -219,25 +219,27 @@ export default {
       , to: sender
       , subject: '購入を受付ました。'
       , text: `お客様は以下の商品を購入しました。\n\n`
-        + ` お客様：${obj.infomation.last_name}`
+        + ` お客様：`
+          + ` ${obj.infomation.company}`
+          + ` ${obj.infomation.last_name}`
           + ` ${obj.infomation.first_name}\n`
-        + ` 商品名：${obj.item.name}\n`
-        + ` 概　要：${obj.item.description}\n`
-        + ` 単　価：${obj.item.price} ${obj.item.currency}\n`
-        + ` 数　量：${obj.item.quantity}\n`
-        + ` 小　計：${obj.details.subtotal} ${obj.item.currency}\n`
-        + ` 配送料：${obj.details.shipping} ${obj.currency}\n`
-        + ` 合　計：${obj.total} ${obj.currency}\n`
-        + ` 配送先：${obj.shipping_address.postal_code}\n`
-        + `         ${obj.shipping_address.state}\n`
-        + `         ${obj.shipping_address.city}\n`
-        + `         ${obj.shipping_address.line1}\n`
-        + `         ${obj.shipping_address.line2}\n`
-        + `         ${obj.shipping_address.recipient_name}\n`
-        + `         ${obj.shipping_address.phone}\n`
-        + `         ${obj.shipping_address.country_code}\n\n`
-        + ` 方　法：${obj.infomation.payment}\n`
-        + ` 連　絡：${obj.infomation.message}\n`
+        + ` 商品名： ${obj.item.name}\n`
+        + ` 概　要： ${obj.item.description}\n`
+        + ` 単　価： ${obj.item.price} ${obj.item.currency}\n`
+        + ` 数　量： ${obj.item.quantity}\n`
+        + ` 小　計： ${obj.details.subtotal} ${obj.item.currency}\n`
+        + ` 配送料： ${obj.details.shipping} ${obj.currency}\n`
+        + ` 合　計： ${obj.total} ${obj.currency}\n`
+        + ` 配送先： ${obj.shipping_address.postal_code}\n`
+        + `          ${obj.shipping_address.state}\n`
+        + `          ${obj.shipping_address.city}\n`
+        + `          ${obj.shipping_address.line1}\n`
+        + `          ${obj.shipping_address.line2}\n`
+        + `          ${obj.shipping_address.recipient_name}\n`
+        + `          ${obj.shipping_address.phone}\n`
+        + `          ${obj.shipping_address.country_code}\n\n`
+        + ` 方　法： ${obj.infomation.payment}\n`
+        + ` 連　絡： ${obj.infomation.message}\n`
         + `銀行振込(deposit）、その他(other)の場合は、\n`
         + `以降、お客様対応をお願いします。\n`
     };
@@ -249,25 +251,27 @@ export default {
       , to: obj.infomation.email
       , subject: 'ご購入有難うございました。'
       , text: `お客様は以下の商品を購入しました。\n\n`
-        + ` お客様：${obj.infomation.last_name}`
-          + ` ${obj.infomation.first_name}\n`
-        + ` 商品名：${obj.item.name}\n`
-        + ` 概　要：${obj.item.description}\n`
-        + ` 単　価：${obj.item.price} ${obj.item.currency}\n`
-        + ` 数　量：${obj.item.quantity}\n`
-        + ` 小　計：${obj.details.subtotal} ${obj.item.currency}\n`
-        + ` 配送料：${obj.details.shipping} ${obj.currency}\n`
-        + ` 合　計：${obj.total} ${obj.currency}\n`
-        + ` 配送先：${obj.shipping_address.postal_code}\n`
-        + `         ${obj.shipping_address.state}\n`
-        + `         ${obj.shipping_address.city}\n`
-        + `         ${obj.shipping_address.line1}\n`
-        + `         ${obj.shipping_address.line2}\n`
-        + `         ${obj.shipping_address.recipient_name}\n`
-        + `         ${obj.shipping_address.phone}\n`
-        + `         ${obj.shipping_address.country_code}\n\n`
-        + ` 方　法：${obj.infomation.payment}\n`
-        + ` 連　絡：${obj.infomation.message}\n`
+        + ` お客様：`
+          + ` ${obj.infomation.company}`
+          + ` ${obj.infomation.first_name}`
+          + ` ${obj.infomation.last_name}\n`
+        + ` 商品名： ${obj.item.name}\n`
+        + ` 概　要： ${obj.item.description}\n`
+        + ` 単　価： ${obj.item.price} ${obj.item.currency}\n`
+        + ` 数　量： ${obj.item.quantity}\n`
+        + ` 小　計： ${obj.details.subtotal} ${obj.item.currency}\n`
+        + ` 配送料： ${obj.details.shipping} ${obj.currency}\n`
+        + ` 合　計： ${obj.total} ${obj.currency}\n`
+        + ` 配送先： ${obj.shipping_address.postal_code}\n`
+        + `          ${obj.shipping_address.state}\n`
+        + `          ${obj.shipping_address.city}\n`
+        + `          ${obj.shipping_address.line1}\n`
+        + `          ${obj.shipping_address.line2}\n`
+        + `          ${obj.shipping_address.recipient_name}\n`
+        + `          ${obj.shipping_address.phone}\n`
+        + `          ${obj.shipping_address.country_code}\n\n`
+        + ` 方　法： ${obj.infomation.payment}\n`
+        + ` 連　絡： ${obj.infomation.message}\n`
         + `銀行振込(deposit）、その他(other)の場合は、\n`
         + `以降の手続きは、メールにてご対応させて頂きます。\n`
         + `弊社担当からの連絡をお待ち下さい。\n`

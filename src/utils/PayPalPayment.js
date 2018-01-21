@@ -72,7 +72,7 @@ class PayPalPayment {
           //if(!data) reject(new Error('UNKNOWN'));
           //resolve(data);
           std.invoke2(
-            ( ) => cache.store[body].content ? true : false,
+            ( ) => cache.store[body] ? true : false,
             val => log.info(val),
             err => reject(err),
             ( ) => resolve(cache.store[body].content),
