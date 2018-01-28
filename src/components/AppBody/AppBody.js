@@ -13,6 +13,7 @@ const pspid = 'AppBodyView';
 class AppBody extends React.Component {
   constructor(props) {
     super(props);
+    const language = props.language;
     const usd = props.usd;
     const jpy = props.jpy;
     const options = props.options;
@@ -57,6 +58,8 @@ class AppBody extends React.Component {
       , payment:        infomation.payment
     //  , agreement:      infomation.agreement
       , message:        infomation.message
+      , recipient_phone: infomation.recipient_phone
+      , language:       language
       , usd:            usd
       , jpy:            jpy
       , results:        results
@@ -99,6 +102,8 @@ class AppBody extends React.Component {
           , line2:  document.getElementById('line2').value
           , recipient_name:
                     document.getElementById('recipient_name').value
+          , recipient_phone:
+                    document.getElementById('recipient_phone').value
         };
         this.setState(newState);
         break;
@@ -124,6 +129,8 @@ class AppBody extends React.Component {
           , line2:  document.getElementById('line2').value
           , recipient_name:
                     document.getElementById('recipient_name').value
+          , recipient_phone:
+                    document.getElementById('recipient_phone').value
         };
         this.setState(newState);
         break;
@@ -322,6 +329,8 @@ class AppBody extends React.Component {
         , delivery:     state.delivery
         , payment:      state.payment
         , message:      state.message
+        , recipient_phone: state.recipient_phone
+        , language:     state.language
       //  , agreement:    state.agreement
       }
     });
@@ -357,6 +366,7 @@ class AppBody extends React.Component {
         , line1:          ''
         , line2:          ''
         , recipient_name: ''
+        , recipient_phone: ''
       };
   }
 
@@ -644,14 +654,14 @@ class AppBody extends React.Component {
     }
   }
 
-  renderNotice(showModal, { head, body }) {
-    return showModal
-      ? <fieldset className="category-group">
-        <legend>{head}</legend>
-        <p>{body}</p>
-        </fieldset>
-      : <div></div>
-  }
+  //renderNotice(showModal, { head, body }) {
+  //  return showModal
+  //    ? <fieldset className="category-group">
+  //      <legend>{head}</legend>
+  //      <p>{body}</p>
+  //      </fieldset>
+  //    : <div></div>
+  // }
 
   logInfo(message) {
     log.info(`${pspid}>`, 'Request:', message);
@@ -700,6 +710,7 @@ class AppBody extends React.Component {
     const line1 = isJP ? '地域' : 'Municipality';
     const line2 = isJP ? '番地・部屋番号' : 'A lot / Room Number';
     const recipient_name = isJP ? '受取人名義' : 'Recipient Name';
+    const recipient_phone = isJP ? '受取人電話' : 'Recipient Phone';
     const quantity = isJP ? 'ご購入数' : 'Quantity';
     const currency = isJP ? '通貨' : 'Currency';
     const payment = isJP ? 'お支払い方法' : 'Payment';
@@ -797,7 +808,7 @@ class AppBody extends React.Component {
       , { name_en: 'US ' + 
         Number(this.state.usd).toLocaleString('en-US'
           , { style: 'currency', currency: 'USD' })
-        , name_jp:
+        , name_jp: 'US ' + 
         Number(this.state.usd).toLocaleString('en-US'
           , { style: 'currency', currency: 'USD' })
         , value: 'USD' }
@@ -1196,7 +1207,7 @@ class AppBody extends React.Component {
         {/*
           <th>
           <label htmlFor="postal_code">
-          {postal_code} <span className="required-mark">required</span>
+          {postal_code}
           </label>
           </th>
         */}
@@ -1205,7 +1216,7 @@ class AppBody extends React.Component {
             value={this.state.postal_code}
             onChange={this.handleChangeText.bind(this, 'postal_code')}
             onFocus={this.handleFocusText.bind(this, 'postal_code')}
-            className=" add-placeholder required"
+            className=" add-placeholder"
             placeholder={postal_code} />
         {/*
           <span className="notes">{check_postal_code}</span>
@@ -1283,7 +1294,9 @@ class AppBody extends React.Component {
         <tr>
         {/*
           <th>
-          <label htmlFor="recipient_name">{recipient_name}</label>
+          <label htmlFor="recipient_name">
+          {recipient_name}
+          </label>
           </th>
         */}
           <td>
@@ -1292,6 +1305,23 @@ class AppBody extends React.Component {
             onChange={this.handleChangeText.bind(this, 'recipient_name')}
             onFocus={this.handleFocusText.bind(this, 'recipient_name')}
             placeholder={recipient_name}
+            className="add-placeholder"/>
+          </td>
+        </tr>
+        <tr>
+        {/*
+          <th>
+          <label htmlFor="recipient_phone">
+          {recipient_phone}
+          </label>
+          </th>
+        */}
+          <td>
+          <input type="text" name="recipient_phone" id="recipient_phone"
+            value={this.state.recipient_phone}
+            onChange={this.handleChangeText.bind(this, 'recipient_phone')}
+            onFocus={this.handleFocusText.bind(this, 'recipient_phone')}
+            placeholder={recipient_phone}
             className="add-placeholder"/>
           </td>
         </tr>
@@ -1351,7 +1381,7 @@ class AppBody extends React.Component {
       </div>
     </form>
     <Modal showModal={showModalResults}>
-      <Notice message={results}
+      <Notice language={language} message={results}
         onCompleted={this.handleClickButton.bind(this, 'results')}/>
     </Modal>
     <Modal showModal={showModalCredit}>

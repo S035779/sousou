@@ -24,6 +24,7 @@ class Notice extends React.Component {
 
   render() {
     const { head, body } = this.props.message;
+    const isLangJp = this.props.language === 'jp';
     return <div className="buynow_contactlast">
       <div id="user-sign-up">
       <fieldset className="category-group">
@@ -31,7 +32,7 @@ class Notice extends React.Component {
       <p>{body}</p>
       </fieldset>
       <div id="signup-next">
-      <input type="submit" value="CLOSE"
+      <input type="submit" value={ isLangJp ? "閉じる" : "CLOSE" }
         onClick={this.handleClickButton.bind(this)}
         className="button-primary"/>
       </div>

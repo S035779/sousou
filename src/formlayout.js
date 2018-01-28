@@ -1,6 +1,6 @@
 import std from 'Utilities/stdutils';
 import jQuery from 'jquery';
-import {} from 'jquery-jpostal-ja';
+//import {} from 'jquery-jpostal-ja';
 const host = process.env.TOP_URL || 'https://localhost:4443';
 
 jQuery(function($) {
@@ -9,18 +9,18 @@ jQuery(function($) {
   const isLangJp = language === 'jp';
 
   // jpostal-ja
-  $('#postal_code').jpostal({   
-    postcode : [
-      '#postal_code'
-    ],
-    address : {
-      '#state':           '%3',
-      '#city':            '%4',
-      '#line1':           '%5',
-      '#line2':           '%6',
-      '#recipient_name':  '%7'
-    }
-  });
+  //$('#postal_code').jpostal({   
+  //  postcode : [
+  //    '#postal_code'
+  //  ],
+  //  address : {
+  //    '#state':           '%3',
+  //    '#city':            '%4',
+  //    '#line1':           '%5',
+  //    '#line2':           '%6',
+  //    '#recipient_name':  '%7'
+  //  }
+  //});
 
   // ah-placeholder
   $('.add-placeholder').ahPlaceholder({

@@ -225,7 +225,7 @@ export default {
         + `--------------------------------------------------------------`
         + `--------\n\n`
         + `ご注文内容\n\n`
-        + `お申込み元サイト: JP or US\n`
+        + `お申込み元サイト: ${obj.infomation.language}\n`
         + `名前　　　　　　: `
           + ` ${obj.infomation.first_name}  ${obj.infomation.last_name}\n`
         + `会社名　　　　　: ${obj.infomation.company}\n`
@@ -239,8 +239,9 @@ export default {
         + `                  ${obj.shipping_address.city}\n`
         + `                  ${obj.shipping_address.line1}\n`
         + `                  ${obj.shipping_address.line2}\n`
-        + `                  ${obj.shipping_address.recipient_name}\n`
         + `                  ${obj.shipping_address.country_code}\n\n`
+        + `お届け先人名　　: ${obj.shipping_address.recipient_name}\n`
+        + `お届け先電話番号: ${obj.infomation.recipient_phone}\n`
         + `ご連絡事項:\n${obj.infomation.message}\n\n`
         + `--------------------------------------------------------------`
         + `--------\n`
@@ -265,21 +266,22 @@ export default {
         + `--------------------------------------------------------------`
         + `--------\n\n`
         + `ご注文内容\n\n`
-        + `名前　　　　　: `
+        + `名前　　　　　  : `
           + `${obj.infomation.first_name} ${obj.infomation.last_name}\n`
-        + `会社名　　　　: ${obj.infomation.company}\n`
-        + `メールアドレス: ${obj.infomation.email}\n`
-        + `電話番号　　　: ${obj.shipping_address.phone}\n`
-        + `ご購入数と通貨: ${obj.item.quantity} 冊 `
+        + `会社名　　　　  : ${obj.infomation.company}\n`
+        + `メールアドレス  : ${obj.infomation.email}\n`
+        + `電話番号　　　  : ${obj.shipping_address.phone}\n`
+        + `ご購入数と通貨  : ${obj.item.quantity} 冊 `
           + `【${obj.currency}】\n`
-        + `お支払い方法　: ${obj.infomation.payment}\n`
-        + `お引き渡し場所: ${obj.shipping_address.postal_code}\n`
-        + `                ${obj.shipping_address.state}\n`
-        + `                ${obj.shipping_address.city}\n`
-        + `                ${obj.shipping_address.line1}\n`
-        + `                ${obj.shipping_address.line2}\n`
-        + `                ${obj.shipping_address.recipient_name}\n`
-        + `                ${obj.shipping_address.country_code}\n\n`
+        + `お支払い方法　  : ${obj.infomation.payment}\n`
+        + `お引き渡し場所  : ${obj.shipping_address.postal_code}\n`
+        + `                  ${obj.shipping_address.state}\n`
+        + `                  ${obj.shipping_address.city}\n`
+        + `                  ${obj.shipping_address.line1}\n`
+        + `                  ${obj.shipping_address.line2}\n`
+        + `                  ${obj.shipping_address.country_code}\n\n`
+        + `お届け先人名　　: ${obj.shipping_address.recipient_name}\n`
+        + `お届け先電話番号: ${obj.infomation.recipient_phone}\n`
         + `ご連絡事項:\n${obj.infomation.message}\n\n`
         + `--------------------------------------------------------------`
         + `--------\n\n`

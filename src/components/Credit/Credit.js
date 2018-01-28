@@ -31,29 +31,27 @@ class Credit extends React.Component {
       , receiver_email: receiver_email
       , mc_gross: props.options.total
       , mc_currency: props.options.currency.join()
+      , isComplete: false
     };
   }
 
   componentDidMount() {
     window.form_iframe.submit();
-    this.screen = document.getElementById('#user-sign-up');
+    AppAction.createCredit(Object.assign({}, this.props.options
+      , { credit_validate: this.state })).then(() => {
+        this.setState({isComplete: true})
+        this.props.onReturn();
+      });
   }
 
   handleClickClose(e) {
     //this.logInfo('handleClickClose');
-    e.preventDefault();
-    e.stopPropagation();
-    this.props.onReturn();
+    if(this.state.isComplete) this.props.onReturn();
   }
 
   handleClickButton(e) {
     //this.logInfo('handleClickButton');
-    e.preventDefault();
-    e.stopPropagation();
-    AppAction.createCredit(Object.assign({}, this.props.options
-      , { credit_validate: this.state })).then(() => {
-        this.props.onCompleted();
-      });
+    if(this.state.isComplete) this.props.onCompleted();
   }
   
   setPrices(obj, isLangJp) {

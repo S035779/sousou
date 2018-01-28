@@ -50,6 +50,8 @@ class AppStore extends ReduceStore {
           , delivery: 'address'
           , payment: []
           , message: ''
+          , recipient_phone: ''
+          , language: ''
         //  , agreement: false
         }
         , credit_validate: {

@@ -1,8 +1,7 @@
 import { dispatch } from '../dispatcher';
 import AppApiClient from '../services/AppApiClient';
-import { spn, log } from '../utils/webutils';
+import { log } from '../utils/webutils';
 
-spn.config('app');
 const pspid = 'AppAction';
 
 export default {
@@ -10,11 +9,9 @@ export default {
     dispatch({ type: 'config/rehydrate', state: state.appStore });
   },
   createCredit(options) {
-    spn.spin();
     return AppApiClient.createCredit(options)
       .then(results => {
         dispatch({ type: 'item/create/credit', results, options });
-        spn.stop();
       }).catch(err => {
         this.logError(err);
         const results = { error: {
@@ -25,7 +22,6 @@ export default {
           }
         }};
         dispatch({ type: 'item/create/credit', results, options });
-        spn.stop();
       });
   },
   createExpress(options) {

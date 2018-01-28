@@ -1,3 +1,5 @@
+import std from 'Utilities/stdutils';
+
 const host = process.env.TOP_URL || 'https://localhost:4443';
 
 const getElm = id => document.getElementById(id);
@@ -17,26 +19,6 @@ window.addEventListener('message', event => {
     setSize(getElm('paypal-widget'), event.data.app.height);
 }, false);
 
-/**
- * encodeFormData
- *
- * @param {object} data 
- * @returns {string}
- */
-const encodeFormData = data => {
-  if (!data) return ""
-  let pairs = [];
-  for(let name in data) {
-    if (!data.hasOwnProperty(name)) continue;
-    if (typeof data[name] === "function") continue;
-    let value = data[name].toString();
-    name = encodeURIComponent(name.replace(" ", "+"));
-    value = encodeURIComponent(value.replace(" ", "+"));
-    pairs.push(name + "=" + value);
-  }
-  return pairs.join('&');
-};
-
 (() => {
   // 目印のaタグからパラメータとってきたら消す
   const atag = document.getElementsByClassName('paypal-widget');
@@ -50,7 +32,7 @@ const encodeFormData = data => {
   atag[0].style.display = 'none';
 
   const iframe = document.createElement('iframe');
-  iframe.src = '/api/' + '?' + encodeFormData(option);
+  iframe.src = '/api/' + '?' + std.encodeFormData(option);
   iframe.frameBorder = 0;
   iframe.width = '100%';
   iframe.height = '100%';
