@@ -86,63 +86,65 @@ class Credit extends React.Component {
     const prices = this.setPrices(obj, isLangJp);
     return {
       email: {
-        key: isLangJp ? '　メール： ' : '              Email : '
+        key: isLangJp ? 'メール　： ' : 'Email        : '
         , value: `${obj.infomation.email}`                              },
       name: {
-        key: isLangJp ? '　名　前： ' : '               Name : '
-        , value: isLangJp
-          ? `${obj.infomation.last_name} ${obj.infomation.first_name}`
-          : `${obj.infomation.first_name} ${obj.infomation.last_name}`  },
+        key: isLangJp ? '名　前　： ' : 'Name         : '
+        , value:
+          `${obj.infomation.first_name} ${obj.infomation.last_name}`    },
+      company: {
+        key: isLangJp ? '会　社　： ' : 'Company      : '
+        , value: `${obj.infomation.company}`                            },
       item: {
-        key: isLangJp ? '　商品名： ' : '            Product : '
+        key: isLangJp ? '商品名　： ' : 'Product      : '
         , value: `${obj.item.name}`                                     },
       description: {
-        key: isLangJp ? '　概　要： ' : '        Description : '
+        key: isLangJp ? '概　要　： ' : 'Description  : '
         , value: `${obj.item.description}`                              },
       price: {
-        key: isLangJp ? '　単　価： ' : '              Price : '
+        key: isLangJp ? '単　価　： ' : 'Price        : '
         , value: `${obj.item.price} ${prices.item_currency}`            },
       quantity: {
-        key: isLangJp ? '　数　量： ' : '           Quantity : '
+        key: isLangJp ? '数　量　： ' : 'Quantity     : '
         , value: `${obj.item.quantity}`                                 },
       subtotal: {
-        key: isLangJp ? '　小　計： ' : '           Subtotal : '
+        key: isLangJp ? '小　計　： ' : 'Subtotal     : '
         , value: prices.subtotal_price                                  },
       shipping: {
-        key: isLangJp ? '　配送料： ' : '       Shipping fee : '
+        key: isLangJp ? '配送料　： ' : 'Shipping fee : '
         , value: prices.shipping_price                                  },
       total: {
-        key: isLangJp ? '　合　計： ' : '              Total : '
+        key: isLangJp ? '合　計　： ' : 'Total        : '
         , value: prices.total_price                                     },
       postal_code: {
-        key: isLangJp ? '郵便番号： ' : '                Zip : '
+        key: isLangJp ? '郵便番号： ' : 'Zip          : '
         , value: `${obj.shipping_address.postal_code}`                  },
       state: {
-        key: isLangJp ? '　州　名： ' : '              State : '
+        key: isLangJp ? '都道府県： ' : 'State        : '
         , value: `${obj.shipping_address.state}`                        },
       city: {
-        key: isLangJp ? '　都市名： ' : '               City : '
+        key: isLangJp ? '市区町村： ' : 'City         : '
         , value: `${obj.shipping_address.city}`                         },
       line1: {
-        key: isLangJp ? '都道府県： ' : '       Municipality : '
+        key: isLangJp ? '地　域　： ' : 'Municipality : '
         , value: `${obj.shipping_address.line1}`                        },
       line2: {
-        key: isLangJp ? '市区町村： ' : 'A lot / Room Number : '
+        key: isLangJp ? '番地番号： ' : 'A lot Number : '
         , value: `${obj.shipping_address.line2}`                        },
       recipient: {
-        key: isLangJp ? '　受取人： ' : '     Recipient Name : '
+        key: isLangJp ? '受取人　： ' : 'Recipient    : '
         , value: `${obj.shipping_address.recipient_name}`               },
       phone: {
-        key: isLangJp ? '電話番号： ' : '              Phone : '
+        key: isLangJp ? '電　話　： ' : 'Phone        : '
         , value: `${obj.shipping_address.phone}`                        },
       country_code: {
-        key: isLangJp ? '国コード： ' : '       Country code : '
+        key: isLangJp ? '国コード： ' : 'Country code : '
         , value: `${obj.shipping_address.country_code}`                 },
       payment: {
-        key: isLangJp ? '支払方法： ' : '     Payment method : '
+        key: isLangJp ? '支払方法： ' : 'Method       : '
         , value: `${obj.infomation.payment}`                            },
       message: {
-        key: isLangJp ? '連絡事項： ' : '            Message : '
+        key: isLangJp ? '連絡事項： ' : 'Message      : '
         , value: `${obj.infomation.message}`                            },
     };
   }
@@ -162,21 +164,21 @@ class Credit extends React.Component {
   render() {
     //console.log(this.state);
     const iframe_styles = {
-      width: '100%', height: '500px', border: 'none', overflow: 'hidden'
+      width: '100%', height: '565px', border: 'none', overflow: 'hidden'
     };
     const form_styles = { display: 'none' };
     const obj = this.props.options;
     const isLangJp = this.props.language === 'jp' ? true : false;
     const contents = this.setContents(obj, isLangJp);
     const Shipping = isLangJp
-      ? '　配送先： ' : '   Delivery address : ';
+      ? '配送先　： ' : 'Address       : ';
     const Confirm = isLangJp
       ? 'ご注文内容の確認' : 'Confirmation of your order';
-    const ConfirmMessage = isLangJp
-      ? 'お客様は以下の商品を選択しました。'
-      : 'Customers selected the following items.';
+    //const ConfirmMessage = isLangJp
+    //  ? 'お客様は以下の商品を選択しました。'
+    //  : 'Customers selected the following items.';
     const ConfirmOrder = isLangJp
-      ? '注文を確定する' : 'Confirm order';
+      ? 'お支払' : 'Payment';
     const language =  isLangJp ? 'JP' : 'US';
     const custom = this.state.custom;
     const receiver = this.state.receiver_email
@@ -187,19 +189,25 @@ class Credit extends React.Component {
       <div id="user-sign-up">
       <fieldset className="category-group">
       <legend>{Confirm}</legend>
+      {/*
       <p>{ConfirmMessage}</p>
+      */}
       <table>
       <tbody>
       <tr><td><label>{contents.item.key}</label>
         <span>{contents.item.value}</span></td></tr>
+      {/*
       <tr><td><label>{contents.description.key}</label>
         <span>{contents.description.value}</span></td></tr>
+      */}
       <tr><td><label>{contents.subtotal.key}</label>
         <span>{contents.subtotal.value}</span></td></tr>
       <tr><td><label>{contents.shipping.key}</label>
         <span>{contents.shipping.value}</span></td></tr>
       <tr><td><label>{contents.total.key}</label>
         <span>{contents.total.value}</span></td></tr>
+      <tr><td><label>{contents.company.key}</label>
+        <span>{contents.company.value}</span></td></tr>
       <tr><td><label>{contents.name.key}</label>
         <span>{contents.name.value}</span></td></tr>
       <tr><td><label>{Shipping}</label>
@@ -247,7 +255,7 @@ class Credit extends React.Component {
         value={obj.shipping_address.country_code.join()}/>
       <input name='business' type='hidden' value={receiver}/>
       <input name='paymentaction' type='hidden' value='sale'/>
-      <input name='template' type='hidden' value='templateD'/>
+      <input name='template' type='hidden' value='mobile-iframe'/>
       <input name='return' type='hidden' value={redirect_url}/>
       <input name='cancel_return' type='hidden' value={canceled_url}/>
       <input name='notify_url' type='hidden' value={notify_url}/>
@@ -256,7 +264,7 @@ class Credit extends React.Component {
       </form>
       </fieldset>
       <div id="signup-next">
-      <input type="submit" value="SEND"
+      <input type="submit" value="RETURN"
         onClick={this.handleClickButton.bind(this)}
         className="button-primary"/>
       </div>

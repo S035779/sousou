@@ -23,6 +23,7 @@ export default class Radio extends React.Component {
     , function(child, i) {
       return <label htmlFor={child.props.id}>
         <input type="radio"
+          disabled={child.props.disabled}
           name={this.props.name}
           id={child.props.id}
           value={child.props.value}

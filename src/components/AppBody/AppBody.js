@@ -138,15 +138,21 @@ class AppBody extends React.Component {
 
   handleChangeRadio(name, e) {
     let newState = {};
+    let newAddress = {};
     newState[name] = e.target.value;
     switch(name) {
       case 'area':
         newState['currency'] = e.target.value === 'domestic'
           ? ['JPY'] : [];
-        this.setState(newState);
+        newState['country_code'] = e.target.value === 'domestic'
+          ? ['JP'] : [];
+        newState['delivery'] = 'address';
+        newAddress
+          = this.setShippingAddress('', this.isLangJp());
+        this.setState(Object.assign({}, newAddress, newState));
         break;
       case 'delivery':
-        const newAddress
+        newAddress
           = this.setShippingAddress(e.target.value, this.isLangJp());
         this.setState(Object.assign({}, newState, newAddress));
         break;
@@ -194,7 +200,12 @@ class AppBody extends React.Component {
   }
 
   setConfirm(shipping, state, isLangJp) {
-    if(!this.isValid(state)) return '';
+    if(!this.isValid(state)) {
+      return isLangJp
+        ? '弊社未対応エリアの場合は、別途ご連絡差し上げます。'
+        : 'In the case of our unsupported area,' 
+          + 'we will contact you separately.';
+    }
     const value = this.isConfirm(shipping, state);
     let confirm = '';
     switch(value) {
@@ -204,10 +215,10 @@ class AppBody extends React.Component {
           : 'For our unsupported area, we will contact you separately.';
         break;
       case 1:
-        confirm = isLangJp
-          ? '弊社対応可能エリアです。'
-          : 'It is an area that we can handle.';
-        break;
+        //confirm = isLangJp
+        //  ? '弊社対応可能エリアです。'
+        //  : 'It is an area that we can handle.';
+      //  break;
       case 2: case 3: default:
         confirm = isLangJp
           ? '弊社未対応エリアの場合は、別途ご連絡差し上げます。'
@@ -224,12 +235,13 @@ class AppBody extends React.Component {
     let notice = '';
     switch(value) {
       case 'paypal':
-        notice = isLangJp
-          ? this.isCredit(state) || this.isPayPal(state)
-            ? 'EMS、PayPal対応エリアです。'
-            : 'EMSまたはPayPal未対応エリアの為、別途ご連絡差し上げます。'
-          : this.isCredit(state) || this.isPayPal(state)
-            ? 'It is an EMS or PayPal compatible area.'
+        notice = this.isCredit(state) || this.isPayPal(state)
+          ? ''
+            //isLangJp
+            //? 'EMS、PayPal対応エリアです。'
+            //: 'It is an EMS or PayPal compatible area.'
+          : isLangJp
+            ? 'EMSまたはPayPal未対応エリアの為、別途ご連絡差し上げます。'
             : 'It is an area not compliant with EMS or PayPal. ';
         break;
       case 'deposit':
@@ -254,12 +266,12 @@ class AppBody extends React.Component {
     let head, body = '';
     if (results && results.accepted) {
       head = isLangJp
-        ? 'ご利用ありがとうございました！'
-        : 'Thank you for using!';
+        ? 'ご購入ありがとうございます。注文手続きが完了しました。'
+        : 'Thank you for your purchase.'
+          + 'The ordering process is complete.';
       body = isLangJp
-        ? 'ご依頼の商品の詳細は別途メールにてご連絡させて頂きます。'
-        : 'Details of the requested item will be notified separately'
-          + 'by e-mail.';
+        ? '注文内容の確認メールを送信しました。'
+        : 'We sent a confirmation email of the order contents.';
     } else if (results && results.error) {
       head = results.error.name;
       body = std.is('Object', results.error.message)
@@ -576,13 +588,13 @@ class AppBody extends React.Component {
   //      : '';
   //}
 
-  checkEmail(value, isLangJp) {
-    return this.isNotEmail(value)
-      ? isLangJp
-        ? '正しいメールアドレスを入力してください。'
-        : 'Please enter the correct e-mail address.'
-      : '';
-  }
+  //checkEmail(value, isLangJp) {
+  //  return this.isNotEmail(value)
+  //    ? isLangJp
+  //      ? '正しいメールアドレスを入力してください。'
+  //      : 'Please enter the correct e-mail address.'
+  //    : '';
+  //}
   
   //checkPostal(country_code, postal_code, isLangJp) {
   //  return isNotPostal(postal_code, country_code)
@@ -592,13 +604,13 @@ class AppBody extends React.Component {
   //      : '';
   //}
 
-  checkPhone(value, isLangJp) {
-    return this.isNotPhone(value)
-        ? isLangJp
-          ? '半角数字を入力して下さい。'
-          : 'Please enter a number.'
-        : '';
-  }
+  //checkPhone(value, isLangJp) {
+  //  return this.isNotPhone(value)
+  //      ? isLangJp
+  //        ? '半角数字を入力して下さい。'
+  //        : 'Please enter a number.'
+  //      : '';
+  //}
 
   //checkNumber(value1, value2, isLangJp) {
   //  return value2 != null
@@ -658,6 +670,7 @@ class AppBody extends React.Component {
     const shipping = this.props.shipping;
     const language = this.props.language;
     const isJP = this.isLangJp();
+    const isJPY = this.state.currency.join() === 'JPY';
     
     //const Information = isJP ? 'お客様の情報' : 'Your Information';
     const Delivery = isJP ? 'お引き渡し場所' : 'Place of delivery';
@@ -712,27 +725,43 @@ class AppBody extends React.Component {
       ? '冊 x '
       : 'book(s) x '
     const label_currency = isJP
-      ? '（税込／送料別）'
-      : '(tax included / shipping fee is separately)';
+      ? isJPY
+        ? '（税込／送料別）'
+        : '（送料別）'
+      : isJPY
+        ? '(tax included / shipping fee is separately)'
+        : '(shipping fee is separately)';
 
     const notes_quantity = isJP
-      ? '日本円でのお支払いの場合、US '
-        + Number(this.state.usd).toLocaleString('en-US'
-          , { style: 'currency', currency: 'USD' })
-        + ' を当日レートで日本円にしてご請求いたします。'
-      : 'In case of payment in Japanese yen, US '
-        + Number(this.state.usd).toLocaleString('en-US'
-      , { style: 'currency', currency: 'USD' })
-        + ' will be charged as Japanese yen at the current day\'s rate.';
+      ? isJPY 
+        ? ''
+        : '日本円でのお支払いの場合、US '
+          + Number(this.state.usd).toLocaleString('en-US'
+            , { style: 'currency', currency: 'USD' })
+          + ' を当日レートで日本円にしてご請求いたします。'
+      : isJPY
+        ? ''
+        : 'In case of payment in Japanese yen, US '
+          + Number(this.state.usd).toLocaleString('en-US'
+        , { style: 'currency', currency: 'USD' })
+          + ' will be charged as Japanese yen at the current day\'s rate.';
     const notes_currency = isJP
-      ? 'US $ での支払の場合、PayPalアカウントが必要です。'
-      : 'For payment with US $, a PayPal account is required.';
+      ? isJPY
+        ? ''
+        : this.state.payment.join() === 'paypal'
+          ? 'US $ での支払の場合、PayPalアカウントが必要です。'
+          : ''
+      : isJPY
+        ? ''
+        : this.state.payment.join() === 'paypal'
+          ? 'For payment with US $, a PayPal account is required.'
+          : '';
     //const notes_payment = isJP
     //  ? 'ミャンマー発行のクレジットカードはご使用になれません。'
     //  : 'Credit card issued by Myanmar can not be used.';
       //? 'クレジット決済の場合は PayPalアカウント が必要となります。'
       //: 'For credit card transactions, you need a PayPal account.';
-    const notes_notice = this.setNotice(this.state, isJP);
+    const notes_notice = this.setNotice(this.state, isJP); 
     const notes_confirm = this.setConfirm(shipping, this.state, isJP);
 
     const opts_country = [
@@ -796,12 +825,12 @@ class AppBody extends React.Component {
       && this.state.country_code.join()
       ? 'delivery' : 'non-delivery';
 
-    const check_email
-      = this.checkEmail(this.state.email, isJP);
+    //const check_email
+    //  = this.checkEmail(this.state.email, isJP);
     //const check_confirm_email
     //  = this.checkConfirmEmail(this.state.confirm_email, isJP);
-    const check_phone
-      = this.checkPhone(this.state.phone, isJP);
+    //const check_phone
+    //  = this.checkPhone(this.state.phone, isJP);
     //const check_postal_code
     //  = this.checkPostal(this.state.country_code.join()
     //    , this.state.postal_code);
@@ -937,7 +966,9 @@ class AppBody extends React.Component {
             onChange={this.handleChangeText.bind(this, 'phone')}
             placeholder={phone}
             className=" add-placeholder required"/>
+          {/*
           <span className="notes">{check_phone}</span>
+          */}
           </td>
         </tr>
         <tr>
@@ -953,7 +984,9 @@ class AppBody extends React.Component {
             onChange={this.handleChangeText.bind(this, 'email')}
             className="add-placeholder required"
             placeholder={email}/>
+          {/*
           <span className="notes">{check_email}</span>
+          */}
           </td>
         </tr>
       {/*
@@ -1121,8 +1154,10 @@ class AppBody extends React.Component {
             <option value="address"
               id="delivery_address"> {delivery_address} </option>
             <option value="japan"
+              disabled={!isDomestic}
               id="delivery_japan"> {delivery_japan} </option>
             <option value="myanmer"
+              disabled={isDomestic}
               id="delivery_myanmer"> {delivery_myanmer} </option>
           </Radio>
           <a className="btn btn-default" href="#"
@@ -1279,13 +1314,13 @@ class AppBody extends React.Component {
           </th>
         */}
           <td>
+          <span className="notes">{notes_notice}</span>
+          <span className="notes">{notes_confirm}</span>
           <textarea name="message" id="message"
             cons="40" rows="10"
             onChange={this.handleChangeText.bind(this, 'message')}
             placeholder={message}
             className="add-placeholder"/>
-          <span className="notes">{notes_notice}</span>
-          <span className="notes">{notes_confirm}</span>
           </td>
         </tr>
         </tbody></table>
@@ -1304,7 +1339,9 @@ class AppBody extends React.Component {
       </div>
       { Agreement */}
 
+    {/*
       {this.renderNotice(showModalResults, results)}
+    */}
 
       {/* Confirm */}
       <div id="signup-next">
@@ -1312,12 +1349,10 @@ class AppBody extends React.Component {
         <div ref="signup_next"></div>
       </div>
     </form>
-    {/*
     <Modal showModal={showModalResults}>
       <Notice message={results}
         onCompleted={this.handleClickButton.bind(this, 'results')}/>
     </Modal>
-    */}
     <Modal showModal={showModalCredit}>
       <Credit language={language} options={options}
         onReturn={this.handleClickClose.bind(this, 'credit')}

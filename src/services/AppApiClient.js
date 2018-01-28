@@ -215,33 +215,35 @@ export default {
   },
   setManager(obj) {
     const message = {
-      from: sender
+      from: `${obj.infomation.first_name} ${obj.infomation.last_name}`
+        + `<${obj.infomation.email}>`
       , to: sender
-      , subject: '購入を受付ました。'
-      , text: `お客様は以下の商品を購入しました。\n\n`
-        + ` お客様：`
-          + ` ${obj.infomation.company}`
-          + ` ${obj.infomation.last_name}`
-          + ` ${obj.infomation.first_name}\n`
-        + ` 商品名： ${obj.item.name}\n`
-        + ` 概　要： ${obj.item.description}\n`
-        + ` 単　価： ${obj.item.price} ${obj.item.currency}\n`
-        + ` 数　量： ${obj.item.quantity}\n`
-        + ` 小　計： ${obj.details.subtotal} ${obj.item.currency}\n`
-        + ` 配送料： ${obj.details.shipping} ${obj.currency}\n`
-        + ` 合　計： ${obj.total} ${obj.currency}\n`
-        + ` 配送先： ${obj.shipping_address.postal_code}\n`
-        + `          ${obj.shipping_address.state}\n`
-        + `          ${obj.shipping_address.city}\n`
-        + `          ${obj.shipping_address.line1}\n`
-        + `          ${obj.shipping_address.line2}\n`
-        + `          ${obj.shipping_address.recipient_name}\n`
-        + `          ${obj.shipping_address.phone}\n`
-        + `          ${obj.shipping_address.country_code}\n\n`
-        + ` 方　法： ${obj.infomation.payment}\n`
-        + ` 連　絡： ${obj.infomation.message}\n`
-        + `銀行振込(deposit）、その他(other)の場合は、\n`
-        + `以降、お客様対応をお願いします。\n`
+      , subject: `(Yearbook) ${obj.infomation.company} : `
+        + `Yearbook Vol.1のご注文がありました`
+      , text: `FWP Researchの公式HPからYearbook vol.1の注文がありました。`
+        + `\n\n`
+        + `--------------------------------------------------------------`
+        + `--------\n\n`
+        + `ご注文内容\n\n`
+        + `お申込み元サイト: JP or US\n`
+        + `名前　　　　　　: `
+          + ` ${obj.infomation.first_name}  ${obj.infomation.last_name}\n`
+        + `会社名　　　　　: ${obj.infomation.company}\n`
+        + `メールアドレス　: ${obj.infomation.email}\n`
+        + `電話番号　　　　: ${obj.shipping_address.phone}\n`
+        + `ご購入数と通貨　: ${obj.item.quantity} 冊`
+          + ` 【${obj.currency}】\n`
+        + `お支払い方法　　: ${obj.infomation.payment}\n`
+        + `お引き渡し場所　: ${obj.shipping_address.postal_code}\n`
+        + `                  ${obj.shipping_address.state}\n`
+        + `                  ${obj.shipping_address.city}\n`
+        + `                  ${obj.shipping_address.line1}\n`
+        + `                  ${obj.shipping_address.line2}\n`
+        + `                  ${obj.shipping_address.recipient_name}\n`
+        + `                  ${obj.shipping_address.country_code}\n\n`
+        + `ご連絡事項:\n${obj.infomation.message}\n\n`
+        + `--------------------------------------------------------------`
+        + `--------\n`
     };
     return { message };
   },
@@ -249,32 +251,50 @@ export default {
     const message = {
       from: sender
       , to: obj.infomation.email
-      , subject: 'ご購入有難うございました。'
-      , text: `お客様は以下の商品を購入しました。\n\n`
-        + ` お客様：`
-          + ` ${obj.infomation.company}`
-          + ` ${obj.infomation.first_name}`
-          + ` ${obj.infomation.last_name}\n`
-        + ` 商品名： ${obj.item.name}\n`
-        + ` 概　要： ${obj.item.description}\n`
-        + ` 単　価： ${obj.item.price} ${obj.item.currency}\n`
-        + ` 数　量： ${obj.item.quantity}\n`
-        + ` 小　計： ${obj.details.subtotal} ${obj.item.currency}\n`
-        + ` 配送料： ${obj.details.shipping} ${obj.currency}\n`
-        + ` 合　計： ${obj.total} ${obj.currency}\n`
-        + ` 配送先： ${obj.shipping_address.postal_code}\n`
-        + `          ${obj.shipping_address.state}\n`
-        + `          ${obj.shipping_address.city}\n`
-        + `          ${obj.shipping_address.line1}\n`
-        + `          ${obj.shipping_address.line2}\n`
-        + `          ${obj.shipping_address.recipient_name}\n`
-        + `          ${obj.shipping_address.phone}\n`
-        + `          ${obj.shipping_address.country_code}\n\n`
-        + ` 方　法： ${obj.infomation.payment}\n`
-        + ` 連　絡： ${obj.infomation.message}\n`
-        + `銀行振込(deposit）、その他(other)の場合は、\n`
-        + `以降の手続きは、メールにてご対応させて頂きます。\n`
-        + `弊社担当からの連絡をお待ち下さい。\n`
+      , subject: `【FWP Research】`
+        + `ご注文内容の確認-ミャンマー企業年鑑 Vol.1`
+      , text: `${obj.infomation.first_name} ${obj.infomation.last_name}`
+        + ` 様\n\n`
+        + `この度は、ミャンマー企業年鑑 Vol.1をご注文いただきまして、`
+        + `誠にありがとうございます。\n\n`
+        + `このメールは、ご注文内容確認のため、`
+          + `自動配信にてお知らせしています。\n`
+        + `後ほど、ご注文内容の確認を行い、`
+          + `送料を追加した合計金額をご案内いたしますので、\n`
+        + `しばらくお待ちくださいませ。\n\n`
+        + `--------------------------------------------------------------`
+        + `--------\n\n`
+        + `ご注文内容\n\n`
+        + `名前　　　　　: `
+          + `${obj.infomation.first_name} ${obj.infomation.last_name}\n`
+        + `会社名　　　　: ${obj.infomation.company}\n`
+        + `メールアドレス: ${obj.infomation.email}\n`
+        + `電話番号　　　: ${obj.shipping_address.phone}\n`
+        + `ご購入数と通貨: ${obj.item.quantity} 冊 `
+          + `【${obj.currency}】\n`
+        + `お支払い方法　: ${obj.infomation.payment}\n`
+        + `お引き渡し場所: ${obj.shipping_address.postal_code}\n`
+        + `                ${obj.shipping_address.state}\n`
+        + `                ${obj.shipping_address.city}\n`
+        + `                ${obj.shipping_address.line1}\n`
+        + `                ${obj.shipping_address.line2}\n`
+        + `                ${obj.shipping_address.recipient_name}\n`
+        + `                ${obj.shipping_address.country_code}\n\n`
+        + `ご連絡事項:\n${obj.infomation.message}\n\n`
+        + `--------------------------------------------------------------`
+        + `--------\n\n`
+        + `==============================================================`
+        + `========\n`
+        + `このメールにお心当たりのない場合はお手数ですが、当社までご連絡`
+        + `をお願い\n`
+        + `致します。\n`
+        + `= FWP Research =\n`
+        + `info@fwpresearch.com\n`
+        + `http://fwpresearch.com\n`
+        + `(JAPAN)    TEL +81 3-3641-8998\n`
+        + `(MYANMAR)  TEL +95 94-5210-2233\n`
+        + `==============================================================`
+        + `========\n`
     };
     return { message };
   },

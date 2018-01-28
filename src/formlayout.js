@@ -4,6 +4,10 @@ import {} from 'jquery-jpostal-ja';
 const host = process.env.TOP_URL || 'https://localhost:4443';
 
 jQuery(function($) {
+  const { language } = std.decodeFormData(
+    $(location).attr('search').split('?')[1], '&', '=', true);
+  const isLangJp = language === 'jp';
+
   // jpostal-ja
   $('#postal_code').jpostal({   
     postcode : [
@@ -68,6 +72,19 @@ jQuery(function($) {
         error.insertAfter(element);
       }
     }
+  });
+  $.extend($.validator.messages, {
+    required:     isLangJp
+      ? "必須項目です" : 'This field is required.',
+    email:        isLangJp
+      ? "メールアドレスを入力してください"
+      : 'Please specify the correct email address.',
+    phone:        isLangJp
+      ? "有効な電話番号を入力してください。"
+      : 'Please specify the correct phone number.',
+    postal_code:  isLangJp
+      ? "有効な郵便番号を入力してください。"
+      : 'Please specify thie correct postal code.'
   });
 
   // exresize

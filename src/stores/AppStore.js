@@ -31,7 +31,7 @@ class AppStore extends ReduceStore {
           , line1: ''
           , line2: ''
           , city: ''
-          , country_code: []
+          , country_code: ['JP']
           , postal_code: ''
           , phone: ''
           , state: ''
