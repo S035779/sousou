@@ -15,14 +15,9 @@ mv $ASSETS/css/style.css.map $ASSETS/css/style_${TODAY}.css.map
 cp dist/*.css $ASSETS/css/
 cp dist/*.css.map $ASSETS/css/
 
-mv $ASSETS/image/close.png       $ASSETS/image/close_${TODAY}.png
-mv $ASSETS/image/loading.gif     $ASSETS/image/loading_${TODAY}.gif
-mv $ASSETS/image/next.png        $ASSETS/image/next_${TODAY}.png
 mv $ASSETS/image/favicon.ico     $ASSETS/image/favicon_${TODAY}.ico
 mv $ASSETS/image/myanmaphoto.png $ASSETS/image/myanmaphoto_${TODAY}.png
-mv $ASSETS/image/prev.png        $ASSETS/image/prev_${TODAY}.png
 cp dist/*.png $ASSETS/image/
-cp dist/*.gif $ASSETS/image/
 cp dist/*.ico $ASSETS/image/
 
 mv $PLUGIN/paypal-shortcode.php $PLUGIN/paypal-shortcode_${TODAY}.php
