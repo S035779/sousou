@@ -188,6 +188,7 @@ class AppBody extends React.Component {
   handleSubmit(e) {
     //this.logInfo('handleSubmit');
     e.preventDefault();
+    e.stopPropagation();
     const state = this.state;
     if(!this.isValid(state)) return;
     if(this.isCredit(state)) {
@@ -636,8 +637,8 @@ class AppBody extends React.Component {
   renderButton(state) {
     if ( this.isMail(state) || this.isCredit(state)
     || !this.isValid(state) || this.payment.shipping === -1) {
-      return <input type="submit" value="SEND"
-        className="button-primary"/>
+      return <input type="submit" value={ this.isLangJp()
+        ? "送信" : "SEND"} className="button-primary"/>
     } else {
       return <div></div>;
     }

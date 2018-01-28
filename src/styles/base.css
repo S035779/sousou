@@ -1,75 +1,87 @@
 @charset "UTF-8";
 
 /*style*/
+html{
+  font-size: calc(10/16*100%);
+}
+@media (min-width: 600px) {
+  html{
+    font-size: calc((12/16*100%) + 2 * (100vw - 600px) / 400)
+  }
+}
+@media (min-width: 1000px) {
+  html{
+    font-size: calc(14/16*100%)
+  }
+}
 body{
-	margin: 0;
-	padding: 0;
-	-webkit-text-size-adjust: none;
-	font-size: 13px;
-	line-height: nomal;
-	font-family: 'Open Sans',verdana,"ヒラギノ角ゴ Pro W3","Hiragino Kaku Gothic Pro","メイリオ",Meiryo,"游ゴシック",YuGothic,sans-serif;
-	color: #555;
+  margin: 0;
+  padding: 0;
+  -webkit-text-size-adjust: none;
+  line-height: normal;
+  font-family: 'Open Sans',verdana,"ヒラギノ角ゴ Pro W3","Hiragino Kaku Gothic Pro","メイリオ",Meiryo,"游ゴシック",YuGothic,sans-serif;
+  color: #555;
 }
 h1,h2,h3,h4,h5,h6,p{
-	margin: 0 0 20px;
+  margin: 0 0 20px;
 }
 h1,h2,h3,h4,h5,h6{
-	font-size: 120%;
+  font-size: 1.2rem;
 }
 ul,ol{
-	padding: 0;
-	margin: 0 0 20px 20px;
+  padding: 0;
+  margin: 0 0 20px 20px;
 }
 img{
-	border: none;
+  border: none;
 }
 a{
-	text-decoration: underline;
+  text-decoration: underline;
 }
 a:hover{
-	text-decoration: none;
+  text-decoration: none;
 }
 .screen-reader-text{
-	display: none;
+  display: none;
 }
 .clear{
-	clear: both;
+  clear: both;
 }
 .clear hr{
-	display: none;
+  display: none;
 }
 hr{
-	background-color: #ddd;
-	border: 0;
-	height: 1px;
-	clear: both;
-	margin: 30px auto;
+  background-color: #ddd;
+  border: 0;
+  height: 1px;
+  clear: both;
+  margin: 30px auto;
 }
 blockquote{
-	margin: 0px 0px 20px;
-	padding: 10px 20px 10px 20px;
-	background-color: #f4f4f4;
-	border: 1px solid #ddd;
-	border-radius: 5px;
-	-moz-border-radius: 5px;
+  margin: 0px 0px 20px;
+  padding: 10px 20px 10px 20px;
+  background-color: #f4f4f4;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
 }
 blockquote blockquote{
-	margin: 20px 0;
-	background-color: #fff;
+  margin: 20px 0;
+  background-color: #fff;
 }
 blockquote blockquote blockquote{
-	margin: 20px 0;
-	background-color: #f4f4f4;
+  margin: 20px 0;
+  background-color: #f4f4f4;
 }
 blockquote p{
-	padding: 0px;
-	margin: 0px 0px 0px 0px;
+  padding: 0px;
+  margin: 0px 0px 0px 0px;
 }
 table{
-	margin-bottom: 5px;
+  margin-bottom: 5px;
 }
 object,embed{
-	width: 100%;
-	display: block;
-	margin: auto;
+  width: 100%;
+  display: block;
+  margin: auto;
 }

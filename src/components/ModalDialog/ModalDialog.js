@@ -16,7 +16,7 @@ ReactModal.defaultStyles = {
   content: {
     position: 'relative',
     width: '90%',
-    margin: '5% auto 0',
+    margin: '2.5% auto 0',
     padding: '5% 0 0',
     borderRadius: '4px',
     background: '#fff'

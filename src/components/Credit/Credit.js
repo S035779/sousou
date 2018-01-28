@@ -36,20 +36,24 @@ class Credit extends React.Component {
 
   componentDidMount() {
     window.form_iframe.submit();
+    this.screen = document.getElementById('#user-sign-up');
   }
 
   handleClickClose(e) {
     //this.logInfo('handleClickClose');
     e.preventDefault();
+    e.stopPropagation();
     this.props.onReturn();
   }
 
   handleClickButton(e) {
     //this.logInfo('handleClickButton');
     e.preventDefault();
+    e.stopPropagation();
     AppAction.createCredit(Object.assign({}, this.props.options
-      , { credit_validate: this.state }));
-    this.props.onCompleted();
+      , { credit_validate: this.state })).then(() => {
+        this.props.onCompleted();
+      });
   }
   
   setPrices(obj, isLangJp) {
@@ -163,9 +167,6 @@ class Credit extends React.Component {
 
   render() {
     //console.log(this.state);
-    const iframe_styles = {
-      width: '100%', height: '565px', border: 'none', overflow: 'hidden'
-    };
     const form_styles = { display: 'none' };
     const obj = this.props.options;
     const isLangJp = this.props.language === 'jp' ? true : false;
@@ -183,8 +184,7 @@ class Credit extends React.Component {
     const custom = this.state.custom;
     const receiver = this.state.receiver_email
     return <div className="buynow_contactlast">
-      <a href="#"
-        className="close-thik"
+      <a href="#" className="close-thik"
         onClick={this.handleClickClose.bind(this)}></a>
       <div id="user-sign-up">
       <fieldset className="category-group">
@@ -223,7 +223,7 @@ class Credit extends React.Component {
       </fieldset>
       <fieldset className="category-group">
       <legend>{ConfirmOrder}</legend>
-      <iframe name='hss_iframe' style={iframe_styles}></iframe>
+      <iframe name='hss_iframe' style={styles.iframe}></iframe>
       <form method='post' name='form_iframe' target='hss_iframe'
         style={form_styles} action={credit_url}>
       <input name='cmd' type='hidden' value='_hosted-payment'/>
@@ -264,7 +264,7 @@ class Credit extends React.Component {
       </form>
       </fieldset>
       <div id="signup-next">
-      <input type="submit" value="RETURN"
+      <input type="submit" value={ isLangJp ? "送信" : "SEND"}
         onClick={this.handleClickButton.bind(this)}
         className="button-primary"/>
       </div>
@@ -272,4 +272,10 @@ class Credit extends React.Component {
       </div>;
   }
 }
+
+const styles = {
+  iframe: {
+    width: '100%', height: '565px', border: 'none', overflow: 'hidden'
+  },
+};
 export default Credit;

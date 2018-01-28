@@ -36,6 +36,8 @@ class Home extends React.Component {
     return <html>
       <head>
       <meta charSet="utf-8" />
+      <meta name="viewport"
+        content="width=device-width, maximum-scale=1.0, minimum-scale=0.5,user-scalable=yes,initial-scale=1.0" />
       <title>PayPal Payment</title>
       <link rel="shortcut icon" href={ path_to_img + '/favicon.ico' } />
       <link rel="stylesheet"    href={ path_to_css + '/style.css' } />

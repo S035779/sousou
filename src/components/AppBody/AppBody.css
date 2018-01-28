@@ -31,7 +31,7 @@
 	font-weight: bold;
   color: #929292;
   border-left: solid 1px #cccccc;
-	font-size: 14px;
+	font-size: 1.0rem;
 }
 
 /* table layout */
@@ -51,7 +51,7 @@
   vertical-align: middle;
 	width: 100%;
   height: 2.5em;
-  font-size: 100%;
+  font-size: 1.0rem;
 	border: solid 1px #ccc;
 }
 
@@ -67,7 +67,7 @@
   , input[type="password"]
   , textarea {
 	width: 97%;
-	font-size: 100%;
+	font-size: 1.0rem;
 	border: solid 1px #ccc;
 }
 
@@ -113,7 +113,7 @@ input.button-primary {
   background: #ffb401;
   height: 60px;
   color: #fff;
-  font-size: 16px;
+  font-size: 1.2rem;
   border: none;
   border-radius: 8px;
 	-moz-border-radius: 8px;
@@ -180,7 +180,7 @@ label.error {
 	margin-bottom: 0.5em;
 	color: #C00;
 	font-weight: bold;
-	font-size: 87.5%;
+	font-size: 0.875rem;
 }
 
 label.error:before {
@@ -203,14 +203,14 @@ label.error:before {
 	border-radius: 2px;
 	color: #FFF;
 	font-weight: normal;
-	font-size: 62.5%;
+	font-size: 0.625rem;
 	background-color: #C00;
 }
 
 .notes {
 	display: block;
 	line-height: 1.2;
-	font-size: 75%;
+	font-size: 0.75rem;
 }
 
 /* multi field */
