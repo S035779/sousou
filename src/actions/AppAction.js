@@ -18,7 +18,7 @@ export default {
           name: 'Credit Payment API Error'
           , message: {
             jp: '入力手続きが完了しませんでした。'
-            , en: 'The input procedure was not completed.'
+          , en: 'The input procedure was not completed.'
           }
         }};
         dispatch({ type: 'item/create/credit', results, options });
@@ -34,7 +34,7 @@ export default {
           name: 'PayPal Payment API Error'
           , message: {
             jp: '入力手続きが完了しませんでした。'
-            , en: 'The input procedure was not completed.'
+          , en: 'The input procedure was not completed.'
           }
         }};
         dispatch({ type: 'item/create/express', results, options });
@@ -50,7 +50,7 @@ export default {
           name: 'Mail messaging API Error'
           , message: {
             jp: 'メッセージ送信が完了しませんでした。'
-            , en: 'Message sending was not completed.'
+          , en: 'Message sending was not completed.'
           }
         }};
         dispatch({ type: 'item/create/message', results, options });
@@ -67,7 +67,7 @@ export default {
           name: 'Delivery charge API Error'
           , message: {
             jp: '配送料算出手続きが完了しませんでした。'
-            , en: 'The shipping fee calculation procedure was not completed.'
+          , en: 'The shipping fee calculation procedure was not completed.'
           }
         }};
         dispatch({ type: 'config/fetch/shipping', results });
@@ -84,7 +84,7 @@ export default {
           name: 'Currency API Error'
           , message: {
             jp: '通貨算出手続きが完了しませんでした。'
-            , en: 'The currency calculation procedure was not completed.'
+          , en: 'The currency calculation procedure was not completed.'
           }
         }};
         dispatch({ type: 'config/fetch/currency', results });

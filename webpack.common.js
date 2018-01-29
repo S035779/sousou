@@ -1,7 +1,6 @@
 const dotenv = require('dotenv-webpack');
 const webpack = require('webpack');
 const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
@@ -27,11 +26,6 @@ module.exports = {
   },
   plugins: [
     new dotenv(),
-    new HtmlWebpackPlugin({
-      inject: false
-      , template: 'index.html'
-      , favicon: './assets/image/favicon.ico'
-    }),
     new CleanWebpackPlugin(['dist']),
     new ManifestPlugin(),
     new ExtractTextPlugin({ filename: 'style.css' }),
@@ -44,12 +38,9 @@ module.exports = {
     publicPath: '/',
   },
   externals: {
-    jquery: 'jQuery',
-    react: 'React',
-    'react-dom': 'ReactDOM',
-//    'react-router': 'ReactRouter',
-//    'react-router-dom': 'ReactRouterDOM',
-//    'react-router-config': 'ReactRouterConfig'
+    'jquery':     'jQuery',
+    'react':      'React',
+    'react-dom':  'ReactDOM'
   },
   module: {
     rules: [{

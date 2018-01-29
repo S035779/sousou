@@ -5,16 +5,17 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-//import { matchRoutes } from 'react-router-config';
-import Home from './pages/Home/Home';
+//import { renderRoutes } from 'react-router-config';
 //import getRoutes from './routes';
-import { dehydrateState, getStores, createStores } from './stores';
+import { dehydrateState, createStores } from './stores';
 import { createDispatcher } from './dispatcher';
 import PayPalPayment from './utils/PayPalPayment';
 import CurrencyLayer from './utils/CurrencyLayer';
 import Shipping from './utils/Shipping';
 import Sendmail from './utils/Sendmail';
 import { logs as log } from './utils/logutils';
+
+import Html from './pages/Html/Html';
 
 dotenv.config()
 const env = process.env.NODE_ENV || 'development';
@@ -57,17 +58,12 @@ app.use(log.connect());
 
 router.route('/')
 .get((req, res, next)     => {
-  //const branch = matchRouter(getRoutes(), req.originalUrl);
-  //const promises = branch.map(({ route, match }) =>
-  //  route.prefetch ? route.prefetch(match) : Promise.resolve(null));
-  const dispatcher = createDispatcher();
-  createStores(dispatcher);
-  //Promise.all(promises).then(() => {
-    const init = req.query;
-    const stat = dehydrateState();
-    res.send('<!doctype html>\n'
-      + renderToStaticMarkup(<Home init={init} stat={stat}/>));
-  //});
+  createStores(createDispatcher());
+  const initialStat = JSON.stringify(dehydrateState());
+  const initialData = JSON.stringify(req.query);
+  res.send('<!doctype html>\n' + renderToStaticMarkup(
+    <Html initialStat={initialStat} initialData={initialData}/>
+  ));
 })
 .put((req, res, next)     => { next(new Error('not implemented')); })
 .post((req, res, next)    => { next(new Error('not implemented')); })

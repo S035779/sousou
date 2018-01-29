@@ -73,10 +73,10 @@ class PayPalPayment {
           //resolve(data);
           std.invoke2(
             ( ) => cache.store[body] ? true : false,
-            val => log.info(val),
+            val => log.trace(val),
             err => reject(err),
             ( ) => resolve(cache.store[body].content),
-            1000, 1000, 30000
+            1000, 1000, 30000 * 2
           );
         });
       case '/ipnpb':
@@ -192,7 +192,8 @@ class PayPalPayment {
     const isReceiver = receiver_email === data.receiver_email;
     const isMcGross = mc_gross === Number(data.mc_gross);
     const isMcCurrency = mc_currency === data.mc_currency;
-    log.info(isReceiver, isMcGross, isMcCurrency);
+    log.info(
+      'email', isReceiver, 'gross', isMcGross, 'currency', isMcCurrency);
     if(!isReceiver || !isMcGross || !isMcCurrency)
       throw new Error('INVALID');
     return 'VERIFIED';

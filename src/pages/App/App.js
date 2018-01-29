@@ -16,32 +16,32 @@ class App extends React.Component {
     return getState('appStore');
   }
 
-  static prefetch() {
-    const { length, weight, from, usd, jpy } = JSON.parse(
-      document.getElementById('initial-data').getAttribute('data-init'));
-    AppAction.fetchShipping({ length, weight, from });
-    AppAction.fetchCurrency({ usd, jpy });
-    return;
+  static prefetch(props) {
+    const { length, weight, from, usd, jpy } = props;
+    const shipping = obj => AppAction.fetchShipping(obj);
+    const currency = obj => AppAction.fetchCurrency(obj);
+    return Promise.all([
+      shipping({ length, weight, from })
+    , currency({ usd, jpy }
+    )])
+      .then(() => console.log('Complete!!'))
+      .catch(err => console.log(err.name, err.message));
   }
 
   componentDidMount() {
-    App.prefetch();
+    App.prefetch(this.props);
   }
 
   render() {
-    const { language } = JSON.parse(
-      document.getElementById('initial-data').getAttribute('data-init'));
+    const props = this.props;
     return <div>
-      <AppHeader language={language} />
-      <AppBody
-        language={language}
-        usd={this.state.usd}
-        jpy={this.state.jpy}
+      <AppHeader {...props} />
+      <AppBody {...props}
         options={this.state.options}
         currency={this.state.currency}
         shipping={this.state.shipping}
         results={this.state.results} />
-      <AppFooter language={language} />
+      <AppFooter {...props} />
     </div>;
   }
 }

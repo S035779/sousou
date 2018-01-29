@@ -13,15 +13,9 @@ const pspid = 'AppBodyView';
 class AppBody extends React.Component {
   constructor(props) {
     super(props);
-    const language = props.language;
-    const usd = props.usd;
-    const jpy = props.jpy;
-    const options = props.options;
-    const results = props.results;
-    const infomation = options.infomation;
-    const details = options.details;
-    const item = options.item;
-    const shipping_address = options.shipping_address;
+    const { usd, jpy, options, results }
+      = props;
+    const { infomation, details, item, shipping_address } = options;
 
     this.payment = {
       total:            options.total
@@ -59,7 +53,6 @@ class AppBody extends React.Component {
     //  , agreement:      infomation.agreement
       , message:        infomation.message
       , recipient_phone: infomation.recipient_phone
-      , language:       language
       , usd:            usd
       , jpy:            jpy
       , results:        results
@@ -94,16 +87,16 @@ class AppBody extends React.Component {
     let newState = {};
     switch(name) {
       case 'postal_code':
-        newState ={
+        newState = {
           postal_code: e.target.value
-          , state:    document.getElementById('state').value
-          , city:   document.getElementById('city').value
-          , line1:  document.getElementById('line1').value
-          , line2:  document.getElementById('line2').value
-          , recipient_name:
-                    document.getElementById('recipient_name').value
-          , recipient_phone:
-                    document.getElementById('recipient_phone').value
+        , state:  document.getElementById('state').value
+        , city:   document.getElementById('city').value
+        , line1:  document.getElementById('line1').value
+        , line2:  document.getElementById('line2').value
+        , recipient_name:
+                  document.getElementById('recipient_name').value
+        , recipient_phone:
+                  document.getElementById('recipient_phone').value
         };
         this.setState(newState);
         break;
@@ -122,15 +115,15 @@ class AppBody extends React.Component {
       case 'city':
       case 'line1':
       case 'line2':
-        newState ={
-          state:    document.getElementById('state').value
-          , city:   document.getElementById('city').value
-          , line1:  document.getElementById('line1').value
-          , line2:  document.getElementById('line2').value
-          , recipient_name:
-                    document.getElementById('recipient_name').value
-          , recipient_phone:
-                    document.getElementById('recipient_phone').value
+        newState = {
+          state:  document.getElementById('state').value
+        , city:   document.getElementById('city').value
+        , line1:  document.getElementById('line1').value
+        , line2:  document.getElementById('line2').value
+        , recipient_name: 
+                  document.getElementById('recipient_name').value
+        , recipient_phone:
+                  document.getElementById('recipient_phone').value
         };
         this.setState(newState);
         break;
@@ -146,21 +139,18 @@ class AppBody extends React.Component {
   handleChangeRadio(name, e) {
     let newState = {};
     let newAddress = {};
-    newState[name] = e.target.value;
+    const value = e.target.value;
+    newState[name] = value;
     switch(name) {
       case 'area':
-        newState['currency'] = e.target.value === 'domestic'
-          ? ['JPY'] : [];
-        newState['country_code'] = e.target.value === 'domestic'
-          ? ['JP'] : [];
-        newState['delivery'] = 'address';
-        newAddress
-          = this.setShippingAddress('', this.isLangJp());
+        newState['currency']      = value === 'domestic' ? ['JPY'] : [];
+        newState['country_code']  = value === 'domestic' ? ['JP']  : [];
+        newState['delivery']      = 'address';
+        newAddress = this.setShippingAddress('', this.isLangJp());
         this.setState(Object.assign({}, newAddress, newState));
         break;
       case 'delivery':
-        newAddress
-          = this.setShippingAddress(e.target.value, this.isLangJp());
+        newAddress = this.setShippingAddress(value, this.isLangJp());
         this.setState(Object.assign({}, newState, newAddress));
         break;
       default:
@@ -176,9 +166,15 @@ class AppBody extends React.Component {
     for( let i=0; i<options.length; i++) {
       if(options[i].selected) values.push(options[i].value);
     }
+    newState[name] = values;
     switch(name) {
+      case 'quantity':
+        const { length, weight, from } = this.props;
+        AppAction.fetchShipping({ length
+          , weight: weight * Number(values.join()), from });
+        this.setState(newState);
+        break;
       //case 'country_code':
-      //  newState[name] = values;
       //  const shipping = this.props.shipping;
       //  const newCountry
       //    = this.setShippingCountry(values.join()
@@ -186,7 +182,6 @@ class AppBody extends React.Component {
       //  this.setState(Object.assign({}, newState, newCountry));
       //  break;
       default:
-        newState[name] = values;
         this.setState(newState);
         break;
     }
@@ -330,7 +325,7 @@ class AppBody extends React.Component {
         , payment:      state.payment
         , message:      state.message
         , recipient_phone: state.recipient_phone
-        , language:     state.language
+        , site:         this.props.language
       //  , agreement:    state.agreement
       }
     });
@@ -490,9 +485,8 @@ class AppBody extends React.Component {
         ? 0
         : isEms(state) && isPay(state) && this.isConfirm(shipping, state)
           ? this.isUSD(state)
-            ? Math.ceil(isEms(state).price * state.quantity.join()
-              / currency.USDJPY)
-            : Number(isEms(state).price) * state.quantity.join()
+            ? Math.ceil(isEms(state).price / currency.USDJPY)
+            : Number(isEms(state).price)
           : -1;
   }
 
@@ -532,8 +526,8 @@ class AppBody extends React.Component {
       && state.phone          && !this.isNotPhone(state.phone)
       && state.email          && !this.isNotEmail(state.email)
       //&& state.confirm_email  && (state.email === state.confirm_email)
-      && state.postal_code
-      && !this.isNotPostal(state.postal_code, state.country_code.join())
+      //&& state.postal_code
+      //&& !this.isNotPostal(state.postal_code, state.country_code.join())
       && state.line1
       && state.line2
       //&& state.agreement
@@ -678,8 +672,7 @@ class AppBody extends React.Component {
   render() {
     this.logTrace(this.state);
     //this.logTrace(this.payment);
-    const shipping = this.props.shipping;
-    const language = this.props.language;
+    const { shipping, language } = this.props;
     const isJP = this.isLangJp();
     const isJPY = this.state.currency.join() === 'JPY';
     
@@ -1216,7 +1209,7 @@ class AppBody extends React.Component {
             value={this.state.postal_code}
             onChange={this.handleChangeText.bind(this, 'postal_code')}
             onFocus={this.handleFocusText.bind(this, 'postal_code')}
-            className=" add-placeholder"
+            className="add-placeholder"
             placeholder={postal_code} />
         {/*
           <span className="notes">{check_postal_code}</span>

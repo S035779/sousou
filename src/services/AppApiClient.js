@@ -225,7 +225,7 @@ export default {
         + `--------------------------------------------------------------`
         + `--------\n\n`
         + `ご注文内容\n\n`
-        + `お申込み元サイト: ${obj.infomation.language}\n`
+        + `お申込み元サイト: ${obj.infomation.site}\n`
         + `名前　　　　　　: `
           + ` ${obj.infomation.first_name}  ${obj.infomation.last_name}\n`
         + `会社名　　　　　: ${obj.infomation.company}\n`
