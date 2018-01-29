@@ -15,10 +15,8 @@ mv $ASSETS/css/style.css.map $ASSETS/css/style_${TODAY}.css.map
 cp dist/*.css $ASSETS/css/
 cp dist/*.css.map $ASSETS/css/
 
-mv $ASSETS/image/favicon.ico     $ASSETS/image/favicon_${TODAY}.ico
 mv $ASSETS/image/myanmaphoto.png $ASSETS/image/myanmaphoto_${TODAY}.png
 cp dist/*.png $ASSETS/image/
-cp dist/*.ico $ASSETS/image/
 
 mv $PLUGIN/paypal-shortcode.php $PLUGIN/paypal-shortcode_${TODAY}.php
 cp wordpress/paypal-shortcode.php $PLUGIN/
