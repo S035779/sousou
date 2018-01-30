@@ -76,7 +76,7 @@ class PayPalPayment {
             val => log.trace(val),
             err => reject(err),
             ( ) => resolve(cache.store[body].content),
-            1000, 1000, 30000 * 2
+            1000, 1000, 110 * 1000 // Time out in 110 sec.
           );
         });
       case '/ipnpb':

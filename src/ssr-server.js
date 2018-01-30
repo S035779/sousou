@@ -52,9 +52,9 @@ const pspid = 'ssr-server';
 
 const app = express();
 const router = express.Router();
+app.use(log.connect());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(log.connect());
 
 router.route('/')
 .get((req, res, next)     => {
@@ -199,6 +199,6 @@ router.route('/currency')
 .delete((req, res, next)  => { next(new Error('not implemented')); });
 
 app.use('/api', router);
-http.createServer(app).listen(http_port, http_host, () => {
+const server = http.createServer(app).listen(http_port, http_host, () => {
   log.info(`HTTP Server listening on ${http_host}:${http_port}`);
 });

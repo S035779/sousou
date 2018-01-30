@@ -1,17 +1,29 @@
 @charset "UTF-8";
 
 /*style*/
-html{
-  font-size: calc(10/16*100%);
-}
-@media (min-width: 600px) {
+@media screen and (max-width: 600px) {
   html{
-    font-size: calc((12/16*100%) + 2 * (100vw - 600px) / 400)
+    font-size: calc(10/16*100%);
+  }
+  thead th,
+  tbody th,
+  tbody td {
+    display: block;
   }
 }
-@media (min-width: 1000px) {
+@media screen and (min-width: 600px) {
   html{
-    font-size: calc(14/16*100%)
+    font-size: calc((12/16*100%) + (14 - 12) * (100vw - 600px) / 360)
+  }
+}
+@media screen and (min-width: 960px) {
+  html{
+    font-size: calc((14/16*100%) + (16 - 14) * (100vw - 960px) / 320)
+  }
+}
+@media screen and (min-width: 1280px) {
+  html{
+    font-size: calc(16/16*100%)
   }
 }
 body{

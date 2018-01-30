@@ -1151,7 +1151,7 @@ class AppBody extends React.Component {
           </label>
           </th>
         */}
-        <td>
+          <td>
           <div className="delivery-field">
           <Radio name="delivery"
             value={this.state.delivery}
@@ -1165,14 +1165,18 @@ class AppBody extends React.Component {
               disabled={isDomestic}
               id="delivery_myanmer"> {delivery_myanmer} </option>
           </Radio>
-          <a className="btn btn-default" href="#"
-              data-featherlight="#fl1">{delivery_check}</a>
           </div>
           {/*
           <span className="notes">{notes_delivery}</span>
           */}
           </td>
+          <td>
+          <a className="btn btn-default" href="#"
+              data-featherlight="#fl1">{delivery_check}</a>
+          </td>
         </tr>
+        </tbody></table>
+        <table><tbody>
         <tr>
         {/*
           <th>

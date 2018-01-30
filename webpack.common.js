@@ -57,14 +57,7 @@ module.exports = {
       },{
         test: /\.(gif|jpg|png|svg|ico)$/,
         use: [ 'file-loader?name=[name].[ext]' ]
-      },{
-        test: /\.(woff|woff2|eot|ttf|otf)$/,
-        use: [ 'file-loader?name=[name].[ext]' ]
-      },{
-        test: /\.(csv|tsv)$/, use: [ 'csv-loader' ]
-      },{
-        test: /\.xml$/,       use: [ 'xml-loader' ]
-    }]
+      }]
   },
   resolve: {
     alias: {
@@ -75,9 +68,7 @@ module.exports = {
       Actions: path.resolve(__dirname, 'src/actions'),
       Components: path.resolve(__dirname, 'src/components'),
       Services: path.resolve(__dirname, 'src/services'),
-      Pages: path.resolve(__dirname, 'src/pages'),
-      Csv: path.resolve(__dirname, 'src/csv'),
-      Xml: path.resolve(__dirname, 'src/xml')
-    },
-  },
+      Pages: path.resolve(__dirname, 'src/pages')
+    }
+  }
 };
