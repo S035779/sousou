@@ -150,6 +150,7 @@ input.button-primary:hover {
 }
 
 a.btn.btn-default {
+  font-size: 0.9rem;
   width: 7rem;
   text-align: center;
   color: #6d6d6d;
@@ -242,14 +243,14 @@ label.error:before {
   display: inline-block;
 	padding: 0.375em;
 	margin-right: 0.5em;
-  width: 10rem;
+  width: 6.25rem;
 }
 
 .category-group .delivery-field label {
   display: inline-block;
 	padding: 0.375em;
 	margin-right: 0.5em;
-  width: 10rem;
+  width: 9.25rem;
 }
 
 /* delivery menu */
