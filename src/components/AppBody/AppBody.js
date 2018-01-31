@@ -195,6 +195,7 @@ class AppBody extends React.Component {
     if(!this.isValid(state)) return;
     if(this.isCredit(state)) {
       this.setState({ showModalCredit: true });
+      window.location.href = '#';
     } else {
       const options = this.setOptions(state, this.payment);
       AppAction.createMessage(options);
