@@ -238,9 +238,9 @@ export default {
         + `                  ${obj.shipping_address.state}\n`
         + `                  ${obj.shipping_address.city}\n`
         + `                  ${obj.shipping_address.line1}\n`
-        + `                  ${obj.shipping_address.line2}\n`
+        //+ `                  ${obj.shipping_address.line2}\n`
         + `                  ${obj.shipping_address.country_code}\n\n`
-        + `お届け先人名　　: ${obj.shipping_address.recipient_name}\n`
+        //+ `お届け先人名　　: ${obj.shipping_address.recipient_name}\n`
         + `お届け先電話番号: ${obj.infomation.recipient_phone}\n`
         + `ご連絡事項:\n${obj.infomation.message}\n\n`
         + `--------------------------------------------------------------`
@@ -278,9 +278,9 @@ export default {
         + `                  ${obj.shipping_address.state}\n`
         + `                  ${obj.shipping_address.city}\n`
         + `                  ${obj.shipping_address.line1}\n`
-        + `                  ${obj.shipping_address.line2}\n`
+        //+ `                  ${obj.shipping_address.line2}\n`
         + `                  ${obj.shipping_address.country_code}\n\n`
-        + `お届け先人名　　: ${obj.shipping_address.recipient_name}\n`
+        //+ `お届け先人名　　: ${obj.shipping_address.recipient_name}\n`
         + `お届け先電話番号: ${obj.infomation.recipient_phone}\n`
         + `ご連絡事項:\n${obj.infomation.message}\n\n`
         + `--------------------------------------------------------------`

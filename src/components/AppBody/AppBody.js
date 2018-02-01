@@ -22,6 +22,7 @@ class AppBody extends React.Component {
       , total_currency: options.currency
       , subtotal:       details.subtotal
       , shipping:       details.shipping
+      , shipping_discount: details.shipping_discount
       , name:           item.name
       , description:    item.description
       , price:          item.price
@@ -30,9 +31,9 @@ class AppBody extends React.Component {
     this.state = {
       currency:         item.currency
       , quantity:       item.quantity
-      , recipient_name: shipping_address.recipient_name
+    //  , recipient_name: shipping_address.recipient_name
       , line1:          shipping_address.line1
-      , line2:          shipping_address.line2
+    //  , line2:          shipping_address.line2
       , city:           shipping_address.city
       , country_code:   shipping_address.country_code
       , postal_code:    shipping_address.postal_code
@@ -62,15 +63,6 @@ class AppBody extends React.Component {
     };
   }
 
-  handleClickClose(name, e) {
-    //this.logInfo('handleClickClose');
-    switch(name) {
-      case 'credit':
-        this.setState({ showModalCredit: false });
-        break;
-    }
-  }
-
   handleClickButton(name, e) {
     //this.logInfo('handleClickButton');
     switch(name) {
@@ -92,11 +84,7 @@ class AppBody extends React.Component {
         , state:  document.getElementById('state').value
         , city:   document.getElementById('city').value
         , line1:  document.getElementById('line1').value
-        , line2:  document.getElementById('line2').value
-        , recipient_name:
-                  document.getElementById('recipient_name').value
-        , recipient_phone:
-                  document.getElementById('recipient_phone').value
+        //, line2:  document.getElementById('line2').value
         };
         this.setState(newState);
         break;
@@ -114,16 +102,12 @@ class AppBody extends React.Component {
       case 'state':
       case 'city':
       case 'line1':
-      case 'line2':
+      //case 'line2':
         newState = {
           state:  document.getElementById('state').value
         , city:   document.getElementById('city').value
         , line1:  document.getElementById('line1').value
-        , line2:  document.getElementById('line2').value
-        , recipient_name: 
-                  document.getElementById('recipient_name').value
-        , recipient_phone:
-                  document.getElementById('recipient_phone').value
+        //, line2:  document.getElementById('line2').value
         };
         this.setState(newState);
         break;
@@ -293,6 +277,7 @@ class AppBody extends React.Component {
       , details: {
         subtotal:       payment.subtotal
         , shipping:     payment.shipping
+        , shipping_discount:     payment.shipping_discount
       }
       , item: {
         name:           payment.name
@@ -302,9 +287,9 @@ class AppBody extends React.Component {
         , currency:     state.currency
       }
       , shipping_address: {
-        recipient_name: state.recipient_name
-        , line1:        state.line1
-        , line2:        state.line2
+        line1:        state.line1
+      //  , line2:        state.line2
+      //  , recipient_name: state.recipient_name
         , city:         state.city
         , country_code: state.country_code
         , postal_code:  state.postal_code
@@ -339,18 +324,18 @@ class AppBody extends React.Component {
       , postal_code:    isLangJp ? '135-0046'     : '135-0046'
       , state:          isLangJp ? '東京都'       : 'TOKYO'
       , city:           isLangJp ? '江東区'       : 'Koto-ku,'
-      , line1:          isLangJp ? '牡丹'
-                                 : 'Botan,'
-      , line2:          isLangJp ? '1-2-2, 東京オフィス'
-                                 : 'Address 1-2-2, TOKYO OFFICE'
+      , line1:          isLangJp ? '牡丹, 1-2-2, 東京オフィス'
+                                 : 'Botan, Address 1-2-2, TOKYO OFFICE'
+      //, line2:          isLangJp ? ''
+      //                           : ''
     };
     newAddress['myanmer'] = {
       country_code:     [ 'MM' ]
       , postal_code:    '11181'
       , state:          'YANGON'
       , city:           'Kamayut Tsp'
-      , line1:          'Hledan Center'
-      , line2:          '#307, 3rd Floor, MYANMER OFFICE'
+      , line1:          'Hledan Center, #307, 3rd Floor, MYANMER OFFICE'
+      //, line2:          ''
     };
     return value === 'japan' || value === 'myanmer'
       ? newAddress[value]
@@ -360,9 +345,7 @@ class AppBody extends React.Component {
         , postal_code:    ''
         , city:           ''
         , line1:          ''
-        , line2:          ''
-        , recipient_name: ''
-        , recipient_phone: ''
+        //, line2:          ''
       };
   }
 
@@ -375,16 +358,18 @@ class AppBody extends React.Component {
     //log.trace(nextProps);
     if(nextProps.results) {
       if(nextProps.results.accepted
-      && nextProps.results.accepted[0] === this.state.email)
+      && nextProps.results.accepted[0] === this.state.email) {
         this.setState({
           results: nextProps.results
           , showModalResults: true
         });
-      else if(nextProps.results.error)
+      } else if(nextProps.results.error) {
         this.setState({
           results: nextProps.results
           , showModalResults: true
         });
+      }
+      window.location.href = '#';
     }
     if(nextProps.jpy || nextProps.usd) 
       this.setState({ usd: nextProps.usd, jpy: nextProps.jpy });
@@ -406,17 +391,24 @@ class AppBody extends React.Component {
     const price = this.isPrice(props.currency, state);
     const shipping =
       this.isShipping(props.shipping, props.currency, state);
+    const shipping_discount = this.isDiscount(shipping);
     const subtotal = price * state.quantity.join();
     this.payment = {
       price:        price
       , shipping:   shipping
+      , shipping_discount: shipping_discount
       , subtotal:   subtotal
-      , total:      subtotal + shipping
+      , total:      subtotal + shipping + shipping_discount
       , total_currency: state.currency
       , name:       'Myanmar Companies YearBook Vol.1'
       , description:'Myanmar Companies Yearbook'
     };
     //this.logTrace(this.payment);
+  }
+
+  isDiscount(shipping) {
+    return this.state.deliery === 'myanmer'
+      || this.state.delivery === 'japan' ? shipping * -1 : 0;
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -445,12 +437,12 @@ class AppBody extends React.Component {
 
   isCredit(state) {
     return !this.isMail(state) && !this.isUSD(state)
-      && this.payment.shipping !== -1;
+      && this.payment.shipping !== 0;
   }
 
   isPayPal(state) {
     return !this.isMail(state) && this.isUSD(state)
-      && this.payment.shipping !== -1;
+      && this.payment.shipping !== 0;
   }
 
   isPrice(currency, state) {
@@ -474,21 +466,17 @@ class AppBody extends React.Component {
     const isPay = obj => shipping.ems.filter(ems =>
       ems.code_2 === obj.country_code.join() && ems.paypal === 'OK' )[0];
     return this.isAreaJp(state)
-      ? state.delivery === 'japan'
-        ? 0
-        : isJpp(state)
-          ? this.isUSD(state)
-            ? Math.ceil(isJpp(state).price * state.quantity.join()
-              / currency.USDJPY)
-            : Number(isJpp(state).price) * state.quantity.join()
-          : -1
-      : state.delivery === 'myanmer'
-        ? 0
-        : isEms(state) && isPay(state) && this.isConfirm(shipping, state)
-          ? this.isUSD(state)
-            ? Math.ceil(isEms(state).price / currency.USDJPY)
-            : Number(isEms(state).price)
-          : -1;
+      ? isJpp(state)
+        ? this.isUSD(state)
+          ? Math.ceil(isJpp(state).price * state.quantity.join()
+            / currency.USDJPY)
+          : Number(isJpp(state).price) * state.quantity.join()
+        : 0
+      : isEms(state) && isPay(state) && this.isConfirm(shipping, state)
+        ? this.isUSD(state)
+          ? Math.ceil(isEms(state).price / currency.USDJPY)
+          : Number(isEms(state).price)
+        : 0;
   }
 
   isConfirm(shipping, state) {
@@ -530,7 +518,7 @@ class AppBody extends React.Component {
       //&& state.postal_code
       //&& !this.isNotPostal(state.postal_code, state.country_code.join())
       && state.line1
-      && state.line2
+      //&& state.line2
       //&& state.agreement
     );
   }
@@ -641,7 +629,7 @@ class AppBody extends React.Component {
 
   renderButton(state) {
     if ( this.isMail(state) || this.isCredit(state)
-    || !this.isValid(state) || this.payment.shipping === -1) {
+    || !this.isValid(state) || this.payment.shipping === 0) {
       return <input type="submit" value={ this.isLangJp()
         ? "送信" : "SEND"} className="button-primary"/>
     } else {
@@ -700,10 +688,10 @@ class AppBody extends React.Component {
     //const country_code = isJP ? '国名' : 'Country';
     const postal_code = isJP ? '郵便番号' : 'Zip Code';
     const state = isJP ? '都道府県' : 'State';
-    const city = isJP ? '市区町村名' : 'City';
-    const line1 = isJP ? '地域' : 'Municipality';
-    const line2 = isJP ? '番地・部屋番号' : 'A lot / Room Number';
-    const recipient_name = isJP ? '受取人名義' : 'Recipient Name';
+    const city = isJP ? '市区町村' : 'City';
+    const line1 = isJP ? 'フリーフォーム' : 'Municipality';
+    //const line2 = isJP ? '番地・部屋番号' : 'A lot / Room Number';
+    //const recipient_name = isJP ? '受取人名義' : 'Recipient Name';
     const recipient_phone = isJP ? '受取人電話' : 'Recipient Phone';
     const quantity = isJP ? 'ご購入数' : 'Quantity';
     const currency = isJP ? '通貨' : 'Currency';
@@ -1196,6 +1184,8 @@ class AppBody extends React.Component {
           <option value="">{delivery}</option>
           {select_country}
           </select>
+          <span className="notes">{notes_notice}</span>
+          <span className="notes">{notes_confirm}</span>
           </td>
         </tr>
         </tbody></table>
@@ -1214,7 +1204,7 @@ class AppBody extends React.Component {
             value={this.state.postal_code}
             onChange={this.handleChangeText.bind(this, 'postal_code')}
             onFocus={this.handleFocusText.bind(this, 'postal_code')}
-            className="add-placeholder"
+            className="required add-placeholder"
             placeholder={postal_code} />
         {/*
           <span className="notes">{check_postal_code}</span>
@@ -1272,14 +1262,13 @@ class AppBody extends React.Component {
             className="required add-placeholder" />
           </td>
         </tr>
-        <tr>
         {/*
+        <tr>
           <th>
           <label htmlFor="line2">
           {line2} <span className="required-mark">required</span>
           </label>
           </th>
-        */}
           <td>
           <input type="text" name="line2" id="line2"
             value={this.state.line2}
@@ -1289,14 +1278,14 @@ class AppBody extends React.Component {
             className="required add-placeholder" />
           </td>
         </tr>
-        <tr>
+        */}
         {/*
+        <tr>
           <th>
           <label htmlFor="recipient_name">
           {recipient_name}
           </label>
           </th>
-        */}
           <td>
           <input type="text" name="recipient_name" id="recipient_name"
             value={this.state.recipient_name}
@@ -1306,6 +1295,7 @@ class AppBody extends React.Component {
             className="add-placeholder"/>
           </td>
         </tr>
+        */}
         <tr>
         {/*
           <th>
@@ -1343,8 +1333,6 @@ class AppBody extends React.Component {
           </th>
         */}
           <td>
-          <span className="notes">{notes_notice}</span>
-          <span className="notes">{notes_confirm}</span>
           <textarea name="message" id="message"
             cons="40" rows="10"
             onChange={this.handleChangeText.bind(this, 'message')}
@@ -1384,7 +1372,6 @@ class AppBody extends React.Component {
     </Modal>
     <Modal showModal={showModalCredit}>
       <Credit language={language} options={options}
-        onReturn={this.handleClickClose.bind(this, 'credit')}
         onCompleted={this.handleClickButton.bind(this, 'credit')}/>
     </Modal>
     </div>;

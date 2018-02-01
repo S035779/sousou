@@ -31,7 +31,6 @@ class Credit extends React.Component {
       , receiver_email: receiver_email
       , mc_gross: props.options.total
       , mc_currency: props.options.currency.join()
-      , isComplete: false
     };
   }
 
@@ -39,19 +38,29 @@ class Credit extends React.Component {
     window.form_iframe.submit();
     AppAction.createCredit(Object.assign({}, this.props.options
       , { credit_validate: this.state })).then(() => {
-        this.setState({isComplete: true})
-        this.props.onReturn();
+        this.props.onCompleted();
       });
   }
 
   handleClickClose(e) {
     //this.logInfo('handleClickClose');
-    if(this.state.isComplete) this.props.onReturn();
+    if(this.isConfirm()) this.props.onCompleted();
   }
 
   handleClickButton(e) {
     //this.logInfo('handleClickButton');
-    if(this.state.isComplete) this.props.onCompleted();
+    if(this.isConfirm()) this.props.onCompleted();
+  }
+
+  isConfirm() {
+    const message = this.isLangJp() 
+      ? 'このページから移動してもよろしですか？'
+      : 'Are you sure to move from this page?';
+    return window.confirm(message);
+  }
+
+  isLangJp() {
+    return this.props.language === 'jp';
   }
   
   setPrices(obj, isLangJp) {
@@ -72,6 +81,13 @@ class Credit extends React.Component {
           ? Number(obj.details.shipping).toLocaleString('ja-JP'
             , { style: 'currency', currency: total_currency})
           : Number(obj.details.shipping).toLocaleString('en-US'
+            , { style: 'currency', currency: total_currency})
+        : 0
+      , discount_price: this.total_currency !== ''
+        ? isLangJp
+          ? Number(obj.details.shipping_discount).toLocaleString('ja-JP'
+            , { style: 'currency', currency: total_currency})
+          : Number(obj.details.shipping_discount).toLocaleString('en-US'
             , { style: 'currency', currency: total_currency})
         : 0
       , total_price: this.total_currency !== ''
@@ -115,6 +131,9 @@ class Credit extends React.Component {
       shipping: {
         key: isLangJp ? '配送料　： ' : 'Shipping fee : '
         , value: prices.shipping_price                                  },
+      discount: {
+        key: isLangJp ? '値引き　： ' : 'Discount     : '
+        , value: prices.discount_price                                  },
       total: {
         key: isLangJp ? '合　計　： ' : 'Total        : '
         , value: prices.total_price                                     },
@@ -130,12 +149,12 @@ class Credit extends React.Component {
       line1: {
         key: isLangJp ? '地　域　： ' : 'Municipality : '
         , value: `${obj.shipping_address.line1}`                        },
-      line2: {
-        key: isLangJp ? '番地番号： ' : 'A lot Number : '
-        , value: `${obj.shipping_address.line2}`                        },
-      recipient: {
-        key: isLangJp ? '受取人　： ' : 'Recipient    : '
-        , value: `${obj.shipping_address.recipient_name}`               },
+      //line2: {
+      //  key: isLangJp ? '番地番号： ' : 'A lot Number : '
+      //  , value: `${obj.shipping_address.line2}`                        },
+      //recipient: {
+      //  key: isLangJp ? '受取人　： ' : 'Recipient    : '
+      //  , value: `${obj.shipping_address.recipient_name}`               },
       phone: {
         key: isLangJp ? '電　話　： ' : 'Phone        : '
         , value: `${obj.shipping_address.phone}`                        },
@@ -167,7 +186,7 @@ class Credit extends React.Component {
     //console.log(this.state);
     const form_styles = { display: 'none' };
     const obj = this.props.options;
-    const isLangJp = this.props.language === 'jp' ? true : false;
+    const isLangJp = this.isLangJp();
     const contents = this.setContents(obj, isLangJp);
     const Shipping = isLangJp
       ? '配送先　： ' : 'Address       : ';
@@ -176,8 +195,7 @@ class Credit extends React.Component {
     //const ConfirmMessage = isLangJp
     //  ? 'お客様は以下の商品を選択しました。'
     //  : 'Customers selected the following items.';
-    const ConfirmOrder = isLangJp
-      ? 'お支払' : 'Payment';
+    const ConfirmOrder = isLangJp ? 'お支払' : 'Payment';
     const language =  isLangJp ? 'JP' : 'US';
     const custom = this.state.custom;
     const receiver = this.state.receiver_email
@@ -185,38 +203,63 @@ class Credit extends React.Component {
       <a href="#" className="close-thik"
         onClick={this.handleClickClose.bind(this)}></a>
       <div id="user-sign-up">
-      <fieldset className="category-group">
+      <fieldset className="category-group confirm">
       <legend>{Confirm}</legend>
       {/*
       <p>{ConfirmMessage}</p>
       */}
       <table>
       <tbody>
-      <tr><td><label>{contents.item.key}</label>
-        <span>{contents.item.value}</span></td></tr>
+      <tr>
+        <td><label>{contents.item.key}</label>
+        <span>{contents.item.value}</span></td>
+      </tr>
       {/*
-      <tr><td><label>{contents.description.key}</label>
-        <span>{contents.description.value}</span></td></tr>
+      <tr>
+        <td><label>{contents.description.key}</label>
+        <span>{contents.description.value}</span></td>
+      </tr>
       */}
-      <tr><td><label>{contents.subtotal.key}</label>
-        <span>{contents.subtotal.value}</span></td></tr>
-      <tr><td><label>{contents.shipping.key}</label>
-        <span>{contents.shipping.value}</span></td></tr>
-      <tr><td><label>{contents.total.key}</label>
-        <span>{contents.total.value}</span></td></tr>
-      <tr><td><label>{contents.company.key}</label>
-        <span>{contents.company.value}</span></td></tr>
-      <tr><td><label>{contents.name.key}</label>
-        <span>{contents.name.value}</span></td></tr>
-      <tr><td><label>{Shipping}</label>
+      <tr>
+        <td><label>{contents.subtotal.key}</label>
+        <span>{contents.subtotal.value}</span></td>
+      </tr>
+      <tr>
+        <td><label>{contents.shipping.key}</label>
+        <span>{contents.shipping.value}</span></td>
+      </tr>
+      <tr>
+        <td><label>{contents.discount.key}</label>
+        <span>{contents.discount.value}</span></td>
+      </tr>
+      <tr>
+        <td><label>{contents.total.key}</label>
+        <span>{contents.total.value}</span></td>
+      </tr>
+      <tr>
+        <td><label>{contents.company.key}</label>
+        <span>{contents.company.value}</span></td>
+      </tr>
+      <tr>
+        <td><label>{contents.name.key}</label>
+        <span>{contents.name.value}</span></td>
+      </tr>
+      <tr>
+        <td><label>{Shipping}</label>
         <span>{contents.postal_code.value}</span>
-        <span>{contents.state.value}{contents.city.value}
-              {contents.line1.value}{contents.line2.value}
-              {contents.recipient.value}</span></td></tr>
-      <tr><td><label>{contents.phone.key}</label>
-        <span>{contents.phone.value}</span></td></tr>
-      <tr><td><label>{contents.email.key}</label>
-        <span>{contents.email.value}</span></td></tr>
+        <span>
+          {contents.state.value}{contents.city.value}{contents.line1.value}
+          {/*contents.line2.value}{contents.recipient.value*/}
+        </span></td>
+      </tr>
+      <tr>
+        <td><label>{contents.phone.key}</label>
+        <span>{contents.phone.value}</span></td>
+      </tr>
+      <tr>
+        <td><label>{contents.email.key}</label>
+        <span>{contents.email.value}</span></td>
+      </tr>
       </tbody></table>
       </fieldset>
       <fieldset className="category-group">
@@ -234,7 +277,7 @@ class Credit extends React.Component {
       <input name='subtotal' type='hidden'
         value={obj.details.subtotal}/>
       <input name='shipping' type='hidden'
-        value={obj.details.shipping}/>
+        value={obj.details.shipping + obj.details.shipping_discount}/>
       <input name='currency_code' type='hidden'
         value={obj.currency.join()}/>
       <input name='billing_zip' type='hidden'
@@ -262,7 +305,7 @@ class Credit extends React.Component {
       </form>
       </fieldset>
       <div id="signup-next">
-      <input type="submit" value={ isLangJp ? "送信" : "SEND"}
+      <input type="submit" value={ isLangJp ? "戻る" : "RETURN"}
         onClick={this.handleClickButton.bind(this)}
         className="button-primary"/>
       </div>

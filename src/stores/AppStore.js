@@ -18,6 +18,7 @@ class AppStore extends ReduceStore {
           {
             subtotal: 0
             , shipping: 0
+            , shipping_discount: 0
           }
         , item: { 
           name: ''
@@ -27,9 +28,9 @@ class AppStore extends ReduceStore {
           , currency: ['JPY']
         }
         , shipping_address: {
-          recipient_name: ''
-          , line1: ''
-          , line2: ''
+          line1: ''
+        //  , line2: ''
+        //  , recipient_name: ''
           , city: ''
           , country_code: ['JP']
           , postal_code: ''
