@@ -1105,8 +1105,8 @@ class AppBody extends React.Component {
           <option value="19">19</option>
           <option value="20">20</option>
           </select>
-          </span>
           <label>{label_quantity}</label>
+          </span>
           <span className="quantity-field">
           <select name="currency" id="currency"
             disabled={isDomestic}
@@ -1117,8 +1117,8 @@ class AppBody extends React.Component {
           <option value="">{currency}</option>
           {select_currency}
           </select>
-          </span>
           <label>{label_currency}</label>
+          </span>
           </div>
           <span className="notes">{notes_currency}</span>
           <span className="notes">{notes_quantity}</span>

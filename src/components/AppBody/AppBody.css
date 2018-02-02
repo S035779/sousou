@@ -89,6 +89,11 @@
 .category-group select.middle-field {
 	width: 15em;
 }
+@media screen and (max-width: 600px) {
+  .category-group select.middle-field {
+    width: 100%;
+  }
+}
 
 .category-group select.short-field {
 	width: 9em;
@@ -139,15 +144,13 @@ input.button-primary:hover {
 }
 
 a.btn.btn-default {
-  font-size: 1.0rem;
-  width: 7rem;
-  text-align: center;
   color: #6d6d6d;
+  white-space: nowrap;
   display: block;
   float: right;
   text-decoration: none;
   border: solid 1px #c1c1c1;
-  padding: 4px 20px 3px;
+  padding: 4px 24px 3px;
   border-radius: 4px;
   box-shadow: 0px 1px 0 0 #aaaaaa;
   background: linear-gradient(to bottom, #fafafa,#e6e6e6);
@@ -232,15 +235,32 @@ label.error:before {
   display: inline-block;
 	padding: 0.375em;
 	margin-right: 0.5em;
-  width: 6.25rem;
 }
 
-.category-group .delivery-field label {
-  font-size: 1.0rem;
+.category-group .quantity-field label {
   display: inline-block;
 	padding: 0.375em;
 	margin-right: 0.5em;
-  width: 9.25rem;
+}
+
+.category-group .delivery-field label {
+  display: inline-block;
+	padding: 0.375em;
+	margin-right: 0.5em;
+}
+
+@media screen and (max-width: 600px) {
+  .category-group .area-field label {
+    display: block;
+    padding: 0.375em;
+    margin-right: 0.5em;
+  }
+
+  .category-group .delivery-field label {
+    display: block;
+    padding: 0.375em;
+    margin-right: 0.5em;
+  }
 }
 
 /* delivery menu */
