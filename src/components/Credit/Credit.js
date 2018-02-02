@@ -316,7 +316,12 @@ class Credit extends React.Component {
 
 const styles = {
   iframe: {
-    width: '100%', height: '565px', border: 'none', overflow: 'hidden'
+    width: '100%'
+    //, height: '565px'
+    //, margin: '0 0 0 10px'
+    , height: '426px'
+    , border: 'none'
+    , overflow: 'auto'
   },
 };
 export default Credit;
