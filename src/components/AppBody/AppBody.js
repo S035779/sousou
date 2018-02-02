@@ -32,7 +32,7 @@ class AppBody extends React.Component {
       currency:         item.currency
       , quantity:       item.quantity
     //  , recipient_name: shipping_address.recipient_name
-      , line1:          shipping_address.line1
+    //  , line1:          shipping_address.line1
     //  , line2:          shipping_address.line2
       , city:           shipping_address.city
       , country_code:   shipping_address.country_code
@@ -83,7 +83,7 @@ class AppBody extends React.Component {
           postal_code: e.target.value
         , state:  document.getElementById('state').value
         , city:   document.getElementById('city').value
-        , line1:  document.getElementById('line1').value
+        //, line1:  document.getElementById('line1').value
         //, line2:  document.getElementById('line2').value
         };
         this.setState(newState);
@@ -101,12 +101,12 @@ class AppBody extends React.Component {
       case 'postal_code':
       case 'state':
       case 'city':
-      case 'line1':
+      //case 'line1':
       //case 'line2':
         newState = {
           state:  document.getElementById('state').value
         , city:   document.getElementById('city').value
-        , line1:  document.getElementById('line1').value
+        //, line1:  document.getElementById('line1').value
         //, line2:  document.getElementById('line2').value
         };
         this.setState(newState);
@@ -287,7 +287,8 @@ class AppBody extends React.Component {
         , currency:     state.currency
       }
       , shipping_address: {
-        line1:        state.line1
+        line1:        '...'
+      //  line1:        state.line1
       //  , line2:        state.line2
       //  , recipient_name: state.recipient_name
         , city:         state.city
@@ -323,18 +324,19 @@ class AppBody extends React.Component {
       country_code:     [ 'JP' ]
       , postal_code:    isLangJp ? '135-0046'     : '135-0046'
       , state:          isLangJp ? '東京都'       : 'TOKYO'
-      , city:           isLangJp ? '江東区'       : 'Koto-ku,'
-      , line1:          isLangJp ? '牡丹, 1-2-2, 東京オフィス'
-                                 : 'Botan, Address 1-2-2, TOKYO OFFICE'
-      //, line2:          isLangJp ? ''
-      //                           : ''
+      , city:           isLangJp
+        ? '江東区 牡丹1-2-2 東京オフィス'
+        : 'Koto-ku, Botan, Address 1-2-2, TOKYO OFFICE'
+      //, line1:          isLangJp ? '' : ''
+      //, line2:          isLangJp ? '' : ''
     };
     newAddress['myanmer'] = {
       country_code:     [ 'MM' ]
       , postal_code:    '11181'
       , state:          'YANGON'
-      , city:           'Kamayut Tsp'
-      , line1:          'Hledan Center, #307, 3rd Floor, MYANMER OFFICE'
+      , city:
+        'Kamayut Tsp, Hledan Center, #307, 3rd Floor, MYANMER OFFICE'
+      //, line1:          ''
       //, line2:          ''
     };
     return value === 'japan' || value === 'myanmer'
@@ -344,7 +346,7 @@ class AppBody extends React.Component {
         , state:          ''
         , postal_code:    ''
         , city:           ''
-        , line1:          ''
+        //, line1:          ''
         //, line2:          ''
       };
   }
@@ -517,7 +519,7 @@ class AppBody extends React.Component {
       //&& state.confirm_email  && (state.email === state.confirm_email)
       //&& state.postal_code
       //&& !this.isNotPostal(state.postal_code, state.country_code.join())
-      && state.line1
+      //&& state.line1
       //&& state.line2
       //&& state.agreement
     );
@@ -688,8 +690,8 @@ class AppBody extends React.Component {
     //const country_code = isJP ? '国名' : 'Country';
     const postal_code = isJP ? '郵便番号' : 'Zip Code';
     const state = isJP ? '都道府県' : 'State';
-    const city = isJP ? '市区町村' : 'City';
-    const line1 = isJP ? 'フリーフォーム' : 'Municipality';
+    const city = isJP ? 'フリーフォーム' : 'City';
+    //const line1 = isJP ? '地域' : 'Municipality';
     //const line2 = isJP ? '番地・部屋番号' : 'A lot / Room Number';
     //const recipient_name = isJP ? '受取人名義' : 'Recipient Name';
     const recipient_phone = isJP ? '受取人電話' : 'Recipient Phone';
@@ -1245,14 +1247,13 @@ class AppBody extends React.Component {
             className="required add-placeholder" />
           </td>
         </tr>
-        <tr>
         {/*
+        <tr>
           <th>
           <label htmlFor="line1">
           {line1} <span className="required-mark">required</span>
           </label>
           </th>
-        */}
           <td>
           <input type="text" name="line1" id="line1"
             value={this.state.line1}
@@ -1262,6 +1263,7 @@ class AppBody extends React.Component {
             className="required add-placeholder" />
           </td>
         </tr>
+        */}
         {/*
         <tr>
           <th>

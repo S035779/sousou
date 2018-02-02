@@ -28,14 +28,14 @@ class AppStore extends ReduceStore {
           , currency: ['JPY']
         }
         , shipping_address: {
-          line1: ''
-        //  , line2: ''
-        //  , recipient_name: ''
-          , city: ''
+          city: ''
           , country_code: ['JP']
           , postal_code: ''
           , phone: ''
           , state: ''
+        //  , line1: ''
+        //  , line2: ''
+        //  , recipient_name: ''
         }
         , infomation: {
           first_name: ''
