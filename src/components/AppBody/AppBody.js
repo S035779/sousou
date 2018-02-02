@@ -450,11 +450,11 @@ class AppBody extends React.Component {
   isPrice(currency, state) {
     return this.isAreaJp(state)
       ? this.isUSD(state)
-        ? Math.ceil(state.jpy / currency.USDJPY)
+        ? Math.ceil((state.jpy / currency.USDJPY) * 100) / 100
         : Number(state.jpy)
       : this.isUSD(state)
         ? Number(state.usd)
-        : Math.ceil(currency.USD);
+        : Math.ceil((currency.USD) * 100) / 100;
   }
 
   isShipping(shipping, currency, state) {
@@ -470,13 +470,14 @@ class AppBody extends React.Component {
     return this.isAreaJp(state)
       ? isJpp(state)
         ? this.isUSD(state)
-          ? Math.ceil(isJpp(state).price * state.quantity.join()
-            / currency.USDJPY)
+          ? Math.ceil((isJpp(state).price
+            * state.quantity.join() / currency.USDJPY) * 100) / 100
           : Number(isJpp(state).price) * state.quantity.join()
         : 0
       : isEms(state) && isPay(state) && this.isConfirm(shipping, state)
         ? this.isUSD(state)
-          ? Math.ceil(isEms(state).price / currency.USDJPY)
+          ? Math.ceil(
+            (isEms(state).price / currency.USDJPY) * 100) / 100 
           : Number(isEms(state).price)
         : 0;
   }
@@ -517,8 +518,8 @@ class AppBody extends React.Component {
       && state.phone          && !this.isNotPhone(state.phone)
       && state.email          && !this.isNotEmail(state.email)
       //&& state.confirm_email  && (state.email === state.confirm_email)
-      //&& state.postal_code
-      //&& !this.isNotPostal(state.postal_code, state.country_code.join())
+      && state.postal_code
+      && !this.isNotPostal(state.postal_code, state.country_code.join())
       //&& state.line1
       //&& state.line2
       //&& state.agreement
@@ -1197,7 +1198,7 @@ class AppBody extends React.Component {
         {/*
           <th>
           <label htmlFor="postal_code">
-          {postal_code}
+          {postal_code} <span className="required-mark">required</span>
           </label>
           </th>
         */}

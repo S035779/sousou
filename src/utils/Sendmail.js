@@ -43,21 +43,29 @@ class Sendmail {
     }
   }
 
-  postMessage(message) {
+  putMessage(message) {
     return this.request('/message', message);
+  }
+
+  postMessage(message) {
+    return Rx.Observable.fromPromise(this.putMessage(message));
+  }
+
+  forMessage(messages) {
+    const promises = R.map(this.postMessage(message), messages);
+    return Rx.Observable.forkJoin(promises);
   }
 
   createMessage(message) {
     this.logTrace(message);
-    const promise = obj =>
-      Rx.Observable.fromPromise(this.postMessage(obj));
-    return promise(message)
+    return this.postMessage(message)
       .map(R.tap(this.logTrace.bind(this)));
   }
 
-  forMessage(objs) {
-    const promises = R.map(this.postMessage(obj), objs);
-    return Rx.Observable.forkJoin(promises);
+  createMessages(messages) {
+    this.logTrace(message);
+    return this.forMessage(messages)
+      .map(R.tap(this.logTrace.bind(this)));
   }
 
   logTrace(message) {

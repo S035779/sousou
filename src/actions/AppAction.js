@@ -97,6 +97,11 @@ export default {
     log.trace(`${pspid}>`, 'Response:', response);
   },
   logError({ error }) {
-    log.error(`${pspid}>`, error.name, ':', error.message);
+    log.error(`${pspid}>`
+      , error.name    ? error.name    : ''
+      , ':'
+      , error.message ? error.message : ''
+      , error.stack   ? error.stack   : ''
+    );
   }
 };

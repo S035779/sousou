@@ -37,9 +37,7 @@ class Credit extends React.Component {
   componentDidMount() {
     window.form_iframe.submit();
     AppAction.createCredit(Object.assign({}, this.props.options
-      , { credit_validate: this.state })).then(() => {
-        this.props.onCompleted();
-      });
+      , { credit_validate: this.state }));
   }
 
   handleClickClose(e) {
@@ -146,9 +144,9 @@ class Credit extends React.Component {
       city: {
         key: isLangJp ? '市区町村： ' : 'City         : '
         , value: `${obj.shipping_address.city}`                         },
-      line1: {
-        key: isLangJp ? '地　域　： ' : 'Municipality : '
-        , value: `${obj.shipping_address.line1}`                        },
+      //line1: {
+      //  key: isLangJp ? '地　域　： ' : 'Municipality : '
+      //  , value: `${obj.shipping_address.line1}`                        },
       //line2: {
       //  key: isLangJp ? '番地番号： ' : 'A lot Number : '
       //  , value: `${obj.shipping_address.line2}`                        },
@@ -248,7 +246,8 @@ class Credit extends React.Component {
         <td><label>{Shipping}</label>
         <span>{contents.postal_code.value}</span>
         <span>
-          {contents.state.value}{contents.city.value}{contents.line1.value}
+          {contents.state.value}{contents.city.value}
+          {/*contents.line1.value*/}
           {/*contents.line2.value}{contents.recipient.value*/}
         </span></td>
       </tr>

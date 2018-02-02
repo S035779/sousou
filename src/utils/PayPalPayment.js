@@ -68,16 +68,17 @@ class PayPalPayment {
     switch(operation) {
       case '/cache':
         return new Promise((resolve, reject) => {
-          //const data = cache.store[body].content;
-          //if(!data) reject(new Error('UNKNOWN'));
-          //resolve(data);
-          std.invoke2(
-            ( ) => cache.store[body] ? true : false,
-            val => log.trace(val),
-            err => reject(err),
-            ( ) => resolve(cache.store[body].content),
-            1000, 1000, 110 * 1000 // Time out in 110 sec.
-          );
+          if(!body) reject(new Error('UNKNOWN'));
+          cache.store[body.credit_validate.custom]
+            = { content: body, timestamp: Date.now() };
+          resolve(body.credit_validate.custom);
+          //std.invoke2(
+          //  ( ) => cache.store[body] ? true : false,
+          //  val => log.trace(val),
+          //  err => reject(err),
+          //  ( ) => resolve(cache.store[body].content),
+          //  1000, 1000, 110 * 1000 // Time out in 110 sec.
+          //);
         });
       case '/ipnpb':
         return new Promise((resolve, reject) => {
@@ -157,13 +158,6 @@ class PayPalPayment {
     return this.request('/ipnpb', options);
   }
 
-  getCache(custom) {
-    const options = {
-      body: custom
-    };
-    return this.request('/cache', options);
-  }
-
   fetchToken() {
     return Rx.Observable.fromPromise(this.getToken());
   }
@@ -172,23 +166,45 @@ class PayPalPayment {
     return Rx.Observable.fromPromise(this.getNotify(notice));
   }
 
-  fetchCache(custom) {
-    return Rx.Observable.fromPromise(this.getCache(custom));
+  //getCache(custom) {
+  //  const options = {
+  //    body: custom
+  //  };
+  //  return this.request('/cache', options);
+  //}
+  //fetchCache(custom) {
+  //  return Rx.Observable.fromPromise(this.getCache(custom));
+  //}
+  //validateCredit({ custom, receiver_email, mc_gross, mc_currency }) {
+  //  const validate = R.curry(this.isCredit);
+  //  return this.fetchCache(custom)
+  //  .map(validate(receiver_email, mc_gross, mc_currency));
+  //}
+
+  putCache(data) {
+    const options = { body: data };
+    return this.request('/cache', options)
   }
 
-  validateNotification(notice) {
-    const validate = R.curry(this.isNotify);
+  postCache(data) {
+    return Rx.Observable.fromPromise(this.putCache(data));
+  }
+
+  validateCredit(data) {
+    return this.postCache(data)
+      .map(custom => cache.store[custom].content.credit_validate);
+  }
+
+  validateNotify(notice) {
+    const isNotify = R.curry(this.isNotify);
+    const isCredit = R.curry(this.isCredit);
     return this.fetchNotify(notice)
-      .map(validate(notice))
+      .map(isNotify(notice))
+      .map(isCredit(notice))
+      .map(data => data.content);
   }
 
-  validateCredit({ custom, receiver_email, mc_gross, mc_currency }) {
-    const validate = R.curry(this.isCredit);
-    return this.fetchCache(custom)
-    .map(validate(receiver_email, mc_gross, mc_currency));
-  }
-
-  isCredit(receiver_email, mc_gross, mc_currency, data) {
+  isCredit({ receiver_email, mc_gross, mc_currency }, data) {
     const isReceiver = receiver_email === data.receiver_email;
     const isMcGross = mc_gross === Number(data.mc_gross);
     const isMcCurrency = mc_currency === data.mc_currency;
@@ -196,33 +212,35 @@ class PayPalPayment {
       'email', isReceiver, 'gross', isMcGross, 'currency', isMcCurrency);
     if(!isReceiver || !isMcGross || !isMcCurrency)
       throw new Error('INVALID');
-    return 'VERIFIED';
+    return data;
   }
 
   isNotify(req, res) {
-    let result = ''
+    let result = {};
     const isComplete = req.payment_status === 'Completed';
     switch(res) {
       case 'VERIFIED':
         if(isComplete) {
           log.info('Verified IPN: IPN message for Transaction ID:'
             , req.txn_id, 'is verified.');
-          cache.store[req.custom]
-            = { content: req, timestamp: Date.now() };
-          result = 'VERIFIED';
+          if(!cache.store[req.custom]) {
+            log.error('But request is no cached.'); 
+            throw new Error('UNKNOWN');
+          }
+          result = cache.store[req.custom];
         } else {
-          log.error('Payment status not Completed'); 
-          result = 'UNKNOWN';
+          log.error('Payment status not Completed.'); 
+          throw new Error('UNKNOWN');
         }
         break;
       case 'INVALID':
         log.error('Invalid IPN: IPN message for Transaction ID:'
           , req.txn_id, 'is invalid.');
-        result = 'INVALID';
+        throw new Error('INVALID');
         break;
       default:
         log.error('Unexpected reponse body.');
-        result = 'UNKNOWN';
+        throw new Error('UNKNOWN');
         break;
     }
     return result;

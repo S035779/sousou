@@ -75,8 +75,9 @@ router.route('/payment/credit')
 .post((req, res, next)     => {
   log.info("Payment Event Received.");
   log.info('Verifying Pay:', req.body);
-  const { credit_validate } = req.body;
-  PayPalPayment.of(paypal_keyset).validateCredit(credit_validate)
+  const { credit_validate, buyer, seler } = req.body;
+  PayPalPayment.of(paypal_keyset)
+  .validateCredit({ credit_validate, buyer, seler })
   .subscribe(
     data  => {  res.json(data); }
     , err => {
@@ -96,7 +97,10 @@ router.route('/payment/notify')
   log.info("IPN Notification Event Received.");
   res.sendStatus(200);
   log.info('Verifying IPN:', req.body);
-  PayPalPayment.of(paypal_keyset).validateNotification(req.body)
+  const send = messages =>
+    Sendmail.of(mail_keyset).createMessages(messages);
+  PayPalPayment.of(paypal_keyset).validateNotify(req.body)
+  .flatMap(obj => send([obj.buyer, obj.seler]))
   .subscribe(
     data  => { log.info('Verified IPN:', data); }
     , err => {
