@@ -151,9 +151,9 @@ class PayPalPayment {
     return this.request('/v1/payments/payment', options);
   }
 
-  getNotify(notice) {
+  getNotify(ipnpb) {
     const options = {
-      body: Object.assign({}, { cmd: '_notify-validate' }, notice)
+      body: Object.assign({}, { cmd: '_notify-validate' }, ipnpb)
     };
     return this.request('/ipnpb', options);
   }
@@ -162,8 +162,8 @@ class PayPalPayment {
     return Rx.Observable.fromPromise(this.getToken());
   }
 
-  fetchNotify(notice) {
-    return Rx.Observable.fromPromise(this.getNotify(notice));
+  fetchNotify(ipnpb) {
+    return Rx.Observable.fromPromise(this.getNotify(ipnpb));
   }
 
   //getCache(custom) {
@@ -195,55 +195,71 @@ class PayPalPayment {
       .map(custom => cache.store[custom].content.credit_validate);
   }
 
-  validateNotify(notice) {
+  validateNotify(ipnpb) {
     const isNotify = R.curry(this.isNotify);
     const isCredit = R.curry(this.isCredit);
-    return this.fetchNotify(notice)
-      .map(isNotify(notice))
-      .map(isCredit(notice))
-      .map(data => data.content);
+    return this.fetchNotify(ipnpb)
+      .map(isNotify(ipnpb))
+      .map(isCredit(ipnpb))
+      .map(data => [ data.buyer.message, data.seler.message ]);
   }
 
-  isCredit({ receiver_email, mc_gross, mc_currency }, data) {
-    const isReceiver = receiver_email === data.receiver_email;
-    const isMcGross = mc_gross === Number(data.mc_gross);
-    const isMcCurrency = mc_currency === data.mc_currency;
+  isNotify(ipnpb, data) {
+    //log.info('Custom', ipnpb.custom);
+    //log.info('Content:', cache);
+    //log.info('Response:', data);   
+    let result = {};
+    const isComplete = ipnpb.payment_status === 'Completed';
+    switch(data) {
+      case 'VERIFIED':
+        if(isComplete) {
+          log.info('Verified IPN: IPN message for Transaction ID:'
+            , ipnpb.txn_id, 'is verified.');
+          if(!cache.store[ipnpb.custom]) {
+            if(ipnpb.txn_type === 'pro_hosted') {
+              log.info('Request is PayPal PaymentPro.'
+                , 'Transaction ID:', ipnpb.txn_id); 
+              throw new Error('UNREGISTERED');
+            } else
+            if(ipnpb.txn_type === 'cart') {
+              log.info('Request is PayPal Express.'
+                , 'Transaction ID:', ipnpb.txn_id); 
+              throw new Error('IGNORED');
+            }
+            log.error('Unknown transaction type.');
+            throw new Error('UNKNOWN');
+          }
+          result = cache.store[ipnpb.custom].content;
+        } else {
+          log.error('Payment status not Completed.'); 
+          throw new Error('UNCOMPLETED');
+        }
+        break;
+      case 'INVALID':
+        log.error('Invalid IPN: IPN message for Transaction ID:'
+          , ipnpb.txn_id, 'is invalid.');
+        throw new Error('INVALID');
+        break;
+      default:
+        log.error('Unexpected reponse body.');
+        throw new Error('UNEXPECTED');
+        break;
+    }
+    return result;
+  }
+
+  isCredit(ipnpb, data) {
+    //log.info('Data:', data);   
+    const { receiver_email, mc_gross, mc_currency } = ipnpb;
+    const { credit_validate } = data;
+    const isReceiver = receiver_email === credit_validate.receiver_email;
+    const isMcGross = Number(mc_gross) === credit_validate.mc_gross;
+    const isMcCurrency = mc_currency === credit_validate.mc_currency;
     log.info(
       'email', isReceiver, 'gross', isMcGross, 'currency', isMcCurrency);
     if(!isReceiver || !isMcGross || !isMcCurrency)
       throw new Error('INVALID');
     return data;
-  }
-
-  isNotify(req, res) {
-    let result = {};
-    const isComplete = req.payment_status === 'Completed';
-    switch(res) {
-      case 'VERIFIED':
-        if(isComplete) {
-          log.info('Verified IPN: IPN message for Transaction ID:'
-            , req.txn_id, 'is verified.');
-          if(!cache.store[req.custom]) {
-            log.error('But request is no cached.'); 
-            throw new Error('UNKNOWN');
-          }
-          result = cache.store[req.custom];
-        } else {
-          log.error('Payment status not Completed.'); 
-          throw new Error('UNKNOWN');
-        }
-        break;
-      case 'INVALID':
-        log.error('Invalid IPN: IPN message for Transaction ID:'
-          , req.txn_id, 'is invalid.');
-        throw new Error('INVALID');
-        break;
-      default:
-        log.error('Unexpected reponse body.');
-        throw new Error('UNKNOWN');
-        break;
-    }
-    return result;
   }
 
   executeExpress(options) {
@@ -264,18 +280,6 @@ class PayPalPayment {
       .map(oauth => oauth.access_token)
       .flatMap(payment)
       //.map(R.tap(log.trace));
-  }
-
-  parseXml(xml) {
-    return Rx.Observable.fromPromise(std.parse_xml(xml));
-  }
-
-  forkJoin(promises) {
-    return Rx.Observable.forkJoin(promises);
-  }
-
-  forParseXml(objs) {
-    return this.forkJoin(R.map(obj => this.parseXml(obj), objs));
   }
 };
 export default PayPalPayment;

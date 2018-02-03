@@ -38,7 +38,7 @@ class Sendmail {
         });
       default:
         return new Promise((resolve, reject) => {
-          reject('Unknown Operation.');
+          reject(new Error('UNKNOWN'));
         });
     }
   }
@@ -52,25 +52,18 @@ class Sendmail {
   }
 
   forMessage(messages) {
-    const promises = R.map(this.postMessage(message), messages);
+    const promises = R.map(this.postMessage.bind(this), messages);
     return Rx.Observable.forkJoin(promises);
   }
 
   createMessage(message) {
-    this.logTrace(message);
-    return this.postMessage(message)
-      .map(R.tap(this.logTrace.bind(this)));
+    log.trace(message);
+    return this.postMessage(message);
   }
 
   createMessages(messages) {
-    this.logTrace(message);
-    return this.forMessage(messages)
-      .map(R.tap(this.logTrace.bind(this)));
+    log.trace(messages);
+    return this.forMessage(messages);
   }
-
-  logTrace(message) {
-    log.trace(`${pspid}>`, 'Trace:', message);
-  }
-
 };
 export default Sendmail;

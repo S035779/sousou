@@ -23,10 +23,6 @@ const http_host = process.env.API_HOST || '127.0.0.1';
 const http_port = process.env.API_PORT || 8080;
 const smtp_port = process.env.MMS_PORT || 2525;
 const ssmtp_port = process.env.MMS_SSL;
-const paypal_keyset = {
-  access_key:         process.env.PAYPAL_ACCESS_KEY
-  , secret_key:       process.env.PAYPAL_SECRET_KEY
-};
 const currency_keyset = {
   access_key:         process.env.CURRENCY_ACCESS_KEY
 };
@@ -40,6 +36,10 @@ const mail_keyset = {
     , pass: process.env.MMS_PASS
   }
 };
+const paypal_keyset = {
+  access_key:         process.env.PAYPAL_ACCESS_KEY
+  , secret_key:       process.env.PAYPAL_SECRET_KEY
+};
 
 if (env === 'development') {
   log.config('console', 'color', 'webpay-api', 'TRACE');
@@ -49,7 +49,7 @@ if (env === 'development') {
   log.config('file', 'json', 'webpay-api', 'INFO');
 }
 const pspid = 'ssr-server';
-
+const paypal = PayPalPayment.of(paypal_keyset);
 const app = express();
 const router = express.Router();
 app.use(log.connect());
@@ -76,8 +76,7 @@ router.route('/payment/credit')
   log.info("Payment Event Received.");
   log.info('Verifying Pay:', req.body);
   const { credit_validate, buyer, seler } = req.body;
-  PayPalPayment.of(paypal_keyset)
-  .validateCredit({ credit_validate, buyer, seler })
+  paypal.validateCredit({ credit_validate, buyer, seler })
   .subscribe(
     data  => {  res.json(data); }
     , err => {
@@ -95,20 +94,22 @@ router.route('/payment/notify')
 .put((req, res, next)     => { next(new Error('not implemented')); })
 .post((req, res, next)    => {
   log.info("IPN Notification Event Received.");
-  res.sendStatus(200);
   log.info('Verifying IPN:', req.body);
-  const send = messages =>
-    Sendmail.of(mail_keyset).createMessages(messages);
-  PayPalPayment.of(paypal_keyset).validateNotify(req.body)
-  .flatMap(obj => send([obj.buyer, obj.seler]))
+  const ipnpb = req.body;
+  const sendmail = objs => Sendmail.of(mail_keyset).createMessages(objs);
+  paypal.validateNotify(ipnpb)
+  .flatMap(sendmail)
   .subscribe(
-    data  => { log.info('Verified IPN:', data); }
+    data  => { log.info('Send messages:', data); }
     , err => {
-      res.status(500)
+      res.status(200)
         .send({ error: { name: err.name, message: err.message } });
       log.error(err.name, ':', err.message);
     }
-    , ()  => { log.info('Completed to validate notification.'); }
+    , ()  => {
+      res.sendStatus(200);
+      log.info('Completed to validate notification.'); 
+    }
   );
 })
 .delete((req, res, next)  => { next(new Error('not implemented')); });
@@ -117,7 +118,7 @@ router.route('/payment/create-payment')
 .get((req, res, next)     => { next(new Error('not implemented')); })
 .put((req, res, next)     => { next(new Error('not implemented')); })
 .post((req, res, next)    => {
-  PayPalPayment.of(paypal_keyset).createExpress()
+  paypal.createExpress()
   .subscribe(
     data  => { res.json({ id: data.id }); }
     , err => {
@@ -135,7 +136,7 @@ router.route('/payment/execute-payment')
 .put((req, res, next)     => { next(new Error('not implemented')); })
 .post((req, res, next)    => {
   const { paymentID, payerID } = req.body;
-  PayPalPayment.of(paypal_keyset).executeExpress({ paymentID, payerID })
+  paypal.executeExpress({ paymentID, payerID })
   .subscribe(
     data  => { res.json({ data }); }
     , err => {
