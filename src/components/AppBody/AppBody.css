@@ -2,7 +2,6 @@
 #user-sign-up {
 	margin: 0 auto;
 	padding-top: 0.5em;
-	background-color: #FFFF;
 	width: 80%;
 }
 
@@ -12,7 +11,7 @@
 	margin: 0;
 	padding: 0;
 	border: none;
-	border-bottom: 0.5em solid #FFF;
+	border-bottom: 0.5em;
 }
 
 .category-group {
