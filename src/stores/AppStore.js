@@ -25,7 +25,7 @@ class AppStore extends ReduceStore {
           , description: ''
           , quantity: []
           , price: 0
-          , currency: ['JPY']
+          , currency: 'JPY'
         }
         , shipping_address: {
           city: ''

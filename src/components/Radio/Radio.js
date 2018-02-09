@@ -21,15 +21,18 @@ export default class Radio extends React.Component {
     const value = this.props.value || this.state.value;
     let children = React.Children.map(this.props.children
     , function(child, i) {
-      return <label htmlFor={child.props.id}>
-        <input type="radio"
+      return <span>
+        <input type="radio" className={child.props.classes}
           disabled={child.props.disabled}
           name={this.props.name}
           id={child.props.id}
           value={child.props.value}
           checked={child.props.value === value}
-          onChange={this.handleChange.bind(this)} />{child.props.children}
-        </label>;
+          onChange={this.handleChange.bind(this)} />
+        <label htmlFor={child.props.id} className={child.props.classes}>
+        {child.props.children}
+        </label>
+      </span>;
     }.bind(this));
     return <span>{children}</span>;
   }

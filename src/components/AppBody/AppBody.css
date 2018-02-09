@@ -74,28 +74,30 @@
 }
 
 .category-group input:focus {
-	background-color: #FFF8F0;
+  background-color: #FFF8F0;
 }
 
 .category-group input.middle-field {
-	width: 16em;
+  width: 15em;
+}
+.category-group select.middle-field {
+  width: 15em;
 }
 
 .category-group input.short-field {
-	width: 4em;
+  width: 9em;
+}
+.category-group select.short-field {
+  width: 9em;
 }
 
-.category-group select.middle-field {
-	width: 15em;
-}
 @media screen and (max-width: 600px) {
   .category-group select.middle-field {
     width: 100%;
   }
-}
-
-.category-group select.short-field {
-	width: 9em;
+  .category-group input.middle-field {
+    width: 100%;
+  }
 }
 
 input.button-primary {
@@ -208,14 +210,6 @@ label.error:before {
 }
 
 /* multi field */
-.category-group input.name-field {
-	width: 45%;
-}
-
-.category-group input.last-name {
-	margin-right: 2.5%;
-}
-
 .category-group gender-field {
 	padding: 0.375em;
 }
@@ -225,12 +219,12 @@ label.error:before {
 	margin-right: 0.5em;
 }
 
-.category-group .quantity-field {
-	display: inline-block;
-	margin-right: 0.5em;
+.category-group .postal-field {
+  display: inline-block;
+  margin-right: 0.5em;
 }
 
-.category-group .area-field label {
+.category-group .area-field span {
   display: inline-block;
 	padding: 0.375em;
 	margin-right: 0.5em;
@@ -242,31 +236,44 @@ label.error:before {
 	margin-right: 0.5em;
 }
 
-.category-group .delivery-field label {
+.category-group .currency-field span {
+  display: inline-block;
+	padding: 0.375em;
+	margin-right: 0.5em;
+}
+
+.category-group .delivery-field span {
   display: inline-block;
 	padding: 0.375em;
 	margin-right: 0.5em;
 }
 
 @media screen and (max-width: 600px) {
-  .category-group .area-field label {
+  .category-group .area-field span {
     display: block;
     padding: 0.375em;
     margin-right: 0.5em;
   }
+  .category-group .delivery-field span {
+    display: block;
+    padding: 0.375em;
+    margin-right: 0.5em;
+  }
+}
 
-  .category-group .delivery-field label {
-    display: block;
-    padding: 0.375em;
-    margin-right: 0.5em;
-  }
+/* domestic menu */
+.buynow_contactlast .domestic {
+  display: none;
+}
+
+.buynow_contactlast .non-domestic {
 }
 
 /* delivery menu */
-.buynow_contactlast div.delivery {
+.buynow_contactlast .delivery {
 }
 
-.buynow_contactlast div.non-delivery {
+.buynow_contactlast .non-delivery {
   display: none;
 }
 

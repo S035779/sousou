@@ -138,7 +138,7 @@ class AppBody extends React.Component {
     newState[name] = value;
     switch(name) {
       case 'area':
-        newState['currency']      = value === 'domestic' ? ['JPY'] : [];
+        newState['currency']      = value === 'domestic' ? 'JPY' : '';
         newState['country_code']  = value === 'domestic' ? ['JP']  : [];
         newState['delivery']      = 'address';
         newAddress = this.setShippingAddress('', this.isLangJp());
@@ -200,10 +200,11 @@ class AppBody extends React.Component {
 
   setConfirm(shipping, state, isLangJp) {
     if(!this.isValid(state)) {
-      return isLangJp
-        ? '弊社未対応エリアの場合は、別途ご連絡差し上げます。'
-        : 'In the case of our unsupported area,' 
-          + 'we will contact you separately.';
+      return;
+      //isLangJp
+      //  ? '弊社未対応エリアの場合は、別途ご連絡差し上げます。'
+      //  : 'In the case of our unsupported area,' 
+      //    + 'we will contact you separately.';
     }
     const value = this.isConfirm(shipping, state);
     let confirm = '';
@@ -214,10 +215,11 @@ class AppBody extends React.Component {
           : 'For our unsupported area, we will contact you separately.';
         break;
       case 1:
+        confirm = '';
         //confirm = isLangJp
         //  ? '弊社対応可能エリアです。'
         //  : 'It is an area that we can handle.';
-      //  break;
+        break;
       case 2: case 3: default:
         confirm = isLangJp
           ? '弊社未対応エリアの場合は、別途ご連絡差し上げます。'
@@ -510,7 +512,7 @@ class AppBody extends React.Component {
   }
 
   isUSD(state) {
-    return state.currency && state.currency.join() === 'USD';
+    return state.currency /*&& state.currency.join()*/ === 'USD';
   }
 
   isMail(state) {
@@ -523,7 +525,7 @@ class AppBody extends React.Component {
       && state.state
       && state.city
       && state.quantity       && (state.quantity.join() !== '')
-      && state.currency       && (state.currency.join() !== '')
+      && state.currency       //&& (state.currency.join() !== '')
       && state.payment        && (state.payment.join() !== '')
       && state.first_name
       //&& state.last_name
@@ -678,13 +680,13 @@ class AppBody extends React.Component {
     //this.logTrace(this.payment);
     const { shipping, language } = this.props;
     const isJP = this.isLangJp();
-    const isJPY = this.state.currency.join() === 'JPY';
+    const isJPY = this.state.currency === 'JPY';
     
     //const Information = isJP ? 'お客様の情報' : 'Your Information';
     const Delivery = isJP ? 'お引き渡し方法' : 'Delivery method';
     const Area = isJP ? '配送先' : 'Delivery address';
-    const Quantity = isJP
-      ? '注文数' : 'Purchasing quantities'; 
+    const Quantity = isJP ? '注文数' : 'Purchasing quantities'; 
+    const Currency = isJP ? '決済通貨' : 'Settlement currency'; 
     const HowToBuy = isJP ? '支払方法' : 'Payment method'; 
     //const Message = isJP ? 'メッセージ' : 'Message';
 
@@ -700,16 +702,22 @@ class AppBody extends React.Component {
     //  ? 'メールアドレス 確認' : 'Confirm E-Mail';
     const area = isJP ? '届け先' : 'Delivery address';
     //const delivery = isJP ? 'お届け先' : 'Delivery address';
-    const country_code = isJP ? '国名' : 'Country';
+    const country_code = isJP ? 'お届け先' : 'Delivery address';
     const postal_code = isJP ? '郵便番号' : 'Zip Code';
     const state = isJP ? '都道府県' : 'State';
-    const city = isJP ? 'フリーフォーム' : 'City';
+    const city = isJP ? '市区町村' : 'City';
     //const line1 = isJP ? '地域' : 'Municipality';
     //const line2 = isJP ? '番地・部屋番号' : 'A lot / Room Number';
     const recipient_name = isJP ? '受取人名' : 'Recipient Name';
     const recipient_phone = isJP ? '受取人電話' : 'Recipient Phone';
     const quantity = isJP ? 'ご購入数' : 'Quantity';
-    const currency = isJP ? '通貨' : 'Currency';
+    //const currency = isJP ? '通貨' : 'Currency';
+    const currency = isJPY 
+      ? isJP
+        ? Number(this.state.jpy).toLocaleString('ja-JP') + ' 円'
+        : 'JP ' + Number(this.state.jpy).toLocaleString('ja-JP') + ' yen'
+      : 'US ' + Number(this.state.usd).toLocaleString('en-US'
+          , { style: 'currency', currency: 'USD' });
     const payment = isJP ? '支払方法' : 'Payment';
     const message = isJP ? 'ご連絡事項' : 'Message';
     //const agreement = ' Agree to our terms of us and privacy policy. ';
@@ -741,30 +749,40 @@ class AppBody extends React.Component {
         ? '(tax included / shipping fee is separately)'
         : '(shipping fee is separately)';
 
-    const notes_quantity = isJP
-      ? isJPY 
-        ? ''
-        : '日本円でのお支払いの場合、US '
-          + Number(this.state.usd).toLocaleString('en-US'
-            , { style: 'currency', currency: 'USD' })
-          + ' を当日レートで日本円にしてご請求いたします。'
-      : isJPY
-        ? ''
-        : 'In case of payment in Japanese yen, US '
-          + Number(this.state.usd).toLocaleString('en-US'
-        , { style: 'currency', currency: 'USD' })
-          + ' will be charged as Japanese yen at the current day\'s rate.';
-    const notes_currency = isJP
-      ? isJPY
-        ? ''
-        : this.state.payment.join() === 'paypal'
-          ? 'US $ での支払の場合、PayPalアカウントが必要です。'
-          : ''
-      : isJPY
-        ? ''
-        : this.state.payment.join() === 'paypal'
-          ? 'For payment with US $, a PayPal account is required.'
-          : '';
+    //const notes_quantity = isJP
+    //  ? isJPY 
+    //    ? ''
+    //    : '日本円でのお支払いの場合、US '
+    //      + Number(this.state.usd).toLocaleString('en-US'
+    //        , { style: 'currency', currency: 'USD' })
+    //      + ' を当日レートで日本円にしてご請求いたします。'
+    //  : isJPY
+    //    ? ''
+    //    : 'In case of payment in Japanese yen, US '
+    //      + Number(this.state.usd).toLocaleString('en-US'
+    //    , { style: 'currency', currency: 'USD' })
+    //  + ' will be charged as Japanese yen at the current day\'s rate.';
+    //const notes_currency = isJP
+    //  ? isJPY
+    //    ? ''
+    //    : this.state.payment.join() === 'paypal'
+    //      ? 'US $ での支払の場合、PayPalアカウントが必要です。'
+    //      : ''
+    //  : isJPY
+    //    ? ''
+    //    : this.state.payment.join() === 'paypal'
+    //      ? 'For payment with US $, a PayPal account is required.'
+    //      : '';
+    const notes_currency_usd = isJP
+      ? 'PayPalアカウントの登録またはログインが必要です。'
+      : 'You need to register or log in to your PayPal account.'
+    const notes_currency_jpy = isJP
+      ? 'US ' + Number(this.state.usd).toLocaleString('en-US'
+          , { style: 'currency', currency: 'USD' })
+        + ' を当日レートで日本円にしてご請求いたします。'
+      : 'US ' + Number(this.state.usd).toLocaleString('en-US'
+          , { style: 'currency', currency: 'USD' })
+        + ' will be charged as Japanese yen at the current day\'s rate.';
     //const notes_payment = isJP
     //  ? 'ミャンマー発行のクレジットカードはご使用になれません。'
     //  : 'Credit card issued by Myanmar can not be used.';
@@ -796,31 +814,33 @@ class AppBody extends React.Component {
           , 'name_en', 'code_2')
       : null;
 
-    const opts_currency = [
-      {   name_en: 'JP ' +
-        Number(this.state.jpy).toLocaleString('ja-JP') + ' yen'
-        , name_jp:
-        Number(this.state.jpy).toLocaleString('ja-JP') + ' 円'
-        , value: 'JPY' }
-      , { name_en: 'US ' + 
-        Number(this.state.usd).toLocaleString('en-US'
-          , { style: 'currency', currency: 'USD' })
-        , name_jp: 'US ' + 
-        Number(this.state.usd).toLocaleString('en-US'
-          , { style: 'currency', currency: 'USD' })
-        , value: 'USD' }
-    ];
-    const select_currency = isJP
-      ? this.renderSelect(opts_currency, 'name_jp', 'value')
-      : this.renderSelect(opts_currency, 'name_en', 'value')
+    //const opts_currency = [
+    //  {   name_en: 'JP ' +
+    //    Number(this.state.jpy).toLocaleString('ja-JP') + ' yen'
+    //    , name_jp:
+    //    Number(this.state.jpy).toLocaleString('ja-JP') + ' 円'
+    //    , value: 'JPY' }
+    //  , { name_en: 'US ' + 
+    //    Number(this.state.usd).toLocaleString('en-US'
+    //      , { style: 'currency', currency: 'USD' })
+    //    , name_jp: 'US ' + 
+    //    Number(this.state.usd).toLocaleString('en-US'
+    //      , { style: 'currency', currency: 'USD' })
+    //    , value: 'USD' }
+    //];
+    //const select_currency = isJP
+    //  ? this.renderSelect(opts_currency, 'name_jp', 'value')
+    //  : this.renderSelect(opts_currency, 'name_en', 'value')
+    const currency_usd = isJP ? 'US $' : 'US $';
+    const currency_jpy = isJP ? '日本円' : 'JPY';
 
     const opts_payment = [
       {   name_en: 'Credit card'
         , name_jp: 'クレジットカード', value: 'paypal'  }
       , { name_en: 'Bank transfer (prepayment)'
-        , name_jp: '銀行振り込み（前払い）'    , value: 'deposit' }
+        , name_jp: '銀行振込'        , value: 'deposit' }
       , { name_en: 'Other'
-        , name_jp: 'その他'                    , value: 'other'   }
+        , name_jp: '現金手渡し'      , value: 'other'   }
     ];
     const select_payment = isJP
       ? this.renderSelect(opts_payment, 'name_jp', 'value')
@@ -828,11 +848,11 @@ class AppBody extends React.Component {
 
     const isDomestic = this.state.area === 'domestic'
       ? true : false;
-    const isAddress = this.state.delivery === 'address'
-      ? true : false;
+    //const isAddress = this.state.delivery === 'address'
+    //  ? true : false;
     const isDelivery = this.state.delivery === 'address'
-      && this.state.country_code.join()
-      ? 'delivery' : 'non-delivery';
+      //&& this.state.country_code.join()
+      ? true : false;
 
     //const check_email
     //  = this.checkEmail(this.state.email, isJP);
@@ -1082,7 +1102,7 @@ class AppBody extends React.Component {
       </fieldset>
       {/* How to buy */}
 
-      {/* Quantity & Currency */}
+      {/* Quantity */}
       <fieldset className="category-group">
         <legend>{Quantity}</legend>
         <table><tbody>
@@ -1113,39 +1133,44 @@ class AppBody extends React.Component {
           <option value="8">8</option>
           <option value="9">9</option>
           <option value="10">10</option>
-          <option value="11">11</option>
-          <option value="12">12</option>
-          <option value="13">13</option>
-          <option value="14">14</option>
-          <option value="15">15</option>
-          <option value="16">16</option>
-          <option value="17">17</option>
-          <option value="18">18</option>
-          <option value="19">19</option>
-          <option value="20">20</option>
           </select>
           <label>{label_quantity}</label>
           </span>
           <span className="quantity-field">
-          <select name="currency" id="currency"
-            disabled={isDomestic}
-            multiple={false}
-            value={this.state.currency}
-            onChange={this.handleChangeSelect.bind(this, 'currency')}
-            className="short-field required">
-          <option value="">{currency}</option>
-          {select_currency}
-          </select>
+          <label>{currency}</label>
           <label>{label_currency}</label>
           </span>
           </div>
-          <span className="notes">{notes_currency}</span>
+          {/*
           <span className="notes">{notes_quantity}</span>
+          */}
           </td>
         </tr>
         </tbody></table>
       </fieldset>
-      {/* Quantity & Currency */}
+      {/* Quantity */}
+
+      {/* Currency */}
+      <fieldset className="category-group">
+        <legend>{Currency}</legend>
+        <table><tbody>
+        <tr>
+          <td>
+          <div className="currency-field">
+          <Radio name="currency"
+            value={this.state.currency}
+            onChange={this.handleChangeRadio.bind(this, 'currency')}>
+            <option value="USD" id="currency_usd"> {currency_usd} <span
+              className="notes"> {notes_currency_usd}</span></option>
+            <option value="JPY" id="currency_jpy"> {currency_jpy} <span
+              className="notes"> {notes_currency_jpy}</span></option>
+          </Radio>
+          </div>
+          </td>
+        </tr>
+        </tbody></table>
+      </fieldset>
+      {/* Currency */}
 
       {/* Delivery */}
       <fieldset className="category-group">
@@ -1167,9 +1192,11 @@ class AppBody extends React.Component {
             <option value="address"
               id="delivery_address"> {delivery_address} </option>
             <option value="japan"
+              classes={!isDomestic ? 'domestic' : 'non-domestic'}
               disabled={!isDomestic}
               id="delivery_japan"> {delivery_japan} </option>
             <option value="myanmer"
+              classes={isDomestic ? 'domestic' : 'non-domestic'}
               disabled={isDomestic}
               id="delivery_myanmer"> {delivery_myanmer} </option>
           </Radio>
@@ -1182,6 +1209,7 @@ class AppBody extends React.Component {
           </td>
         </tr>
         </tbody></table>
+      <div className={isDomestic ? 'domestic' : 'non-domestic'}>
         <table><tbody>
         <tr>
         {/*
@@ -1193,7 +1221,7 @@ class AppBody extends React.Component {
         */}
           <td>
           <select name="country_code" id="country_code"
-            disabled={!isAddress}
+            disabled={!isDelivery}
             multiple={false}
             value={this.state.country_code}
             onChange={this.handleChangeSelect.bind(this, 'country_code')}
@@ -1206,7 +1234,8 @@ class AppBody extends React.Component {
           </td>
         </tr>
         </tbody></table>
-      <div className={isDelivery}>
+      </div>
+      <div className={isDelivery ? 'delivery' : 'non-delivery'}>
         <table><tbody>
         <tr>
         {/*
@@ -1233,7 +1262,7 @@ class AppBody extends React.Component {
             value={this.state.postal_code}
             onChange={this.handleChangeText.bind(this, 'postal_code')}
             onFocus={this.handleFocusText.bind(this, 'postal_code')}
-            className="required add-placeholder"
+            className="short-field required add-placeholder"
             placeholder={postal_code} />
           </span>
           <span className="postal-field">
@@ -1242,7 +1271,7 @@ class AppBody extends React.Component {
             onChange={this.handleChangeText.bind(this, 'state')}
             onFocus={this.handleFocusText.bind(this, 'state')}
             placeholder={state}
-            className="required add-placeholder" />
+            className="middle-field required add-placeholder" />
           </span>
           </div>
           </td>
