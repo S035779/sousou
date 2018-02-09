@@ -103,68 +103,69 @@ class Credit extends React.Component {
     return {
       email: {
         key: isLangJp ? 'メール　： ' : 'Email        : '
-        , value: `${obj.infomation.email}`                              },
+      , value: `${obj.infomation.email}`                              },
       name: {
         key: isLangJp ? '名　前　： ' : 'Name         : '
-        , value:
-          `${obj.infomation.first_name} ${obj.infomation.last_name}`    },
+      , value:
+      //  `${obj.infomation.first_name} ${obj.infomation.last_name}`    },
+          `${obj.infomation.first_name}`    },
       company: {
         key: isLangJp ? '会　社　： ' : 'Company      : '
-        , value: `${obj.infomation.company}`                            },
+      , value: `${obj.infomation.company}`                            },
       item: {
         key: isLangJp ? '商品名　： ' : 'Product      : '
-        , value: `${obj.item.name}`                                     },
-      description: {
-        key: isLangJp ? '概　要　： ' : 'Description  : '
-        , value: `${obj.item.description}`                              },
-      price: {
-        key: isLangJp ? '単　価　： ' : 'Price        : '
-        , value: `${obj.item.price} ${prices.item_currency}`            },
-      quantity: {
-        key: isLangJp ? '数　量　： ' : 'Quantity     : '
-        , value: `${obj.item.quantity}`                                 },
+      , value: `${obj.item.name}`                                     },
+      //description: {
+      //  key: isLangJp ? '概　要　： ' : 'Description  : '
+      //, value: `${obj.item.description}`                              },
+      //price: {
+      //  key: isLangJp ? '単　価　： ' : 'Price        : '
+      //, value: `${obj.item.price} ${prices.item_currency}`            },
+      //quantity: {
+      //  key: isLangJp ? '数　量　： ' : 'Quantity     : '
+      //, value: `${obj.item.quantity}`                                 },
       subtotal: {
         key: isLangJp ? '小　計　： ' : 'Subtotal     : '
-        , value: prices.subtotal_price                                  },
+      , value: prices.subtotal_price                                  },
       shipping: {
         key: isLangJp ? '配送料　： ' : 'Shipping fee : '
-        , value: prices.shipping_price                                  },
+      , value: prices.shipping_price                                  },
       discount: {
         key: isLangJp ? '値引き　： ' : 'Discount     : '
-        , value: prices.discount_price                                  },
+      , value: prices.discount_price                                  },
       total: {
         key: isLangJp ? '合　計　： ' : 'Total        : '
-        , value: prices.total_price                                     },
+      , value: prices.total_price                                     },
       postal_code: {
         key: isLangJp ? '郵便番号： ' : 'Zip          : '
-        , value: `${obj.shipping_address.postal_code}`                  },
+      , value: `${obj.shipping_address.postal_code}`                  },
       state: {
         key: isLangJp ? '都道府県： ' : 'State        : '
-        , value: `${obj.shipping_address.state}`                        },
+      , value: `${obj.shipping_address.state}`                        },
       city: {
         key: isLangJp ? '市区町村： ' : 'City         : '
-        , value: `${obj.shipping_address.city}`                         },
+      , value: `${obj.shipping_address.city}`                         },
       //line1: {
       //  key: isLangJp ? '地　域　： ' : 'Municipality : '
-      //  , value: `${obj.shipping_address.line1}`                        },
+      //, value: `${obj.shipping_address.line1}`                        },
       //line2: {
       //  key: isLangJp ? '番地番号： ' : 'A lot Number : '
-      //  , value: `${obj.shipping_address.line2}`                        },
-      //recipient: {
-      //  key: isLangJp ? '受取人　： ' : 'Recipient    : '
-      //  , value: `${obj.shipping_address.recipient_name}`               },
+      //, value: `${obj.shipping_address.line2}`                        },
+      recipient: {
+        key: isLangJp ? '受取人　： ' : 'Recipient    : '
+      , value: `${obj.shipping_address.recipient_name}`               },
       phone: {
         key: isLangJp ? '電　話　： ' : 'Phone        : '
-        , value: `${obj.shipping_address.phone}`                        },
-      country_code: {
-        key: isLangJp ? '国コード： ' : 'Country code : '
-        , value: `${obj.shipping_address.country_code}`                 },
-      payment: {
-        key: isLangJp ? '支払方法： ' : 'Method       : '
-        , value: `${obj.infomation.payment}`                            },
-      message: {
-        key: isLangJp ? '連絡事項： ' : 'Message      : '
-        , value: `${obj.infomation.message}`                            },
+      , value: `${obj.shipping_address.phone}`                        },
+      //country_code: {
+      //  key: isLangJp ? '国コード： ' : 'Country code : '
+      //, value: `${obj.shipping_address.country_code}`                 },
+      //payment: {
+      //  key: isLangJp ? '支払方法： ' : 'Method       : '
+      //, value: `${obj.infomation.payment}`                            },
+      //message: {
+      //  key: isLangJp ? '連絡事項： ' : 'Message      : '
+      //, value: `${obj.infomation.message}`                            },
     };
   }
 
@@ -246,9 +247,9 @@ class Credit extends React.Component {
         <td><label>{Shipping}</label>
         <span>{contents.postal_code.value}</span>
         <span>
-          {contents.state.value}{contents.city.value}
+          {contents.state.value} {contents.city.value}
           {/*contents.line1.value*/}
-          {/*contents.line2.value}{contents.recipient.value*/}
+          {/*contents.line2.value*/}{contents.recipient.value}
         </span></td>
       </tr>
       <tr>

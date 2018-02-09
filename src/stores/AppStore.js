@@ -35,11 +35,11 @@ class AppStore extends ReduceStore {
           , state: ''
         //  , line1: ''
         //  , line2: ''
-        //  , recipient_name: ''
+          , recipient_name: ''
         }
         , infomation: {
           first_name: ''
-          , last_name: ''
+        //  , last_name: ''
           , company: ''
         //  , gender: ''
         //  , year: ''

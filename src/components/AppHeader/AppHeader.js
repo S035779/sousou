@@ -5,8 +5,8 @@ class AppHeader extends React.Component {
     const language = this.props.language;
     const isJP = language  === 'jp' ? true : false;
     const title = isJP
-      ? '企業年鑑ご購入お申込みフォーム'
-      : 'Yearbook purchase application form';
+      ? '企業年鑑お申込みフォーム'
+      : 'Yearbook application form';
     return <div className="buynowtitle">
       <p>{title}</p>
       </div>;

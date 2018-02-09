@@ -31,7 +31,7 @@ class AppBody extends React.Component {
     this.state = {
       currency:         item.currency
       , quantity:       item.quantity
-    //  , recipient_name: shipping_address.recipient_name
+      , recipient_name: shipping_address.recipient_name
     //  , line1:          shipping_address.line1
     //  , line2:          shipping_address.line2
       , city:           shipping_address.city
@@ -40,7 +40,7 @@ class AppBody extends React.Component {
       , phone:          shipping_address.phone
       , state:          shipping_address.state
       , first_name:     infomation.first_name
-      , last_name:      infomation.last_name
+    //  , last_name:      infomation.last_name
       , company:        infomation.company
     //  , gender:         infomation.gender
     //  , year:           infomation.year
@@ -78,6 +78,18 @@ class AppBody extends React.Component {
   handleChangeText(name, e) {
     let newState = {};
     switch(name) {
+      case 'first_name':
+        newState = {
+          first_name: e.target.value
+        , recipient_name: e.target.value
+        };
+        break;
+      case 'phone':
+        newState = {
+          phone: e.target.value
+        , recipient_phone: e.target.value
+        };
+        break;
       case 'postal_code':
         newState = {
           postal_code: e.target.value
@@ -86,13 +98,12 @@ class AppBody extends React.Component {
         //, line1:  document.getElementById('line1').value
         //, line2:  document.getElementById('line2').value
         };
-        this.setState(newState);
         break;
       default:
         newState[name] = e.target.value;
-        this.setState(newState);
         break;
     }
+    this.setState(newState);
   }
 
   handleFocusText(name, e) {
@@ -287,10 +298,10 @@ class AppBody extends React.Component {
         , currency:     state.currency
       }
       , shipping_address: {
-        line1:        '...'
+        line1:        '.'
       //  line1:        state.line1
       //  , line2:        state.line2
-      //  , recipient_name: state.recipient_name
+        , recipient_name: state.recipient_name
         , city:         state.city
         , country_code: state.country_code
         , postal_code:  state.postal_code
@@ -299,7 +310,8 @@ class AppBody extends React.Component {
       }
       , infomation: {
         first_name:     state.first_name
-        , last_name:    state.last_name
+        , last_name:    '.'
+      //  , last_name:    state.last_name
         , company:      state.company
       //  , gender:       state.gender
       //  , year:         state.year
@@ -514,7 +526,7 @@ class AppBody extends React.Component {
       && state.currency       && (state.currency.join() !== '')
       && state.payment        && (state.payment.join() !== '')
       && state.first_name
-      && state.last_name
+      //&& state.last_name
       && state.phone          && !this.isNotPhone(state.phone)
       && state.email          && !this.isNotEmail(state.email)
       //&& state.confirm_email  && (state.email === state.confirm_email)
@@ -669,16 +681,16 @@ class AppBody extends React.Component {
     const isJPY = this.state.currency.join() === 'JPY';
     
     //const Information = isJP ? 'お客様の情報' : 'Your Information';
-    const Delivery = isJP ? 'お引き渡し場所' : 'Place of delivery';
+    const Delivery = isJP ? 'お引き渡し方法' : 'Delivery method';
     const Area = isJP ? '配送先' : 'Delivery address';
     const Quantity = isJP
-      ? 'ご購入数と通貨' : 'Purchasing quantities and currency'; 
-    const HowToBuy = isJP ? 'お支払い方法' : 'Payment method'; 
+      ? '注文数' : 'Purchasing quantities'; 
+    const HowToBuy = isJP ? '支払方法' : 'Payment method'; 
     //const Message = isJP ? 'メッセージ' : 'Message';
 
-    //const name = isJP ? 'お名前' : 'Name';
-    const first_name = isJP ? '姓' : 'First';
-    const last_name = isJP ? '名' : 'Last';
+    const first_name = isJP ? 'お名前' : 'Name';
+    //const first_name = isJP ? '姓' : 'First';
+    //const last_name = isJP ? '名' : 'Last';
     const company = isJP ? '会社名' : 'Company';
     //const gender = isJP ? '性別' : 'Gender';
     //const birthday = isJP ? '誕生日' : 'Birthday';
@@ -686,19 +698,19 @@ class AppBody extends React.Component {
     const email = isJP ? 'メールアドレス' : 'E-Mail';
     //const confirm_email = isJP
     //  ? 'メールアドレス 確認' : 'Confirm E-Mail';
-    const area = isJP ? '配送先' : 'Delivery address';
-    const delivery = isJP ? 'お届け先' : 'Delivery address';
-    //const country_code = isJP ? '国名' : 'Country';
+    const area = isJP ? '届け先' : 'Delivery address';
+    //const delivery = isJP ? 'お届け先' : 'Delivery address';
+    const country_code = isJP ? '国名' : 'Country';
     const postal_code = isJP ? '郵便番号' : 'Zip Code';
     const state = isJP ? '都道府県' : 'State';
     const city = isJP ? 'フリーフォーム' : 'City';
     //const line1 = isJP ? '地域' : 'Municipality';
     //const line2 = isJP ? '番地・部屋番号' : 'A lot / Room Number';
-    //const recipient_name = isJP ? '受取人名義' : 'Recipient Name';
+    const recipient_name = isJP ? '受取人名' : 'Recipient Name';
     const recipient_phone = isJP ? '受取人電話' : 'Recipient Phone';
     const quantity = isJP ? 'ご購入数' : 'Quantity';
     const currency = isJP ? '通貨' : 'Currency';
-    const payment = isJP ? 'お支払い方法' : 'Payment';
+    const payment = isJP ? '支払方法' : 'Payment';
     const message = isJP ? 'ご連絡事項' : 'Message';
     //const agreement = ' Agree to our terms of us and privacy policy. ';
 
@@ -708,16 +720,16 @@ class AppBody extends React.Component {
     //const month = isJP ? '月' : 'Month';
     //const day = isJP ? '日' : 'Day';
     const area_domestic = isJP ? '日本国内' : 'Domestic delivery';
-    const area_oversea = isJP ? 'それ以外' : 'Oversea delivery';
-    const delivery_address = isJP ? '指定場所' : 'Delivery Address';
-    const delivery_japan = isJP ? '日本本社' : 'Japan office';
-    const delivery_myanmer = isJP ? 'ミャンマー支社' : 'Myanmar office';
-    const delivery_check = isJP ? '住所を確認する' : 'Check the address';
+    const area_oversea = isJP ? '国外' : 'Oversea delivery';
+    const delivery_address = isJP ? '指定場所配達' : 'Delivery Address';
+    const delivery_japan = isJP ? '日本事務所来店' : 'Japan office';
+    const delivery_myanmer = isJP
+      ? 'ミャンマー事務所来店' : 'Myanmar office';
+    const delivery_check = isJP ? '来店先を確認' : 'Check the address';
 
-    //const notes_delivery = isJP 
-    //  ? '配送先で送料が異なります。送料はメールでお知らせします。'
-    //  : 'Shipping fee differs depending on shipping destination.'
-    //    + 'Shipping fee will be notified by E-mail.';
+    const notes_delivery = isJP 
+      ? '来店いただく場合は送料はかかりません。'
+      : 'There is no shipping fee when visiting the shop.';
     const label_quantity = isJP
       ? '冊 x '
       : 'book(s) x '
@@ -857,22 +869,25 @@ class AppBody extends React.Component {
           </th>
         */}
           <td>
-          <div className="multi-name-field">
+          <input type="text" name="first_name" id="first_name"
+            value={this.state.first_name}
+            onChange={this.handleChangeText.bind(this, 'first_name')}
+            placeholder={first_name}
+            className="add-placeholder required"/>
         {/*
+          <div className="multi-name-field">
           <label htmlFor="first-name">{first_name}</label>
-        */}
           <input type="text" name="first-name" id="first-name"
             onChange={this.handleChangeText.bind(this, 'first_name')}
             placeholder={first_name}
             className="name-field last-name add-placeholder required"/>
-        {/*
           <label htmlFor="last-name">{last_name}</label>
-        */}
           <input type="text" name="last-name" id="last-name"
             onChange={this.handleChangeText.bind(this, 'last_name')}
             placeholder={last_name}
             className="name-field add-placeholder required"/>
           </div>
+        */}
           </td>
         </tr>
         <tr>
@@ -887,7 +902,7 @@ class AppBody extends React.Component {
           <input type="text" name="company" id="company"
             onChange={this.handleChangeText.bind(this, 'company')}
             placeholder={company}
-            className=" add-placeholder"/>
+            className="add-placeholder"/>
           </td>
         </tr>
       {/*
@@ -960,9 +975,10 @@ class AppBody extends React.Component {
         */}
           <td>
           <input type="text" name="phone" id="phone"
+            value={this.state.phone}
             onChange={this.handleChangeText.bind(this, 'phone')}
             placeholder={phone}
-            className=" add-placeholder required"/>
+            className="add-placeholder required"/>
           {/*
           <span className="notes">{check_phone}</span>
           */}
@@ -1158,14 +1174,12 @@ class AppBody extends React.Component {
               id="delivery_myanmer"> {delivery_myanmer} </option>
           </Radio>
           </div>
+          <span className="notes">{notes_delivery}</span>
           </td>
           <td>
           <a className="btn btn-default" href="#"
               data-featherlight="#fl1">{delivery_check}</a>
           </td>
-          {/*
-          <span className="notes">{notes_delivery}</span>
-          */}
         </tr>
         </tbody></table>
         <table><tbody>
@@ -1184,7 +1198,7 @@ class AppBody extends React.Component {
             value={this.state.country_code}
             onChange={this.handleChangeSelect.bind(this, 'country_code')}
             className="required">
-          <option value="">{delivery}</option>
+          <option value="">{country_code}</option>
           {select_country}
           </select>
           <span className="notes">{notes_notice}</span>
@@ -1201,34 +1215,36 @@ class AppBody extends React.Component {
           {postal_code} <span className="required-mark">required</span>
           </label>
           </th>
+          <th>
+          <label htmlFor="state">
+          {state} <span className="required-mark">required</span>
+          </label>
+          </th>
+          </td>
+          <td>
+          <span className="notes">{check_postal_code}</span>
+        </tr>
+        <tr>
         */}
           <td>
+          <div className="multi-postal-field">
+          <span className="postal-field">
           <input type="text" name="postal_code" id="postal_code"
             value={this.state.postal_code}
             onChange={this.handleChangeText.bind(this, 'postal_code')}
             onFocus={this.handleFocusText.bind(this, 'postal_code')}
             className="required add-placeholder"
             placeholder={postal_code} />
-        {/*
-          <span className="notes">{check_postal_code}</span>
-        */}
-          </td>
-        </tr>
-        <tr>
-        {/*
-          <th>
-          <label htmlFor="state">
-          {state} <span className="required-mark">required</span>
-          </label>
-          </th>
-        */}
-          <td>
+          </span>
+          <span className="postal-field">
           <input type="text" name="state" id="state"
             value={this.state.state}
             onChange={this.handleChangeText.bind(this, 'state')}
             onFocus={this.handleFocusText.bind(this, 'state')}
             placeholder={state}
             className="required add-placeholder" />
+          </span>
+          </div>
           </td>
         </tr>
         <tr>
@@ -1282,13 +1298,14 @@ class AppBody extends React.Component {
           </td>
         </tr>
         */}
-        {/*
         <tr>
+        {/*
           <th>
           <label htmlFor="recipient_name">
           {recipient_name}
           </label>
           </th>
+        */}
           <td>
           <input type="text" name="recipient_name" id="recipient_name"
             value={this.state.recipient_name}
@@ -1298,7 +1315,6 @@ class AppBody extends React.Component {
             className="add-placeholder"/>
           </td>
         </tr>
-        */}
         <tr>
         {/*
           <th>

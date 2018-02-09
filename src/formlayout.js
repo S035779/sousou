@@ -62,13 +62,19 @@ jQuery(function($) {
       , quantitys: 'quantity currency'
     },
     errorPlacement: function(error, element) {
-      if (element.attr('name') == 'first-name'
-        || element.attr('name') == 'last-name' ) {
-        error.appendTo('.multi-name-field');
-      } else if (element.attr('name') == 'quantity'
+      //if (element.attr('name') == 'first-name'
+      //  || element.attr('name') == 'last-name' ) {
+      //  error.appendTo('.multi-name-field');
+      //} else
+      if (element.attr('name') == 'postal_code'
+        || element.attr('name') == 'state' ) {
+        error.appendTo('.multi-postal-field');
+      } else
+      if (element.attr('name') == 'quantity'
         || element.attr('name') == 'currency') {
         error.appendTo('.multi-quantity-field');
-      } else {
+      }
+      else {
         error.insertAfter(element);
       }
     }
