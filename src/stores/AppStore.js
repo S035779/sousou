@@ -28,11 +28,11 @@ class AppStore extends ReduceStore {
           , currency: 'JPY'
         }
         , shipping_address: {
-          city: ''
-          , country_code: ['JP']
+          country_code: ['JP']
           , postal_code: ''
           , phone: ''
           , state: ''
+          , city: ''
         //  , line1: ''
         //  , line2: ''
           , recipient_name: ''
@@ -51,9 +51,14 @@ class AppStore extends ReduceStore {
           , delivery: 'address'
           , payment: []
           , message: ''
-          , recipient_phone: ''
           , site: ''
         //  , agreement: false
+          , country_code: []
+          , postal_code: ''
+          , state: ''
+          , phone: ''
+          , recipient_name: ''
+          , recipient_phone: ''
         }
         , credit_validate: {
           custom: ''

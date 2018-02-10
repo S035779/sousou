@@ -30,7 +30,7 @@ class Credit extends React.Component {
       custom: std.formatDate(new Date(), 'yyMMdd01ccc')
       , receiver_email: receiver_email
       , mc_gross: props.options.total
-      , mc_currency: props.options.currency.join()
+      , mc_currency: props.options.currency
     };
   }
 
@@ -62,10 +62,8 @@ class Credit extends React.Component {
   }
   
   setPrices(obj, isLangJp) {
-    const item_currency = obj.item.currency.join() !== '' 
-      ? obj.item.currency : ''
-    const total_currency = obj.currency.join() !== ''
-        ? obj.currency : ''
+    const item_currency = obj.item.currency; 
+    const total_currency = obj.currency;
     return {
       subtotal_price: this.item_currency !== ''
         ? isLangJp
@@ -187,8 +185,7 @@ class Credit extends React.Component {
     const obj = this.props.options;
     const isLangJp = this.isLangJp();
     const contents = this.setContents(obj, isLangJp);
-    const Shipping = isLangJp
-      ? '配送先　： ' : 'Address       : ';
+    const Shipping = isLangJp ? '配送先　： ' : 'Address       : ';
     const Confirm = isLangJp
       ? 'ご注文内容の確認' : 'Confirmation of your order';
     //const ConfirmMessage = isLangJp
@@ -246,11 +243,13 @@ class Credit extends React.Component {
       <tr>
         <td><label>{Shipping}</label>
         <span>{contents.postal_code.value}</span>
-        <span>
-          {contents.state.value} {contents.city.value}
-          {/*contents.line1.value*/}
-          {/*contents.line2.value*/}{contents.recipient.value}
-        </span></td>
+        <span> {contents.state.value} </span>
+        <span> {contents.city.value} </span>
+      {/*
+        <span> {contents.line1.value} </span>
+        <span> {contents.line2.value} </span>
+      */}
+        <span> {contents.recipient.value} </span></td>
       </tr>
       <tr>
         <td><label>{contents.phone.key}</label>
@@ -279,7 +278,7 @@ class Credit extends React.Component {
       <input name='shipping' type='hidden'
         value={obj.details.shipping + obj.details.shipping_discount}/>
       <input name='currency_code' type='hidden'
-        value={obj.currency.join()}/>
+        value={obj.currency}/>
       <input name='billing_zip' type='hidden'
         value={obj.shipping_address.postal_code}/>
       <input name='billing_state' type='hidden'

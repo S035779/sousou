@@ -138,7 +138,7 @@ class AppBody extends React.Component {
     newState[name] = value;
     switch(name) {
       case 'area':
-        newState['currency']      = value === 'domestic' ? 'JPY' : '';
+        newState['currency']      = value === 'domestic' ? 'JPY' : 'USD';
         newState['country_code']  = value === 'domestic' ? ['JP']  : [];
         newState['delivery']      = 'address';
         newAddress = this.setShippingAddress('', this.isLangJp());
@@ -199,31 +199,22 @@ class AppBody extends React.Component {
   }
 
   setConfirm(shipping, state, isLangJp) {
-    if(!this.isValid(state)) {
-      return;
-      //isLangJp
-      //  ? '弊社未対応エリアの場合は、別途ご連絡差し上げます。'
-      //  : 'In the case of our unsupported area,' 
-      //    + 'we will contact you separately.';
-    }
-    const value = this.isConfirm(shipping, state);
+    const value = this.isValid(state)
+      ? this.isConfirm(shipping, state) : '';
     let confirm = '';
     switch(value) {
       case 0:
         confirm = isLangJp
-          ? '弊社未対応エリアの為、別途ご連絡差し上げます。'
-          : 'For our unsupported area, we will contact you separately.';
+          ? 'EMS取扱地域外の為、別途ご連絡差し上げます。'
+          : 'For EMS unsupported area, we will contact you separately.';
         break;
       case 1:
         confirm = '';
-        //confirm = isLangJp
-        //  ? '弊社対応可能エリアです。'
-        //  : 'It is an area that we can handle.';
         break;
       case 2: case 3: default:
         confirm = isLangJp
-          ? '弊社未対応エリアの場合は、別途ご連絡差し上げます。'
-          : 'In the case of our unsupported area,' 
+          ? 'EMS取扱地域外の場合は、別途ご連絡差し上げます。'
+          : 'In the case of EMS unsupported area,' 
             + 'we will contact you separately.';
         break;
     }
@@ -231,19 +222,16 @@ class AppBody extends React.Component {
   }
 
   setNotice(state, isLangJp) {
-    if(!this.isValid(state)) return '';
-    const value = this.state.payment.join();
+    const value = this.isValid(state) ? this.state.payment.join() : '';
     let notice = '';
     switch(value) {
       case 'paypal':
         notice = this.isCredit(state) || this.isPayPal(state)
           ? ''
-            //isLangJp
-            //? 'EMS、PayPal対応エリアです。'
-            //: 'It is an EMS or PayPal compatible area.'
           : isLangJp
-            ? 'EMSまたはPayPal未対応エリアの為、別途ご連絡差し上げます。'
-            : 'It is an area not compliant with EMS or PayPal. ';
+            ? 'クレジットまたはPayPal未対応エリアの為、'
+              + '別途ご連絡差し上げます。'
+            : 'It is an area not compliant with Credit or PayPal. ';
         break;
       case 'deposit':
         notice = isLangJp
@@ -253,9 +241,8 @@ class AppBody extends React.Component {
         break;
       case 'other':
         notice = isLangJp
-          ? '購入数指定、支払い方法について、記入してください。'
-          : 'Please contact us separately for number of entries and'
-            + 'payment method.';
+          ? '支払い方法について、記入してください。'
+          : 'Please contact us separately for payment method.';
         break;
       default:
         break;
@@ -300,15 +287,15 @@ class AppBody extends React.Component {
         , currency:     state.currency
       }
       , shipping_address: {
-        line1:        '.'
-      //  line1:        state.line1
-      //  , line2:        state.line2
-        , recipient_name: state.recipient_name
-        , city:         state.city
-        , country_code: state.country_code
+        country_code: state.country_code
         , postal_code:  state.postal_code
         , phone:        state.phone
         , state:        state.state
+        , city:         state.city
+        , line1:        '.'
+      //  line1:        state.line1
+      //  , line2:        state.line2
+        , recipient_name: state.recipient_name
       }
       , infomation: {
         first_name:     state.first_name
@@ -325,9 +312,14 @@ class AppBody extends React.Component {
         , delivery:     state.delivery
         , payment:      state.payment
         , message:      state.message
-        , recipient_phone: state.recipient_phone
         , site:         this.props.language
       //  , agreement:    state.agreement
+        , country_code: state.country_code
+        , postal_code:  state.postal_code
+        , state:        state.state + state.city
+        , phone:        state.phone
+        , recipient_name: state.recipient_name
+        , recipient_phone: state.recipient_phone
       }
     });
   }
@@ -512,7 +504,7 @@ class AppBody extends React.Component {
   }
 
   isUSD(state) {
-    return state.currency /*&& state.currency.join()*/ === 'USD';
+    return state.currency === 'USD';
   }
 
   isMail(state) {
@@ -525,7 +517,7 @@ class AppBody extends React.Component {
       && state.state
       && state.city
       && state.quantity       && (state.quantity.join() !== '')
-      && state.currency       //&& (state.currency.join() !== '')
+      && state.currency
       && state.payment        && (state.payment.join() !== '')
       && state.first_name
       //&& state.last_name
@@ -711,6 +703,7 @@ class AppBody extends React.Component {
     const recipient_name = isJP ? '受取人名' : 'Recipient Name';
     const recipient_phone = isJP ? '受取人電話' : 'Recipient Phone';
     const quantity = isJP ? 'ご購入数' : 'Quantity';
+    const quantity_other = isJP ? 'その他' : 'Other';
     //const currency = isJP ? '通貨' : 'Currency';
     const currency = isJPY 
       ? isJP
@@ -1133,6 +1126,7 @@ class AppBody extends React.Component {
           <option value="8">8</option>
           <option value="9">9</option>
           <option value="10">10</option>
+          <option value="0">{quantity_other}</option>
           </select>
           <label>{label_quantity}</label>
           </span>
@@ -1229,7 +1223,6 @@ class AppBody extends React.Component {
           <option value="">{country_code}</option>
           {select_country}
           </select>
-          <span className="notes">{notes_notice}</span>
           <span className="notes">{notes_confirm}</span>
           </td>
         </tr>
@@ -1386,6 +1379,7 @@ class AppBody extends React.Component {
             onChange={this.handleChangeText.bind(this, 'message')}
             placeholder={message}
             className="add-placeholder"/>
+          <span className="notes">{notes_notice}</span>
           </td>
         </tr>
         </tbody></table>
