@@ -616,6 +616,10 @@ export default {
     return numFormat.format(num, format);
   },
   
+  regexWord(word, str) {
+    return RegExp(word).test(str);
+  },
+
   regexZip(postal_code, country_code) {
     return zipRegex.regex(country_code, postal_code);
   },

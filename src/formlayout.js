@@ -1,6 +1,6 @@
 import std from 'Utilities/stdutils';
 import jQuery from 'jquery';
-//import {} from 'jquery-jpostal-ja';
+import {} from 'jquery-jpostal-ja';
 const host = process.env.TOP_URL || 'https://localhost:4443';
 
 jQuery(function($) {
@@ -9,18 +9,10 @@ jQuery(function($) {
   const isLangJp = language === 'jp';
 
   // jpostal-ja
-  //$('#postal_code').jpostal({   
-  //  postcode : [
-  //    '#postal_code'
-  //  ],
-  //  address : {
-  //    '#state':           '%3',
-  //    '#city':            '%4',
-  //    '#line1':           '%5',
-  //    '#line2':           '%6',
-  //    '#recipient_name':  '%7'
-  //  }
-  //});
+  $('#postal_code').jpostal({   
+    postcode :  [ '#postal_code' ]
+    , address : { '#address1': '%3 %4 %5', '#address2': '%6' }
+  });
 
   // ah-placeholder
   $('.add-placeholder').ahPlaceholder({
@@ -58,8 +50,8 @@ jQuery(function($) {
       }
     },
     groups: {
-      usersname: 'first-name last-name'
-      , quantitys: 'quantity currency'
+      //usersname: 'first-name last-name',
+      quantitys: 'quantity currency'
     },
     errorPlacement: function(error, element) {
       //if (element.attr('name') == 'first-name'
@@ -67,7 +59,7 @@ jQuery(function($) {
       //  error.appendTo('.multi-name-field');
       //} else
       if (element.attr('name') == 'postal_code'
-        || element.attr('name') == 'state' ) {
+        || element.attr('name') == 'address1' ) {
         error.appendTo('.multi-postal-field');
       } else
       if (element.attr('name') == 'quantity'

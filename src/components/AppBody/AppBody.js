@@ -29,37 +29,43 @@ class AppBody extends React.Component {
     };
 
     this.state = {
-      currency:         item.currency
-      , quantity:       item.quantity
-      , recipient_name: shipping_address.recipient_name
+      currency:           item.currency
+      , quantity:         item.quantity
+    //  , country_code:   shipping_address.country_code
+    //  , postal_code:    shipping_address.postal_code
+    //  , state:          shipping_address.state
+    //  , city:           shipping_address.city
     //  , line1:          shipping_address.line1
     //  , line2:          shipping_address.line2
-      , city:           shipping_address.city
-      , country_code:   shipping_address.country_code
-      , postal_code:    shipping_address.postal_code
-      , phone:          shipping_address.phone
-      , state:          shipping_address.state
-      , first_name:     infomation.first_name
+      , name:             infomation.name
+    //  , first_name:     infomation.first_name
     //  , last_name:      infomation.last_name
-      , company:        infomation.company
+      , phone:            infomation.phone
+      , company:          infomation.company
     //  , gender:         infomation.gender
     //  , year:           infomation.year
     //  , month:          infomation.month
     //  , day:            infomation.day
-      , email:          infomation.email
+      , email:            infomation.email
     //  , confirm_email:  infomation.confirm_email
-      , area:           infomation.area
-      , delivery:       infomation.delivery
-      , payment:        infomation.payment
+      , area:             infomation.area
+      , delivery:         infomation.delivery
+      , payment:          infomation.payment
+      , message:          infomation.message
     //  , agreement:      infomation.agreement
-      , message:        infomation.message
-      , recipient_phone: infomation.recipient_phone
-      , usd:            usd
-      , jpy:            jpy
-      , results:        results
+      , country_code:     infomation.country_code
+      , postal_code:      infomation.postal_code
+      , address1:         infomation.address1
+      , address2:         infomation.address2
+      , address3:         ''
+      , recipient_name:   infomation.recipient_name
+      , recipient_phone:  infomation.recipient_phone
+      , usd:              usd
+      , jpy:              jpy
+      , results:          results
       , showModalCredit:  false
-      , showModalResults:  false
-      , notice:         ''
+      , showModalResults: false
+      , notice:           ''
     };
   }
 
@@ -78,9 +84,9 @@ class AppBody extends React.Component {
   handleChangeText(name, e) {
     let newState = {};
     switch(name) {
-      case 'first_name':
+      case 'name':
         newState = {
-          first_name: e.target.value
+          name: e.target.value
         , recipient_name: e.target.value
         };
         break;
@@ -93,10 +99,15 @@ class AppBody extends React.Component {
       case 'postal_code':
         newState = {
           postal_code: e.target.value
-        , state:  document.getElementById('state').value
-        , city:   document.getElementById('city').value
-        //, line1:  document.getElementById('line1').value
-        //, line2:  document.getElementById('line2').value
+        , address1: document.getElementById('address1').value
+        , address2: document.getElementById('address2').value
+        };
+        break;
+      case 'address1':
+      case 'address3':
+        newState = {
+          address1: e.target.value
+        , address3: e.target.value
         };
         break;
       default:
@@ -110,15 +121,14 @@ class AppBody extends React.Component {
     let newState = {};
     switch(name) {
       case 'postal_code':
-      case 'state':
-      case 'city':
-      //case 'line1':
-      //case 'line2':
+      case 'address1':
+      case 'address2':
+      case 'address3':
         newState = {
-          state:  document.getElementById('state').value
-        , city:   document.getElementById('city').value
-        //, line1:  document.getElementById('line1').value
-        //, line2:  document.getElementById('line2').value
+          address1: document.getElementById('address1').value
+        , address2: document.getElementById('address2').value
+        , address3: document.getElementById('address1').value
+          + ' ' + document.getElementById('address2').value
         };
         this.setState(newState);
         break;
@@ -141,11 +151,11 @@ class AppBody extends React.Component {
         newState['currency']      = value === 'domestic' ? 'JPY' : 'USD';
         newState['country_code']  = value === 'domestic' ? ['JP']  : [];
         newState['delivery']      = 'address';
-        newAddress = this.setShippingAddress('', this.isLangJp());
+        newAddress = this.setAddress('', this.isLangJp());
         this.setState(Object.assign({}, newAddress, newState));
         break;
       case 'delivery':
-        newAddress = this.setShippingAddress(value, this.isLangJp());
+        newAddress = this.setAddress(value, this.isLangJp());
         this.setState(Object.assign({}, newState, newAddress));
         break;
       default:
@@ -229,7 +239,7 @@ class AppBody extends React.Component {
         notice = this.isCredit(state) || this.isPayPal(state)
           ? ''
           : isLangJp
-            ? 'クレジットまたはPayPal未対応エリアの為、'
+            ? 'クレジットカード取扱地域外の為、'
               + '別途ご連絡差し上げます。'
             : 'It is an area not compliant with Credit or PayPal. ';
         break;
@@ -239,7 +249,7 @@ class AppBody extends React.Component {
           : 'For bank transfer method, details will be contacted'
             + ' separately.';
         break;
-      case 'other':
+      case 'cash':
         notice = isLangJp
           ? '支払い方法について、記入してください。'
           : 'Please contact us separately for payment method.';
@@ -271,13 +281,16 @@ class AppBody extends React.Component {
   }
 
   setOptions(state, payment) {
+    const isLangJp = this.isLangJp();
+    const isSite = isLangJp ? 'ja-JP' : 'en-US';
+    const shipping_address = this.setShippingAddress('ja-JP', isLangJp);
     return Object.assign({}, this.props.options, {
-      total:          payment.total
-      , currency:       payment.total_currency
+      total:      payment.total
+      , currency: payment.total_currency
       , details: {
-        subtotal:       payment.subtotal
-        , shipping:     payment.shipping
-        , shipping_discount:     payment.shipping_discount
+        subtotal:             payment.subtotal
+        , shipping:           payment.shipping
+        , shipping_discount:  payment.shipping_discount
       }
       , item: {
         name:           payment.name
@@ -286,74 +299,105 @@ class AppBody extends React.Component {
         , price:        payment.price
         , currency:     state.currency
       }
-      , shipping_address: {
-        country_code: state.country_code
-        , postal_code:  state.postal_code
-        , phone:        state.phone
-        , state:        state.state
-        , city:         state.city
-        , line1:        '.'
-      //  line1:        state.line1
-      //  , line2:        state.line2
-        , recipient_name: state.recipient_name
-      }
+      , shipping_address
       , infomation: {
-        first_name:     state.first_name
-        , last_name:    '.'
-      //  , last_name:    state.last_name
-        , company:      state.company
-      //  , gender:       state.gender
-      //  , year:         state.year
-      //  , month:        state.month
-      //  , day:          state.day
-        , email: state.email
-      //  , confirm_email:  state.confirm_email
-        , area:         state.area
-        , delivery:     state.delivery
-        , payment:      state.payment
-        , message:      state.message
-        , site:         this.props.language
-      //  , agreement:    state.agreement
-        , country_code: state.country_code
-        , postal_code:  state.postal_code
-        , state:        state.state + state.city
-        , phone:        state.phone
-        , recipient_name: state.recipient_name
+        name:              state.name
+      //  first_name:      state.first_name
+      //  , last_name:     state.last_name
+        , phone:           state.phone
+        , company:         state.company
+      //  , gender:        state.gender
+      //  , year:          state.year
+      //  , month:         state.month
+      //  , day:           state.day
+        , email:           state.email
+      //  , confirm_email: state.confirm_email
+        , area:            state.area
+        , delivery:        state.delivery
+        , payment:         state.payment
+        , message:         state.message
+      //  , agreement:     state.agreement
+        , country_code:    state.country_code
+        , postal_code:     state.postal_code
+        , address1:        state.address1
+        , address2:        state.address2
+        , recipient_name:  state.recipient_name
         , recipient_phone: state.recipient_phone
+        , site:            isSite
       }
     });
   }
 
   setShippingAddress(value, isLangJp) {
     let newAddress = {};
-    newAddress['japan'] = {
+    newAddress['ja-JP'] = {
       country_code:     [ 'JP' ]
-      , postal_code:    isLangJp ? '135-0046'     : '135-0046'
-      , state:          isLangJp ? '東京都'       : 'TOKYO'
-      , city:           isLangJp
-        ? '江東区 牡丹1-2-2 東京オフィス'
-        : 'Koto-ku, Botan, Address 1-2-2, TOKYO OFFICE'
-      //, line1:          isLangJp ? '' : ''
-      //, line2:          isLangJp ? '' : ''
+      , postal_code:    isLangJp ? '135-0046' : '135-0046'
+      , state:          isLangJp ? '東京都'
+                                 : 'TOKYO'
+      , city:           isLangJp ? '江東区 牡丹'
+                                 : 'Koto-ku, Botan'
+      , line1:          isLangJp ? '1-2-2'
+                                 : 'Address 1-2-2'
+      , line2:          isLangJp ? '東京オフィス'
+                                 : 'TOKYO OFFICE'
+      , phone:          isLangJp ? '03-5875-8402'
+                                 : '03-5875-8402'
+      , recipient_name: isLangJp ? '...'
+                                 : '...'
     };
-    newAddress['myanmer'] = {
+    newAddress['en-US'] = {
       country_code:     [ 'MM' ]
       , postal_code:    '11181'
       , state:          'YANGON'
-      , city:
-        'Kamayut Tsp, Hledan Center, #307, 3rd Floor, MYANMER OFFICE'
-      //, line1:          ''
-      //, line2:          ''
+      , city:           'Kamayut Tsp'
+      , line1:          'Hledan Center, #307, 3rd Floor'
+      , line2:          'MYANMER OFFICE'
+      , phone:          '+95 94-5210-2233'
+      , recipient_name: '...'
+    };
+    return value === 'ja-JP' || value === 'en-US'
+      ? newAddress[value]
+      : { country_code:   []
+        , postal_code:    ''
+        , state:          ''
+        , city:           ''
+        , line1:          ''
+        , line2:          ''
+        , phone:          ''
+        , recipient_name: ''
+      };
+  }
+
+  setAddress(value, isLangJp) {
+    let newAddress = {};
+    newAddress['japan'] = {
+      country_code:  [ 'JP' ]
+      , postal_code: isLangJp ? '135-0046' : '135-0046'
+      , address1:    isLangJp ? '東京都 江東区 牡丹'
+                              : 'TOKYO, Koto-ku, Botan'
+      , address2:    isLangJp ? '1-2-2 東京オフィス'
+                              : 'Address 1-2-2, TOKYO OFFICE'
+      , address3:    isLangJp
+        ? '135-0046 東京都 江東区 牡丹 1-2-2 東京オフィス'
+        : '135-0046 TOKYO, Koto-ku, Botan, Address 1-2-2, TOKYO OFFICE'
+    };
+    newAddress['myanmer'] = {
+      country_code:   [ 'MM' ]
+      , postal_code:  '11181'
+      , address1:     'YANGON, Kamayut Tsp'
+      , address2:     'Hledan Center, #307, 3rd Floor, MYANMER OFFICE'
+      , address3:
+        '11181 YANGON, Kamayut Tsp, Hledan Center, #307, 3rd Floor'
+          + ', MYANMER OFFICE'
     };
     return value === 'japan' || value === 'myanmer'
       ? newAddress[value]
-      : {
-        country_code:     []
-        , state:          ''
-        , postal_code:    ''
-        , city:           ''
-        //, line1:          ''
-        //, line2:          ''
+      : { country_code: []
+        , postal_code:  ''
+        , address1:     ''
+        , address2:     ''
+        , address3:     ''
       };
   }
 
@@ -465,8 +509,8 @@ class AppBody extends React.Component {
 
   isShipping(shipping, currency, state) {
     const isJpp = obj => shipping.jpp.filter(jpp =>
-      jpp.name_jp === obj.state.toUpperCase()
-        || jpp.name_en === obj.state.toUpperCase())[0];
+      std.regexWord(jpp.name_jp, obj.address1.toUpperCase())
+        || std.regexWord(jpp.name_en, obj.address1.toUpperCase()))[0];
     const isEms = obj => shipping.ems.filter(ems =>
       ems.code_2 === obj.country_code.join()
       && (ems.ems1 === 'OK' || ems.ems2_1 === 'OK' ||
@@ -513,19 +557,22 @@ class AppBody extends React.Component {
 
   isValid(state) {
     return (
-      state.country_code      && (state.country_code.join() !== '')
-      && state.state
-      && state.city
+      state.name
+      && state.phone          && !this.isNotPhone(state.phone)
+      && state.email          && !this.isNotEmail(state.email)
+      && state.country_code   && (state.country_code.join() !== '')
+      //&& state.postal_code
+      //&& !this.isNotPostal(state.postal_code, state.country_code.join())
+      && state.address1
+      && state.address3
       && state.quantity       && (state.quantity.join() !== '')
       && state.currency
       && state.payment        && (state.payment.join() !== '')
-      && state.first_name
+      //&& state.first_name
       //&& state.last_name
-      && state.phone          && !this.isNotPhone(state.phone)
-      && state.email          && !this.isNotEmail(state.email)
       //&& state.confirm_email  && (state.email === state.confirm_email)
-      && state.postal_code
-      && !this.isNotPostal(state.postal_code, state.country_code.join())
+      //&& state.state
+      //&& state.city
       //&& state.line1
       //&& state.line2
       //&& state.agreement
@@ -631,9 +678,11 @@ class AppBody extends React.Component {
 
   renderSelect(objs, key, value) {
     if(!objs) return null;
-    const opts = objs.map(obj => ({ key: obj[key], val: obj[value] }))
-    return opts.map((opt, idx) => (<option
-      key={"choice-" + idx} value={opt.val} >{opt.key}</option>));
+    const opts = objs.filter(opt => opt.disable ? false : true)
+      .map(obj => ({ key: obj[key], val: obj[value] }))
+    return opts.map((opt, idx) => (
+        <option key={"choice-" + idx} value={opt.val}>{opt.key}</option>
+    ));
   }
 
   renderButton(state) {
@@ -673,16 +722,19 @@ class AppBody extends React.Component {
     const { shipping, language } = this.props;
     const isJP = this.isLangJp();
     const isJPY = this.state.currency === 'JPY';
+    const isDomestic = this.state.area === 'domestic';
+    const isDelivery = this.state.delivery === 'address';
+    const isPaypal = this.state.payment.join() === 'paypal';
     
     //const Information = isJP ? 'お客様の情報' : 'Your Information';
     const Delivery = isJP ? 'お引き渡し方法' : 'Delivery method';
-    const Area = isJP ? '配送先' : 'Delivery address';
+    const Area = isJP ? '届け先' : 'Delivery address';
     const Quantity = isJP ? '注文数' : 'Purchasing quantities'; 
     const Currency = isJP ? '決済通貨' : 'Settlement currency'; 
-    const HowToBuy = isJP ? '支払方法' : 'Payment method'; 
+    const Payment = isJP ? '支払方法' : 'Payment method'; 
     //const Message = isJP ? 'メッセージ' : 'Message';
 
-    const first_name = isJP ? 'お名前' : 'Name';
+    const name = isJP ? '名前' : 'Name';
     //const first_name = isJP ? '姓' : 'First';
     //const last_name = isJP ? '名' : 'Last';
     const company = isJP ? '会社名' : 'Company';
@@ -692,17 +744,20 @@ class AppBody extends React.Component {
     const email = isJP ? 'メールアドレス' : 'E-Mail';
     //const confirm_email = isJP
     //  ? 'メールアドレス 確認' : 'Confirm E-Mail';
-    const area = isJP ? '届け先' : 'Delivery address';
+    //const area = isJP ? '届け先' : 'Delivery address';
     //const delivery = isJP ? 'お届け先' : 'Delivery address';
     const country_code = isJP ? 'お届け先' : 'Delivery address';
     const postal_code = isJP ? '郵便番号' : 'Zip Code';
-    const state = isJP ? '都道府県' : 'State';
-    const city = isJP ? '市区町村' : 'City';
+    const address1 = isJP ? '住所' : 'Address';
+    const address2 = isJP ? '番地' : 'A lot number';
+    const address3 = isJP ? '住所（郵便番号）' : 'Address(Zip code)';
+    //const state = isJP ? '都道府県' : 'State';
+    //const city = isJP ? '市区町村' : 'City';
     //const line1 = isJP ? '地域' : 'Municipality';
     //const line2 = isJP ? '番地・部屋番号' : 'A lot / Room Number';
     const recipient_name = isJP ? '受取人名' : 'Recipient Name';
     const recipient_phone = isJP ? '受取人電話' : 'Recipient Phone';
-    const quantity = isJP ? 'ご購入数' : 'Quantity';
+    const quantity = isJP ? '注文数' : 'Quantity';
     const quantity_other = isJP ? 'その他' : 'Other';
     //const currency = isJP ? '通貨' : 'Currency';
     const currency = isJPY 
@@ -728,20 +783,17 @@ class AppBody extends React.Component {
       ? 'ミャンマー事務所来店' : 'Myanmar office';
     const delivery_check = isJP ? '来店先を確認' : 'Check the address';
 
-    const notes_delivery = isJP 
-      ? '来店いただく場合は送料はかかりません。'
-      : 'There is no shipping fee when visiting the shop.';
-    const label_quantity = isJP
-      ? '冊 x '
-      : 'book(s) x '
+    const label_quantity = isJP ? '冊 x ' : 'book(s) x '
     const label_currency = isJP
       ? isJPY
-        ? '（税込／送料別）'
-        : '（送料別）'
-      : isJPY
+        ? '（税込／送料別）' : '（送料別）'
+      : isJPY 
         ? '(tax included / shipping fee is separately)'
         : '(shipping fee is separately)';
 
+    const notes_delivery = isJP 
+      ? 'ご来店いただく場合は送料はかかりません。'
+      : 'There is no shipping fee when visiting the shop.';
     //const notes_quantity = isJP
     //  ? isJPY 
     //    ? ''
@@ -776,11 +828,13 @@ class AppBody extends React.Component {
       : 'US ' + Number(this.state.usd).toLocaleString('en-US'
           , { style: 'currency', currency: 'USD' })
         + ' will be charged as Japanese yen at the current day\'s rate.';
-    //const notes_payment = isJP
-    //  ? 'ミャンマー発行のクレジットカードはご使用になれません。'
-    //  : 'Credit card issued by Myanmar can not be used.';
-      //? 'クレジット決済の場合は PayPalアカウント が必要となります。'
-      //: 'For credit card transactions, you need a PayPal account.';
+    const notes_payment = !isDomestic && isPaypal
+      ? isJP
+        ? 'ミャンマー及び'
+          + '一部地域発行のクレジットカードはご使用になれません。'
+        : 'We can not use credit card issued' +
+            'by Myanmar and some regions.'
+      : '';
     const notes_notice = this.setNotice(this.state, isJP); 
     const notes_confirm = this.setConfirm(shipping, this.state, isJP);
 
@@ -828,24 +882,26 @@ class AppBody extends React.Component {
     const currency_jpy = isJP ? '日本円' : 'JPY';
 
     const opts_payment = [
-      {   name_en: 'Credit card'
-        , name_jp: 'クレジットカード', value: 'paypal'  }
-      , { name_en: 'Bank transfer (prepayment)'
-        , name_jp: '銀行振込'        , value: 'deposit' }
-      , { name_en: 'Other'
-        , name_jp: '現金手渡し'      , value: 'other'   }
+      {
+        name_en: 'Credit card'
+        , name_jp: 'クレジットカード'
+        , value: 'paypal'
+      }
+      , {
+        name_en: 'Bank transfer (prepayment)'
+        , name_jp: '銀行振込'
+        , value: 'deposit'
+        , disable: isDomestic ? false : true
+      }
+      , {
+        name_en: 'Cash payment'
+        , name_jp: '現金手渡し'
+        , value: 'cash'
+      }
     ];
     const select_payment = isJP
       ? this.renderSelect(opts_payment, 'name_jp', 'value')
       : this.renderSelect(opts_payment, 'name_en', 'value')
-
-    const isDomestic = this.state.area === 'domestic'
-      ? true : false;
-    //const isAddress = this.state.delivery === 'address'
-    //  ? true : false;
-    const isDelivery = this.state.delivery === 'address'
-      //&& this.state.country_code.join()
-      ? true : false;
 
     //const check_email
     //  = this.checkEmail(this.state.email, isJP);
@@ -882,10 +938,10 @@ class AppBody extends React.Component {
           </th>
         */}
           <td>
-          <input type="text" name="first_name" id="first_name"
-            value={this.state.first_name}
-            onChange={this.handleChangeText.bind(this, 'first_name')}
-            placeholder={first_name}
+          <input type="text" name="name" id="name"
+            value={this.state.name}
+            onChange={this.handleChangeText.bind(this, 'name')}
+            placeholder={name}
             className="add-placeholder required"/>
         {/*
           <div className="multi-name-field">
@@ -1063,9 +1119,9 @@ class AppBody extends React.Component {
       </fieldset>
       {/* Your Shipping Address */}
 
-      {/* How to Buy */}
+      {/* Payment */}
       <fieldset className="category-group">
-        <legend>{HowToBuy}</legend>
+        <legend>{Payment}</legend>
         <table><tbody>
         <tr>
         {/*
@@ -1086,9 +1142,7 @@ class AppBody extends React.Component {
           {select_payment}
           </select>
           </div>
-          {/*
           <span className="notes">{notes_payment}</span>
-          */}
           </td>
         </tr>
         </tbody></table>
@@ -1145,6 +1199,7 @@ class AppBody extends React.Component {
       {/* Quantity */}
 
       {/* Currency */}
+      <div className={isDomestic ? 'hide' : 'no-hide'}>
       <fieldset className="category-group">
         <legend>{Currency}</legend>
         <table><tbody>
@@ -1164,6 +1219,7 @@ class AppBody extends React.Component {
         </tr>
         </tbody></table>
       </fieldset>
+      </div>
       {/* Currency */}
 
       {/* Delivery */}
@@ -1186,11 +1242,11 @@ class AppBody extends React.Component {
             <option value="address"
               id="delivery_address"> {delivery_address} </option>
             <option value="japan"
-              classes={!isDomestic ? 'domestic' : 'non-domestic'}
+              classes={!isDomestic ? 'hide' : 'no-hide'}
               disabled={!isDomestic}
               id="delivery_japan"> {delivery_japan} </option>
             <option value="myanmer"
-              classes={isDomestic ? 'domestic' : 'non-domestic'}
+              classes={isDomestic ? 'hide' : 'no-hide'}
               disabled={isDomestic}
               id="delivery_myanmer"> {delivery_myanmer} </option>
           </Radio>
@@ -1203,7 +1259,7 @@ class AppBody extends React.Component {
           </td>
         </tr>
         </tbody></table>
-      <div className={isDomestic ? 'domestic' : 'non-domestic'}>
+      <div className={isDomestic ? 'hide' : 'no-hide'}>
         <table><tbody>
         <tr>
         {/*
@@ -1228,26 +1284,24 @@ class AppBody extends React.Component {
         </tr>
         </tbody></table>
       </div>
-      <div className={isDelivery ? 'delivery' : 'non-delivery'}>
+      <div className={!isDelivery ? 'hide' : 'no-hide'}>
+      <div className={isDomestic ? 'hide' : 'no-hide'}>
         <table><tbody>
         <tr>
-        {/*
-          <th>
-          <label htmlFor="postal_code">
-          {postal_code} <span className="required-mark">required</span>
-          </label>
-          </th>
-          <th>
-          <label htmlFor="state">
-          {state} <span className="required-mark">required</span>
-          </label>
-          </th>
-          </td>
           <td>
-          <span className="notes">{check_postal_code}</span>
+          <textarea name="address3" id="address3"
+            value={this.state.address3}
+            cons="40" rows="4"
+            onChange={this.handleChangeText.bind(this, 'address3')}
+            placeholder={address3}
+            className="required add-placeholder"/>
+          </td>
         </tr>
+        </tbody></table>
+      </div>
+      <div className={!isDomestic ? 'hide' : 'no-hide'}>
+        <table><tbody>
         <tr>
-        */}
           <td>
           <div className="multi-postal-field">
           <span className="postal-field">
@@ -1259,24 +1313,66 @@ class AppBody extends React.Component {
             placeholder={postal_code} />
           </span>
           <span className="postal-field">
-          <input type="text" name="state" id="state"
-            value={this.state.state}
-            onChange={this.handleChangeText.bind(this, 'state')}
-            onFocus={this.handleFocusText.bind(this, 'state')}
-            placeholder={state}
+          <input type="text" name="address1" id="address1"
+            value={this.state.address1}
+            onChange={this.handleChangeText.bind(this, 'address1')}
+            onFocus={this.handleFocusText.bind(this, 'address1')}
+            placeholder={address1}
             className="middle-field required add-placeholder" />
           </span>
           </div>
           </td>
         </tr>
         <tr>
+          <td>
+          <input type="text" name="address2" id="address2"
+            value={this.state.address2}
+            onChange={this.handleChangeText.bind(this, 'address2')}
+            onFocus={this.handleFocusText.bind(this, 'address2')}
+            placeholder={address2}
+            className="add-placeholder" />
+          </td>
+        </tr>
         {/*
+        <tr>
+          <th>
+          <label htmlFor="postal_code">
+          {postal_code} <span className="required-mark">required</span>
+          </label>
+          </th>
+          <td>
+          <input type="text" name="postal_code" id="postal_code"
+            value={this.state.postal_code}
+            onChange={this.handleChangeText.bind(this, 'postal_code')}
+            onFocus={this.handleFocusText.bind(this, 'postal_code')}
+            className="short-field required add-placeholder"
+            placeholder={postal_code} />
+          <span className="notes">{check_postal_code}</span>
+          </td>
+        </tr>
+        <tr>
+          <th>
+          <label htmlFor="state">
+          {state} <span className="required-mark">required</span>
+          </label>
+          </th>
+          <td>
+          <input type="text" name="state" id="state"
+            value={this.state.state}
+            onChange={this.handleChangeText.bind(this, 'state')}
+            onFocus={this.handleFocusText.bind(this, 'state')}
+            placeholder={state}
+            className="middle-field required add-placeholder" />
+          </td>
+        </tr>
+        */}
+        {/*
+        <tr>
           <th>
           <label htmlFor="city">
           {city} <span className="required-mark">required</span>
           </label>
           </th>
-        */}
           <td>
           <input type="text" name="city" id="city"
             value={this.state.city}
@@ -1286,6 +1382,7 @@ class AppBody extends React.Component {
             className="required add-placeholder" />
           </td>
         </tr>
+        */}
         {/*
         <tr>
           <th>
@@ -1320,6 +1417,9 @@ class AppBody extends React.Component {
           </td>
         </tr>
         */}
+        </tbody></table>
+      </div>
+        <table><tbody>
         <tr>
         {/*
           <th>
@@ -1375,6 +1475,7 @@ class AppBody extends React.Component {
         */}
           <td>
           <textarea name="message" id="message"
+            value={this.state.message}
             cons="40" rows="10"
             onChange={this.handleChangeText.bind(this, 'message')}
             placeholder={message}

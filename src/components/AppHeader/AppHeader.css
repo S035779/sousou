@@ -6,3 +6,12 @@
 	margin: 0 0 24px 0;
 }
 
+.buynowtitle span {
+  display: inline-block;
+}
+
+@media screen and (max-width: 600px) {
+  .buynowtitle span {
+    display: block;
+  }
+}

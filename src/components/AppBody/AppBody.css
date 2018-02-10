@@ -78,15 +78,17 @@
 }
 
 .category-group input.middle-field {
-  width: 15em;
+  width: 20em;
 }
+
+.category-group input.short-field {
+  width: 8em;
+}
+
 .category-group select.middle-field {
   width: 15em;
 }
 
-.category-group input.short-field {
-  width: 9em;
-}
 .category-group select.short-field {
   width: 9em;
 }
@@ -96,7 +98,7 @@
     width: 100%;
   }
   .category-group input.middle-field {
-    width: 100%;
+    width: 106%;
   }
 }
 
@@ -165,6 +167,7 @@ a.btn.btn-default:hover{
 /* Validate */
 input[type=text].error,
 input[type=password].error,
+textarea.error,
 select.error {
 	border: 1px solid #C66;
 	background-color: #FDD;
@@ -261,19 +264,10 @@ label.error:before {
   }
 }
 
-/* domestic menu */
-.buynow_contactlast .domestic {
-  display: none;
+.buynow_contactlast .no-hide {
 }
 
-.buynow_contactlast .non-domestic {
-}
-
-/* delivery menu */
-.buynow_contactlast .delivery {
-}
-
-.buynow_contactlast .non-delivery {
+.buynow_contactlast .hide {
   display: none;
 }
 

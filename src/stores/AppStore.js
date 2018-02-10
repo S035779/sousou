@@ -3,68 +3,68 @@ import { ReduceStore } from 'flux/utils';
 class AppStore extends ReduceStore {
   getInitialState() {
     return { 
-      length: 0
-      , weigth: 0
-      , from: ''
-      , usd: 0
-      , jpy: 0
+      length:     0
+      , weigth:   0
+      , from:     ''
+      , usd:      0
+      , jpy:      0
       , shipping: {}
       , currency: {}
       , results:  null
-      , options:  {
-        total:  0
+      , options: {
+        total:      0
         , currency: []
-        , details:
-          {
-            subtotal: 0
-            , shipping: 0
-            , shipping_discount: 0
-          }
+        , details: {
+          subtotal:             0
+          , shipping:           0
+          , shipping_discount:  0
+        }
         , item: { 
-          name: ''
-          , description: ''
-          , quantity: []
-          , price: 0
-          , currency: 'JPY'
+          name:           ''
+          , description:  ''
+          , quantity:     []
+          , price:        0
+          , currency:     'JPY'
         }
-        , shipping_address: {
-          country_code: ['JP']
-          , postal_code: ''
-          , phone: ''
-          , state: ''
-          , city: ''
-        //  , line1: ''
-        //  , line2: ''
-          , recipient_name: ''
-        }
+        //, shipping_address: {
+        //  country_code:     ['JP']
+        //  , postal_code:    ''
+        //  , phone:          ''
+        //  , state:          ''
+        //  , city:           ''
+        //  , line1:          ''
+        //  , line2:          ''
+        //  , recipient_name: ''
+        //}
         , infomation: {
-          first_name: ''
-        //  , last_name: ''
-          , company: ''
-        //  , gender: ''
-        //  , year: ''
-        //  , month: []
-        //  , day: ''
-          , email: ''
-        //  , confirm_email: ''
-          , area: 'domestic'
-          , delivery: 'address'
-          , payment: []
-          , message: ''
-          , site: ''
-        //  , agreement: false
-          , country_code: []
-          , postal_code: ''
-          , state: ''
-          , phone: ''
-          , recipient_name: ''
-          , recipient_phone: ''
+          name:               ''
+        //  first_name:       ''
+        //  , last_name:      ''
+          , phone:            ''
+          , company:          ''
+        //  , gender:         ''
+        //  , year:           ''
+        //  , month:          []
+        //  , day:            ''
+          , email:            ''
+        //  , confirm_email:  ''
+          , area:             'domestic'
+          , delivery:         'address'
+          , payment:          []
+          , message:          ''
+        //  , agreement:      false
+          , country_code:     ['JP']
+          , postal_code:      ''
+          , address1:         ''
+          , address2:         ''
+          , recipient_name:   ''
+          , recipient_phone:  ''
         }
         , credit_validate: {
-          custom: ''
+          custom:           ''
           , receiver_email: ''
-          , mc_gross: 0
-          , mc_currency: 0
+          , mc_gross:       0
+          , mc_currency:    ''
         }
       }
     };

@@ -99,71 +99,61 @@ class Credit extends React.Component {
   setContents(obj, isLangJp) {
     const prices = this.setPrices(obj, isLangJp);
     return {
-      email: {
-        key: isLangJp ? 'メール　： ' : 'Email        : '
-      , value: `${obj.infomation.email}`                              },
-      name: {
-        key: isLangJp ? '名　前　： ' : 'Name         : '
-      , value:
-      //  `${obj.infomation.first_name} ${obj.infomation.last_name}`    },
-          `${obj.infomation.first_name}`    },
-      company: {
-        key: isLangJp ? '会　社　： ' : 'Company      : '
-      , value: `${obj.infomation.company}`                            },
       item: {
-        key: isLangJp ? '商品名　： ' : 'Product      : '
-      , value: `${obj.item.name}`                                     },
-      //description: {
-      //  key: isLangJp ? '概　要　： ' : 'Description  : '
-      //, value: `${obj.item.description}`                              },
-      //price: {
-      //  key: isLangJp ? '単　価　： ' : 'Price        : '
-      //, value: `${obj.item.price} ${prices.item_currency}`            },
-      //quantity: {
-      //  key: isLangJp ? '数　量　： ' : 'Quantity     : '
-      //, value: `${obj.item.quantity}`                                 },
-      subtotal: {
-        key: isLangJp ? '小　計　： ' : 'Subtotal     : '
-      , value: prices.subtotal_price                                  },
-      shipping: {
+        key: isLangJp ? '商品名　： ' : 'Product : '
+        , value: obj.item.name
+      }
+      , name: {
+        key: isLangJp ? '名　前　： ' : 'Name : '
+        , value: obj.infomation.name
+      }
+      , company: {
+        key: isLangJp ? '会　社　： ' : 'Company : '
+        , value: obj.infomation.company
+      }
+      , subtotal: {
+        key: isLangJp ? '小　計　： ' : 'Subtotal : '
+        , value: prices.subtotal_price
+      }
+      , shipping: {
         key: isLangJp ? '配送料　： ' : 'Shipping fee : '
-      , value: prices.shipping_price                                  },
-      discount: {
-        key: isLangJp ? '値引き　： ' : 'Discount     : '
-      , value: prices.discount_price                                  },
-      total: {
-        key: isLangJp ? '合　計　： ' : 'Total        : '
-      , value: prices.total_price                                     },
-      postal_code: {
-        key: isLangJp ? '郵便番号： ' : 'Zip          : '
-      , value: `${obj.shipping_address.postal_code}`                  },
-      state: {
-        key: isLangJp ? '都道府県： ' : 'State        : '
-      , value: `${obj.shipping_address.state}`                        },
-      city: {
-        key: isLangJp ? '市区町村： ' : 'City         : '
-      , value: `${obj.shipping_address.city}`                         },
-      //line1: {
-      //  key: isLangJp ? '地　域　： ' : 'Municipality : '
-      //, value: `${obj.shipping_address.line1}`                        },
-      //line2: {
-      //  key: isLangJp ? '番地番号： ' : 'A lot Number : '
-      //, value: `${obj.shipping_address.line2}`                        },
-      recipient: {
-        key: isLangJp ? '受取人　： ' : 'Recipient    : '
-      , value: `${obj.shipping_address.recipient_name}`               },
-      phone: {
-        key: isLangJp ? '電　話　： ' : 'Phone        : '
-      , value: `${obj.shipping_address.phone}`                        },
-      //country_code: {
-      //  key: isLangJp ? '国コード： ' : 'Country code : '
-      //, value: `${obj.shipping_address.country_code}`                 },
-      //payment: {
-      //  key: isLangJp ? '支払方法： ' : 'Method       : '
-      //, value: `${obj.infomation.payment}`                            },
-      //message: {
-      //  key: isLangJp ? '連絡事項： ' : 'Message      : '
-      //, value: `${obj.infomation.message}`                            },
+        , value: prices.shipping_price
+      }
+      , discount: {
+        key: isLangJp ? '値引き　： ' : 'Discount : '
+        , value: prices.discount_price
+      }
+      , total: {
+        key: isLangJp ? '合　計　： ' : 'Total : '
+        , value: prices.total_price
+      }
+      , postal_code: {
+        key: isLangJp ? '郵便番号： ' : 'Zip : '
+        , value: obj.infomation.postal_code
+          ? obj.infomation.postal_code : ''
+      }
+      , address1: {
+        key: isLangJp ? '住　所　： ' : 'Address : '
+        , value: obj.infomation.address1
+      }
+      , address2: {
+        key: isLangJp ? '番　地　： ' : 'A lot number : '
+        , value: obj.infomation.address2
+          ? obj.infomation.address2 : ''
+      }
+      , recipient_name: {
+        key: isLangJp ? '受取人名： ' : 'Name : '
+        , value: obj.infomation.recipient_name 
+          ? obj.infomation.recipient_name : ''
+      }
+      , recipient_phone: {
+        key: isLangJp ? '電話番号： ' : 'Phone : '
+        , value: obj.infomation.recipient_phone
+      }
+      , email: {
+        key: isLangJp ? 'メール　： ' : 'Email : '
+        , value: obj.infomation.email
+      }
     };
   }
 
@@ -180,7 +170,6 @@ class Credit extends React.Component {
   }
 
   render() {
-    //console.log(this.state);
     const form_styles = { display: 'none' };
     const obj = this.props.options;
     const isLangJp = this.isLangJp();
@@ -188,9 +177,6 @@ class Credit extends React.Component {
     const Shipping = isLangJp ? '配送先　： ' : 'Address       : ';
     const Confirm = isLangJp
       ? 'ご注文内容の確認' : 'Confirmation of your order';
-    //const ConfirmMessage = isLangJp
-    //  ? 'お客様は以下の商品を選択しました。'
-    //  : 'Customers selected the following items.';
     const ConfirmOrder = isLangJp ? 'お支払' : 'Payment';
     const language =  isLangJp ? 'JP' : 'US';
     const custom = this.state.custom;
@@ -199,65 +185,56 @@ class Credit extends React.Component {
       <a href="#" className="close-thik"
         onClick={this.handleClickClose.bind(this)}></a>
       <div id="user-sign-up">
-      <fieldset className="category-group confirm">
+      <fieldset className="category-group item-group">
       <legend>{Confirm}</legend>
-      {/*
-      <p>{ConfirmMessage}</p>
-      */}
       <table>
       <tbody>
       <tr>
-        <td><label>{contents.item.key}</label>
-        <span>{contents.item.value}</span></td>
-      </tr>
-      {/*
-      <tr>
-        <td><label>{contents.description.key}</label>
-        <span>{contents.description.value}</span></td>
-      </tr>
-      */}
-      <tr>
-        <td><label>{contents.subtotal.key}</label>
-        <span>{contents.subtotal.value}</span></td>
+        <th className="key"></th>
+        <th className="value"></th>
       </tr>
       <tr>
-        <td><label>{contents.shipping.key}</label>
-        <span>{contents.shipping.value}</span></td>
+        <td className="item_name"><label>{contents.item.key}</label></td>
+        <td><span>{contents.item.value}</span></td>
       </tr>
       <tr>
-        <td><label>{contents.discount.key}</label>
-        <span>{contents.discount.value}</span></td>
+        <td className="item_name"><label>{contents.subtotal.key}</label></td>
+        <td><span>{contents.subtotal.value}</span></td>
       </tr>
       <tr>
-        <td><label>{contents.total.key}</label>
-        <span>{contents.total.value}</span></td>
+        <td className="item_name"><label>{contents.shipping.key}</label></td>
+        <td><span>{contents.shipping.value}</span></td>
       </tr>
       <tr>
-        <td><label>{contents.company.key}</label>
-        <span>{contents.company.value}</span></td>
+        <td className="item_name"><label>{contents.discount.key}</label></td>
+        <td><span>{contents.discount.value}</span></td>
       </tr>
       <tr>
-        <td><label>{contents.name.key}</label>
-        <span>{contents.name.value}</span></td>
+        <td className="item_name"><label>{contents.total.key}</label></td>
+        <td><span>{contents.total.value}</span></td>
       </tr>
       <tr>
-        <td><label>{Shipping}</label>
-        <span>{contents.postal_code.value}</span>
-        <span> {contents.state.value} </span>
-        <span> {contents.city.value} </span>
-      {/*
-        <span> {contents.line1.value} </span>
-        <span> {contents.line2.value} </span>
-      */}
-        <span> {contents.recipient.value} </span></td>
+        <td className="item_name"><label>{contents.company.key}</label></td>
+        <td><span>{contents.company.value}</span></td>
       </tr>
       <tr>
-        <td><label>{contents.phone.key}</label>
-        <span>{contents.phone.value}</span></td>
+        <td className="item_name"><label>{contents.name.key}</label></td>
+        <td><span>{contents.name.value}</span></td>
       </tr>
       <tr>
-        <td><label>{contents.email.key}</label>
-        <span>{contents.email.value}</span></td>
+        <td className="item_name"><label>{Shipping}</label></td>
+        <td><span>{contents.postal_code.value}</span>
+        <span>{contents.address1.value}</span>
+        <span>{contents.address2.value}</span>
+        <span>{contents.recipient_name.value}</span></td>
+      </tr>
+      <tr>
+        <td className="item_name"><label>{contents.recipient_phone.key}</label></td>
+        <td><span>{contents.recipient_phone.value}</span></td>
+      </tr>
+      <tr>
+        <td className="item_name"><label>{contents.email.key}</label></td>
+        <td><span>{contents.email.value}</span></td>
       </tr>
       </tbody></table>
       </fieldset>
@@ -270,9 +247,9 @@ class Credit extends React.Component {
       <input name='buyer_email' type='hidden'
         value={obj.infomation.email}/>
       <input name='billing_first_name' type='hidden'
-        value={obj.infomation.first_name}/>
+        value={obj.infomation.name}/>
       <input name='billing_last_name' type='hidden'
-        value={obj.infomation.last_name}/>
+        value={'.'}/>
       <input name='subtotal' type='hidden'
         value={obj.details.subtotal}/>
       <input name='shipping' type='hidden'

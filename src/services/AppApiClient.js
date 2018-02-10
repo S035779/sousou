@@ -184,39 +184,31 @@ export default {
     return this.getCurrency(options)
   },
   validate(params) {
-    const { currency, item, shipping_address, infomation } = params;
+    const { item, shipping_address, infomation } = params;
     let newItem = {};
     let newAddr = {};
     let newInfo = {};
-    const newCurrency = Array.isArray(currency)
-      ? currency.join()
-      : currency;
     newItem['quantity'] = Array.isArray(item.quantity)
       ? item.quantity.join()
       : item.quantity;
-    newItem['currency'] = Array.isArray(item.currency)
-      ? item.currency.join()
-      : item.currency;
     newAddr['country_code'] = Array.isArray(shipping_address.country_code)
       ? shipping_address.country_code.join()
       : shipping_address.country_code;
-    newInfo['month'] = Array.isArray(infomation.month)
-      ? infomation.month.join()
-      : infomation.month;
+    newInfo['country_code'] = Array.isArray(infomation.country_code)
+      ? infomation.country_code.join()
+      : infomation.country_code;
     newInfo['payment'] = Array.isArray(infomation.payment)
       ? infomation.payment.join()
       : infomation.payment;
     return Object.assign({}, params, {
-      currency: newCurrency
-      , item: Object.assign({},item, newItem)
+      item: Object.assign({},item, newItem)
       , shipping_address: Object.assign({}, shipping_address, newAddr)
       , infomation: Object.assign({}, infomation, newInfo)
     });
   },
   setManager(obj) {
     const message = {
-      from: `${obj.infomation.first_name} ${obj.infomation.last_name}`
-        + `<${obj.infomation.email}>`
+      from: `${obj.infomation.name}<${obj.infomation.email}>`
       , to: sender
       , subject: `(Yearbook) ${obj.infomation.company} : `
         + `Yearbook Vol.1のご注文がありました`
@@ -226,23 +218,19 @@ export default {
         + `--------\n\n`
         + `ご注文内容\n\n`
         + `お申込み元サイト: ${obj.infomation.site}\n`
-        + `名前　　　　　　: `
-          + ` ${obj.infomation.first_name}  ${obj.infomation.last_name}\n`
+        + `名前　　　　　　: ${obj.infomation.name}\n`
         + `会社名　　　　　: ${obj.infomation.company}\n`
         + `メールアドレス　: ${obj.infomation.email}\n`
-        + `電話番号　　　　: ${obj.shipping_address.phone}\n`
-        + `ご購入数と通貨　: ${obj.item.quantity} 冊`
-          + ` 【${obj.currency}】\n`
+        + `電話番号　　　　: ${obj.infomation.phone}\n`
+        + `ご購入数と通貨　: ${obj.item.quantity} 冊【${obj.currency}】\n`
         + `お支払い方法　　: ${obj.infomation.payment}\n`
-        + `お引き渡し場所　: ${obj.shipping_address.postal_code}\n`
-        + `                  ${obj.shipping_address.state}\n`
-        + `                  ${obj.shipping_address.city}\n`
-        //+ `                  ${obj.shipping_address.line1}\n`
-        //+ `                  ${obj.shipping_address.line2}\n`
-        + `                  ${obj.shipping_address.country_code}\n\n`
-        //+ `お届け先人名　　: ${obj.shipping_address.recipient_name}\n`
+        + `お引き渡し場所　: ${obj.infomation.postal_code}\n`
+        + `                  ${obj.infomation.address1}\n`
+        + `                  ${obj.infomation.address2}\n`
+        + `                  ${obj.infomation.country_code}\n\n`
+        + `お届け先人名　　: ${obj.infomation.recipient_name}\n`
         + `お届け先電話番号: ${obj.infomation.recipient_phone}\n`
-        + `ご連絡事項:\n${obj.infomation.message}\n\n`
+        + `ご連絡事項      :\n${obj.infomation.message}\n\n`
         + `--------------------------------------------------------------`
         + `--------\n`
     };
@@ -252,10 +240,9 @@ export default {
     const message = {
       from: sender
       , to: obj.infomation.email
-      , subject: `【FWP Research】`
-        + `ご注文内容の確認-ミャンマー企業年鑑 Vol.1`
-      , text: `${obj.infomation.first_name} ${obj.infomation.last_name}`
-        + ` 様\n\n`
+      , subject:
+        `【FWP Research】ご注文内容の確認-ミャンマー企業年鑑 Vol.1`
+      , text: `${obj.infomation.name} 様\n\n`
         + `この度は、ミャンマー企業年鑑 Vol.1をご注文いただきまして、`
         + `誠にありがとうございます。\n\n`
         + `このメールは、ご注文内容確認のため、`
@@ -266,23 +253,19 @@ export default {
         + `--------------------------------------------------------------`
         + `--------\n\n`
         + `ご注文内容\n\n`
-        + `名前　　　　　  : `
-          + `${obj.infomation.first_name} ${obj.infomation.last_name}\n`
+        + `名前　　　　　  : ${obj.infomation.name}\n`
         + `会社名　　　　  : ${obj.infomation.company}\n`
         + `メールアドレス  : ${obj.infomation.email}\n`
-        + `電話番号　　　  : ${obj.shipping_address.phone}\n`
-        + `ご購入数と通貨  : ${obj.item.quantity} 冊 `
-          + `【${obj.currency}】\n`
+        + `電話番号　　　  : ${obj.infomation.phone}\n`
+        + `ご購入数と通貨  : ${obj.item.quantity} 冊【${obj.currency}】\n`
         + `お支払い方法　  : ${obj.infomation.payment}\n`
-        + `お引き渡し場所  : ${obj.shipping_address.postal_code}\n`
-        + `                  ${obj.shipping_address.state}\n`
-        + `                  ${obj.shipping_address.city}\n`
-        //+ `                  ${obj.shipping_address.line1}\n`
-        //+ `                  ${obj.shipping_address.line2}\n`
-        + `                  ${obj.shipping_address.country_code}\n\n`
-        //+ `お届け先人名　　: ${obj.shipping_address.recipient_name}\n`
+        + `お引き渡し場所  : ${obj.infomation.postal_code}\n`
+        + `                  ${obj.infomation.address1}\n`
+        + `                  ${obj.infomation.address2}\n`
+        + `                  ${obj.infomation.country_code}\n\n`
+        + `お届け先人名　　: ${obj.infomation.recipient_name}\n`
         + `お届け先電話番号: ${obj.infomation.recipient_phone}\n`
-        + `ご連絡事項:\n${obj.infomation.message}\n\n`
+        + `ご連絡事項      :\n${obj.infomation.message}\n\n`
         + `--------------------------------------------------------------`
         + `--------\n\n`
         + `==============================================================`

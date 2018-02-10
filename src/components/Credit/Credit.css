@@ -1,1 +1,30 @@
 /* table layout */
+.item-group table {
+  table-layout: fixed;
+  word-wrap: break-word;
+}
+.item-group td.item_name {
+  text-align: right;
+}
+.item-group th.key {
+  width: 25%;
+}
+.item-group th.value {
+  width: 75%;
+}
+.item-group span {
+  display: inline-block;
+  margin-right: 0.5em;
+}
+.item-group label {
+  display: inline-block;
+  margin-right: 0.5em;
+}
+@media screen and (max-width: 600px) {
+  .item-group td {
+    text-align: right;
+  }
+  .item-group td.item_name {
+    text-align: left;
+  }
+}
