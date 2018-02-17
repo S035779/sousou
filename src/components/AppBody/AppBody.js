@@ -51,10 +51,14 @@ class AppBody extends React.Component {
       , area:             infomation.area
       , delivery:         infomation.delivery
       , payment:          infomation.payment
+      , payment_method:   infomation.payment_method
       , message:          infomation.message
     //  , agreement:      infomation.agreement
       , country_code:     infomation.country_code
       , postal_code:      infomation.postal_code
+      , country:          infomation.country
+        ? infomation.country
+        : props.language === 'jp' ? '日本' : 'Japan'
       , address1:         infomation.address1
       , address2:         infomation.address2
       , address3:         ''
@@ -142,20 +146,25 @@ class AppBody extends React.Component {
   //}
 
   handleChangeRadio(name, e) {
+    const isLangJp = this.isLangJp();
     let newState = {};
     let newAddress = {};
+    let newCountry = {};
     const value = e.target.value;
     newState[name] = value;
     switch(name) {
       case 'area':
         newState['currency']      = value === 'domestic' ? 'JPY' : 'USD';
         newState['country_code']  = value === 'domestic' ? ['JP']  : [];
+        newState['country']       = value === 'domestic'
+          ? isLangJp ? '日本' : 'Japan'
+          : '';
         newState['delivery']      = 'address';
-        newAddress = this.setAddress('', this.isLangJp());
+        newAddress = this.setAddress('', isLangJp);
         this.setState(Object.assign({}, newAddress, newState));
         break;
       case 'delivery':
-        newAddress = this.setAddress(value, this.isLangJp());
+        newAddress = this.setAddress(value, isLangJp);
         this.setState(Object.assign({}, newState, newAddress));
         break;
       default:
@@ -165,7 +174,9 @@ class AppBody extends React.Component {
   }
 
   handleChangeSelect(name, e) {
+    const isLangJp = this.isLangJp();
     let newState = {};
+    let newPayment = {};
     let options = e.target.options;
     let values = [];
     for( let i=0; i<options.length; i++) {
@@ -179,13 +190,13 @@ class AppBody extends React.Component {
           , weight: weight * Number(values.join()), from });
         this.setState(newState);
         break;
-      //case 'country_code':
-      //  const shipping = this.props.shipping;
-      //  const newCountry
-      //    = this.setShippingCountry(values.join()
-      //      , this.props.shipping, this.isLangJp());
-      //  this.setState(Object.assign({}, newState, newCountry));
-      //  break;
+      case 'country_code':
+        const newCountry = this.setCountry(values.join(),isLangJp);
+        this.setState(Object.assign({}, newState, newCountry));
+        break;
+      case 'payment':
+        newPayment = this.setPayment(values.join(), isLangJp);
+        this.setState(Object.assign({}, newState, newPayment));
       default:
         this.setState(newState);
         break;
@@ -315,10 +326,12 @@ class AppBody extends React.Component {
         , area:            state.area
         , delivery:        state.delivery
         , payment:         state.payment
+        , payment_method:  state.payment_method
         , message:         state.message
       //  , agreement:     state.agreement
         , country_code:    state.country_code
         , postal_code:     state.postal_code
+        , country:         state.country
         , address1:        state.address1
         , address2:        state.address2
         , recipient_name:  state.recipient_name
@@ -374,6 +387,7 @@ class AppBody extends React.Component {
     newAddress['japan'] = {
       country_code:  [ 'JP' ]
       , postal_code: isLangJp ? '135-0046' : '135-0046'
+      , country:     isLangJp ? '日本' : 'Japan'
       , address1:    isLangJp ? '東京都 江東区 牡丹'
                               : 'TOKYO, Koto-ku, Botan'
       , address2:    isLangJp ? '1-2-2 東京オフィス'
@@ -385,6 +399,7 @@ class AppBody extends React.Component {
     newAddress['myanmer'] = {
       country_code:   [ 'MM' ]
       , postal_code:  '11181'
+      , country:      'Myanmar'
       , address1:     'YANGON, Kamayut Tsp'
       , address2:     'Hledan Center, #307, 3rd Floor, MYANMER OFFICE'
       , address3:
@@ -395,16 +410,35 @@ class AppBody extends React.Component {
       ? newAddress[value]
       : { country_code: []
         , postal_code:  ''
+        , country:      ''
         , address1:     ''
         , address2:     ''
         , address3:     ''
       };
   }
 
-  //setShippingCountry(value, shipping, isLangJp) {
-  //  const ems =  shipping.ems.filter(obj => obj.code_2 === value);
-  //  return { state: isLangJp ? ems[0].name_jp : ems[0].name_en };
-  //}
+  setCountry(value, isLangJp) {
+    const shipping = this.props.shipping;
+    const ems =  shipping.ems.filter(obj => obj.code_2 === value);
+    return value
+      ? { country: isLangJp ? ems[0].name_jp : ems[0].name_en }
+      : { country: '' };
+  }
+
+  setPayment(value, isLangJp) {
+    let newPayment = {};
+    newPayment['paypal'] = {
+      payment_method: isLangJp ? 'クレジットカード' : 'Credit card'
+    };
+    newPayment['deposit'] = {
+      payment_method: isLangJp ? '銀行振込' : 'Bank transfer (prepayment)'
+    };
+    newPayment['cash'] = {
+      payment_method: isLangJp ? '現金手渡し' : 'Cash payment'
+    };
+    return value === 'paypal' || value === 'deposit' || value === 'cash' 
+      ? newPayment[value] : { payment_method: '' };
+  }
 
   componentWillReceiveProps(nextProps) {
     //log.trace(nextProps);
@@ -685,6 +719,73 @@ class AppBody extends React.Component {
     ));
   }
 
+  //renderSelectCurrency(jpy, usd, isJP) {
+  //  const opts_currency = [
+  //    {
+  //      name_en: 'JP ' + Number(jpy).toLocaleString('ja-JP') + ' yen'
+  //    , name_jp: Number(jpy).toLocaleString('ja-JP') + ' 円'
+  //    , value: 'JPY'
+  //    }
+  //    , {
+  //      name_en: 'US ' + Number(usd).toLocaleString(
+  //      'en-US', { style: 'currency', currency: 'USD' })
+  //    , name_jp: 'US ' + Number(usd).toLocaleString(
+  //      'en-US', { style: 'currency', currency: 'USD' })
+  //    , value: 'USD'
+  //    }
+  //  ];
+  //  return isJP
+  //    ? this.renderSelect(opts_currency, 'name_jp', 'value')
+  //    : this.renderSelect(opts_currency, 'name_en', 'value')
+  //}
+
+  renderSelectCountry(objs, isJP) {
+    const opts_country = [
+      {   name_en: 'Japan'    , name_jp: '日本'           , code_2: 'JP' }
+       ,{ name_en: 'Myanmar'  , name_jp: 'ミャンマー'     , code_2: 'MM' }
+       ,{ name_en: 'Tai'      , name_jp: 'タイ'           , code_2: 'TH' }
+       ,{ name_en: 'China'    , name_jp: '中華人民共和国 (中国)'
+                                                          , code_2: 'CN' }
+       ,{ name_en: 'Singapore', name_jp: 'シンガポール'   , code_2: 'SG' }
+       ,{ name_en: 'Malaysia' , name_jp: 'マレーシア'     , code_2: 'MY' }
+       ,{ name_en: 'Taiwan'   , name_jp: '台湾'           , code_2: 'TW' }
+       ,{ name_en: 'Hong Kong', name_jp: '香港'           , code_2: 'HK' }
+       ,{ name_en: 'Vietnam'  , name_jp: 'ベトナム'       , code_2: 'VN' }
+       ,{ name_en: 'Korea'    , name_jp: '大韓民国 (韓国)', code_2: 'KR' }
+    ];
+    return objs
+      ? isJP
+        ? this.renderSelect(opts_country
+          .concat(std.sortObjUni(objs,'name_jp')), 'name_jp', 'code_2') 
+        : this.renderSelect(opts_country
+          .concat(std.sortObjStr(objs,'name_en')), 'name_en', 'code_2')
+      : null;
+  }
+
+  renderSelectPayment(isDomestic, isJP) {
+    const opts_payment = [
+      {
+        name_en: 'Credit card'
+        , name_jp: 'クレジットカード'
+        , value: 'paypal'
+      }
+      , {
+        name_en: 'Bank transfer (prepayment)'
+        , name_jp: '銀行振込'
+        , value: 'deposit'
+        , disable: isDomestic ? false : true
+      }
+      , {
+        name_en: 'Cash payment'
+        , name_jp: '現金手渡し'
+        , value: 'cash'
+      }
+    ];
+    return isJP
+      ? this.renderSelect(opts_payment, 'name_jp', 'value')
+      : this.renderSelect(opts_payment, 'name_en', 'value')
+  }
+
   renderButton(state) {
     if ( this.isMail(state) || this.isCredit(state)
     || !this.isValid(state) || this.payment.shipping === 0) {
@@ -725,7 +826,6 @@ class AppBody extends React.Component {
     const isDomestic = this.state.area === 'domestic';
     const isDelivery = this.state.delivery === 'address';
     const isPaypal = this.state.payment.join() === 'paypal';
-    
     //const Information = isJP ? 'お客様の情報' : 'Your Information';
     const Delivery = isJP ? 'お引き渡し方法' : 'Delivery method';
     const Area = isJP ? '届け先' : 'Delivery address';
@@ -733,7 +833,6 @@ class AppBody extends React.Component {
     const Currency = isJP ? '決済通貨' : 'Settlement currency'; 
     const Payment = isJP ? '支払方法' : 'Payment method'; 
     //const Message = isJP ? 'メッセージ' : 'Message';
-
     const name = isJP ? '名前' : 'Name';
     //const first_name = isJP ? '姓' : 'First';
     //const last_name = isJP ? '名' : 'Last';
@@ -769,7 +868,6 @@ class AppBody extends React.Component {
     const payment = isJP ? '支払方法' : 'Payment';
     const message = isJP ? 'ご連絡事項' : 'Message';
     //const agreement = ' Agree to our terms of us and privacy policy. ';
-
     //const gender_male = isJP ? '男性' : 'Male';
     //const gender_female = isJP ? '女性' : 'Female';
     //const year = isJP ? '年' : 'Year';
@@ -782,15 +880,11 @@ class AppBody extends React.Component {
     const delivery_myanmer = isJP
       ? 'ミャンマー事務所来店' : 'Myanmar office';
     const delivery_check = isJP ? '来店先を確認' : 'Check the address';
-
     const label_quantity = isJP ? '冊 x ' : 'book(s) x '
     const label_currency = isJP
-      ? isJPY
-        ? '（税込／送料別）' : '（送料別）'
-      : isJPY 
-        ? '(tax included / shipping fee is separately)'
-        : '(shipping fee is separately)';
-
+      ? '（送料別）': '(shipping fee is separately)';
+    const label_currency_usd = isJP ? 'US $' : 'US $';
+    const label_currency_jpy = isJP ? '日本円' : 'JPY';
     const notes_delivery = isJP 
       ? 'ご来店いただく場合は送料はかかりません。'
       : 'There is no shipping fee when visiting the shop.';
@@ -837,72 +931,6 @@ class AppBody extends React.Component {
       : '';
     const notes_notice = this.setNotice(this.state, isJP); 
     const notes_confirm = this.setConfirm(shipping, this.state, isJP);
-
-    const opts_country = [
-      {  name_en: 'Japan'    , name_jp: '日本'           , code_2: 'JP' }
-      ,{ name_en: 'Myanmar'  , name_jp: 'ミャンマー'     , code_2: 'MM' }
-      ,{ name_en: 'Tai'      , name_jp: 'タイ'           , code_2: 'TH' }
-      ,{ name_en: 'China'    , name_jp: '中華人民共和国 (中国)'
-                                                         , code_2: 'CN' }
-      ,{ name_en: 'Singapore', name_jp: 'シンガポール'   , code_2: 'SG' }
-      ,{ name_en: 'Malaysia' , name_jp: 'マレーシア'     , code_2: 'MY' }
-      ,{ name_en: 'Taiwan'   , name_jp: '台湾'           , code_2: 'TW' }
-      ,{ name_en: 'Hong Kong', name_jp: '香港'           , code_2: 'HK' }
-      ,{ name_en: 'Vietnam'  , name_jp: 'ベトナム'       , code_2: 'VN' }
-      ,{ name_en: 'Korea'    , name_jp: '大韓民国 (韓国)', code_2: 'KR' }
-    ];
-    const select_country = shipping.ems
-      ? isJP
-        ? this.renderSelect(opts_country
-          .concat(std.sortObjUni(shipping.ems, 'name_jp'))
-          , 'name_jp', 'code_2') 
-        : this.renderSelect(opts_country
-          .concat(std.sortObjStr(shipping.ems, 'name_en'))
-          , 'name_en', 'code_2')
-      : null;
-
-    //const opts_currency = [
-    //  {   name_en: 'JP ' +
-    //    Number(this.state.jpy).toLocaleString('ja-JP') + ' yen'
-    //    , name_jp:
-    //    Number(this.state.jpy).toLocaleString('ja-JP') + ' 円'
-    //    , value: 'JPY' }
-    //  , { name_en: 'US ' + 
-    //    Number(this.state.usd).toLocaleString('en-US'
-    //      , { style: 'currency', currency: 'USD' })
-    //    , name_jp: 'US ' + 
-    //    Number(this.state.usd).toLocaleString('en-US'
-    //      , { style: 'currency', currency: 'USD' })
-    //    , value: 'USD' }
-    //];
-    //const select_currency = isJP
-    //  ? this.renderSelect(opts_currency, 'name_jp', 'value')
-    //  : this.renderSelect(opts_currency, 'name_en', 'value')
-    const currency_usd = isJP ? 'US $' : 'US $';
-    const currency_jpy = isJP ? '日本円' : 'JPY';
-
-    const opts_payment = [
-      {
-        name_en: 'Credit card'
-        , name_jp: 'クレジットカード'
-        , value: 'paypal'
-      }
-      , {
-        name_en: 'Bank transfer (prepayment)'
-        , name_jp: '銀行振込'
-        , value: 'deposit'
-        , disable: isDomestic ? false : true
-      }
-      , {
-        name_en: 'Cash payment'
-        , name_jp: '現金手渡し'
-        , value: 'cash'
-      }
-    ];
-    const select_payment = isJP
-      ? this.renderSelect(opts_payment, 'name_jp', 'value')
-      : this.renderSelect(opts_payment, 'name_en', 'value')
-
     //const check_email
     //  = this.checkEmail(this.state.email, isJP);
     //const check_confirm_email
@@ -914,7 +942,10 @@ class AppBody extends React.Component {
     //    , this.state.postal_code);
     //const check_birthday
     //  = this.checkNumber(this.state.year, this.state.day, isJP);
-
+    const select_country = this.renderSelectCountry(shipping.ems, isJP);
+    //const select_currency =
+    //  this.renderSelectCurrency(this.state.jpy, this.state.usd, isJP);
+    const select_payment = this.renderSelectPayment(isDomestic, isJP);
     const toggledButton = this.renderButton(this.state);
     const results = this.setResults(this.state.results, isJP);
     const showModalCredit = !!this.state.showModalCredit;
@@ -1209,9 +1240,9 @@ class AppBody extends React.Component {
           <Radio name="currency"
             value={this.state.currency}
             onChange={this.handleChangeRadio.bind(this, 'currency')}>
-            <option value="USD" id="currency_usd"> {currency_usd} <span
+            <option value="USD" id="currency_usd"> {label_currency_usd} <span
               className="notes"> {notes_currency_usd}</span></option>
-            <option value="JPY" id="currency_jpy"> {currency_jpy} <span
+            <option value="JPY" id="currency_jpy"> {label_currency_jpy} <span
               className="notes"> {notes_currency_jpy}</span></option>
           </Radio>
           </div>

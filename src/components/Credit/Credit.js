@@ -86,6 +86,15 @@ class Credit extends React.Component {
           : Number(obj.details.shipping_discount).toLocaleString('en-US'
             , { style: 'currency', currency: total_currency})
         : 0
+      , total_shipping_price: this.total_currency !== ''
+        ? isLangJp
+          ? (obj.details.shipping + obj.details.shipping_discount)
+            .toLocaleString('ja-JP'
+              , { style: 'currency', currency: total_currency})
+          : (obj.details.shipping + obj.details.shipping_discount)
+            .toLocaleString('en-US'
+              , { style: 'currency', currency: total_currency})
+        : 0
       , total_price: this.total_currency !== ''
         ? isLangJp 
           ? Number(obj.total).toLocaleString('ja-JP'
@@ -117,12 +126,13 @@ class Credit extends React.Component {
       }
       , shipping: {
         key: isLangJp ? '配送料　： ' : 'Shipping fee : '
-        , value: prices.shipping_price
+        //, value: prices.shipping_price
+        , value: prices.total_shipping_price
       }
-      , discount: {
-        key: isLangJp ? '値引き　： ' : 'Discount : '
-        , value: prices.discount_price
-      }
+      //, discount: {
+      //  key: isLangJp ? '値引き　： ' : 'Discount : '
+      //  , value: prices.discount_price
+      //}
       , total: {
         key: isLangJp ? '合　計　： ' : 'Total : '
         , value: prices.total_price
@@ -131,6 +141,11 @@ class Credit extends React.Component {
         key: isLangJp ? '郵便番号： ' : 'Zip : '
         , value: obj.infomation.postal_code
           ? obj.infomation.postal_code : ''
+      }
+      , country: {
+        key: isLangJp ? '国　名　： ' : 'Country : '
+        , value: obj.infomation.country
+          ? obj.infomation.country : ''
       }
       , address1: {
         key: isLangJp ? '住　所　： ' : 'Address : '
@@ -205,10 +220,12 @@ class Credit extends React.Component {
         <td className="item_name"><label>{contents.shipping.key}</label></td>
         <td><span>{contents.shipping.value}</span></td>
       </tr>
+      {/*
       <tr>
         <td className="item_name"><label>{contents.discount.key}</label></td>
         <td><span>{contents.discount.value}</span></td>
       </tr>
+      */}
       <tr>
         <td className="item_name"><label>{contents.total.key}</label></td>
         <td><span>{contents.total.value}</span></td>
@@ -224,6 +241,7 @@ class Credit extends React.Component {
       <tr>
         <td className="item_name"><label>{Shipping}</label></td>
         <td><span>{contents.postal_code.value}</span>
+        <span>{contents.country.value}</span>
         <span>{contents.address1.value}</span>
         <span>{contents.address2.value}</span>
         <span>{contents.recipient_name.value}</span></td>

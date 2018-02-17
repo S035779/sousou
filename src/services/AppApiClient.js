@@ -218,17 +218,17 @@ export default {
         + `--------\n\n`
         + `ご注文内容\n\n`
         + `お申込み元サイト: ${obj.infomation.site}\n`
-        + `名前　　　　　　: ${obj.infomation.name}\n`
-        + `会社名　　　　　: ${obj.infomation.company}\n`
-        + `メールアドレス　: ${obj.infomation.email}\n`
-        + `電話番号　　　　: ${obj.infomation.phone}\n`
-        + `ご購入数と通貨　: ${obj.item.quantity} 冊【${obj.currency}】\n`
-        + `お支払い方法　　: ${obj.infomation.payment}\n`
-        + `お引き渡し場所　: ${obj.infomation.postal_code}\n`
+        + `名前            : ${obj.infomation.name}\n`
+        + `会社名          : ${obj.infomation.company}\n`
+        + `メールアドレス  : ${obj.infomation.email}\n`
+        + `電話番号        : ${obj.infomation.phone}\n`
+        + `ご購入数と通貨  : ${obj.item.quantity} 冊【${obj.currency}】\n`
+        + `お支払い方法    : ${obj.infomation.payment_method}\n`
+        + `お引き渡し場所  : ${obj.infomation.postal_code}\n`
         + `                  ${obj.infomation.address1}\n`
         + `                  ${obj.infomation.address2}\n`
-        + `                  ${obj.infomation.country_code}\n\n`
-        + `お届け先人名　　: ${obj.infomation.recipient_name}\n`
+        + `                  ${obj.infomation.country}\n\n`
+        + `お届け先人名    : ${obj.infomation.recipient_name}\n`
         + `お届け先電話番号: ${obj.infomation.recipient_phone}\n`
         + `ご連絡事項      :\n${obj.infomation.message}\n\n`
         + `--------------------------------------------------------------`
@@ -247,23 +247,23 @@ export default {
         + `誠にありがとうございます。\n\n`
         + `このメールは、ご注文内容確認のため、`
           + `自動配信にてお知らせしています。\n`
-        + `後ほど、ご注文内容の確認を行い、`
-          + `送料を追加した合計金額をご案内いたしますので、\n`
-        + `しばらくお待ちくださいませ。\n\n`
+        + `只今ご注文の確認を行っています。\n`
+          + `確認が完了しましたら改めてご連絡致しますので`
+        + `しばらくお待ちください。\n\n`
         + `--------------------------------------------------------------`
         + `--------\n\n`
         + `ご注文内容\n\n`
-        + `名前　　　　　  : ${obj.infomation.name}\n`
-        + `会社名　　　　  : ${obj.infomation.company}\n`
+        + `名前            : ${obj.infomation.name}\n`
+        + `会社名          : ${obj.infomation.company}\n`
         + `メールアドレス  : ${obj.infomation.email}\n`
-        + `電話番号　　　  : ${obj.infomation.phone}\n`
+        + `電話番号        : ${obj.infomation.phone}\n`
         + `ご購入数と通貨  : ${obj.item.quantity} 冊【${obj.currency}】\n`
-        + `お支払い方法　  : ${obj.infomation.payment}\n`
+        + `お支払い方法    : ${obj.infomation.payment_method}\n`
         + `お引き渡し場所  : ${obj.infomation.postal_code}\n`
         + `                  ${obj.infomation.address1}\n`
         + `                  ${obj.infomation.address2}\n`
-        + `                  ${obj.infomation.country_code}\n\n`
-        + `お届け先人名　　: ${obj.infomation.recipient_name}\n`
+        + `                  ${obj.infomation.country}\n\n`
+        + `お届け先人名    : ${obj.infomation.recipient_name}\n`
         + `お届け先電話番号: ${obj.infomation.recipient_phone}\n`
         + `ご連絡事項      :\n${obj.infomation.message}\n\n`
         + `--------------------------------------------------------------`

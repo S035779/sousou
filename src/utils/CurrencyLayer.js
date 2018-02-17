@@ -42,9 +42,9 @@ class CurrencyLayer {
         return new Promise((resolve, reject) => {
           net.getJSON(url, query, (err, head, body) => {
             if(err) reject(err);
-            //if(!body.success)
-            //  reject({ name: `Error(${body.error.code})`
-            //    , message: body.error.info});
+            if(!body.success)
+              reject({ name: `Error(${body.error.code})`
+                , message: body.error.info});
             resolve(body);
           });
         });
@@ -166,8 +166,8 @@ class CurrencyLayer {
 
   fetchCurrency({ usd, jpy }) {
     return Rx.Observable.fromPromise(this.getLive('JPY', 'USD'))
-      //.map(R.tap(this.logTrace.bind(this)))
-      .map(obj => 110 /*obj.quotes.USDJPY*/)
+      .map(R.tap(this.logTrace.bind(this)))
+      .map(obj => obj.quotes.USDJPY)
       .map(val => ({
         USDJPY: val
         , USD: Number(usd)*val

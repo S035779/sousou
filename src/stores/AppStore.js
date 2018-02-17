@@ -51,10 +51,12 @@ class AppStore extends ReduceStore {
           , area:             'domestic'
           , delivery:         'address'
           , payment:          []
+          , payment_method:   ''
           , message:          ''
         //  , agreement:      false
           , country_code:     ['JP']
           , postal_code:      ''
+          , country:          ''
           , address1:         ''
           , address2:         ''
           , recipient_name:   ''
