@@ -222,7 +222,9 @@ export default {
         + `会社名          : ${obj.infomation.company}\n`
         + `メールアドレス  : ${obj.infomation.email}\n`
         + `電話番号        : ${obj.infomation.phone}\n`
-        + `ご購入数と通貨  : ${obj.item.quantity} 冊【${obj.currency}】\n`
+        + `ご購入数と通貨  : ${
+          obj.item.quantity > 0 && obj.item.quantity < 11
+            ? obj.item.quantity + '冊' : 'その他' }【${obj.currency}】\n`
         + `お支払い方法    : ${obj.infomation.payment_method}\n`
         + `お引き渡し場所  : ${obj.infomation.postal_code}\n`
         + `                  ${obj.infomation.address1}\n`
@@ -257,7 +259,9 @@ export default {
         + `会社名          : ${obj.infomation.company}\n`
         + `メールアドレス  : ${obj.infomation.email}\n`
         + `電話番号        : ${obj.infomation.phone}\n`
-        + `ご購入数と通貨  : ${obj.item.quantity} 冊【${obj.currency}】\n`
+        + `ご購入数と通貨  : ${
+          obj.item.quantity > 0 && obj.item.quantity < 11
+            ? obj.item.quantity + '冊' : 'その他' }【${obj.currency}】\n`
         + `お支払い方法    : ${obj.infomation.payment_method}\n`
         + `お引き渡し場所  : ${obj.infomation.postal_code}\n`
         + `                  ${obj.infomation.address1}\n`

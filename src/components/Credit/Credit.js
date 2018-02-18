@@ -299,7 +299,7 @@ class Credit extends React.Component {
       </form>
       </fieldset>
       <div id="signup-next">
-      <input type="submit" value={ isLangJp ? "戻る" : "RETURN"}
+      <input type="submit" value={ isLangJp ? "閉じる" : "CLOSE"}
         onClick={this.handleClickButton.bind(this)}
         className="button-primary"/>
       </div>

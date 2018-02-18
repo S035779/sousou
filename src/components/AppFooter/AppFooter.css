@@ -21,7 +21,8 @@
   display: block;
 }
 .office-left{
-  text-align: right;
+  text-align: left;
+  word-break: keep-all;
   width: 50%;
   float: left;
   background: #fff;

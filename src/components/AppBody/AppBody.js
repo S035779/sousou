@@ -18,14 +18,14 @@ class AppBody extends React.Component {
     const { infomation, details, item, shipping_address } = options;
 
     this.payment = {
-      total:            options.total
-      , total_currency: options.currency
-      , subtotal:       details.subtotal
-      , shipping:       details.shipping
-      , shipping_discount: details.shipping_discount
-      , name:           item.name
-      , description:    item.description
-      , price:          item.price
+      total:                options.total
+      , total_currency:     options.currency
+      , subtotal:           details.subtotal
+      , shipping:           details.shipping
+      , shipping_discount:  details.shipping_discount
+      , name:               item.name
+      , description:        item.description
+      , price:              item.price
     };
 
     this.state = {
@@ -56,7 +56,7 @@ class AppBody extends React.Component {
     //  , agreement:      infomation.agreement
       , country_code:     infomation.country_code
       , postal_code:      infomation.postal_code
-      , country:          infomation.country
+      , country:          infomation.country !== ""
         ? infomation.country
         : props.language === 'jp' ? '日本' : 'Japan'
       , address1:         infomation.address1
@@ -209,12 +209,12 @@ class AppBody extends React.Component {
     e.stopPropagation();
     const state = this.state;
     if(!this.isValid(state)) return;
-    if(this.isCredit(state)) {
+    if(this.isCredit(state) && this.isQuantity(state)) {
       this.setState({ showModalCredit: true });
       window.location.href = '#';
     } else {
-      const options = this.setOptions(state, this.payment);
-      AppAction.createMessage(options);
+      const newOptions = this.setOptions(state, this.payment);
+      AppAction.createMessage(newOptions);
     }
     this.logTrace(this.payment);
   }
@@ -247,24 +247,25 @@ class AppBody extends React.Component {
     let notice = '';
     switch(value) {
       case 'paypal':
-        notice = this.isCredit(state) || this.isPayPal(state)
-          ? ''
-          : isLangJp
+        this.logTrace(`${this.isCredit(state)} ${this.isPayPal(state)}`);
+        notice = (!this.isCredit(state) && !this.isPayPal(state))
+          ? isLangJp
             ? 'クレジットカード取扱地域外の為、'
               + '別途ご連絡差し上げます。'
-            : 'It is an area not compliant with Credit or PayPal. ';
+            : 'It is an area not compliant with Credit or PayPal. '
+          : '';
         break;
       case 'deposit':
         notice = isLangJp
-          ? '銀行振り込み方法について、別途ご連絡差し上げます。'
+          ? 'お振込先などは別途ご連絡差し上げます。'
           : 'For bank transfer method, details will be contacted'
             + ' separately.';
         break;
       case 'cash':
-        notice = isLangJp
-          ? '支払い方法について、記入してください。'
-          : 'Please contact us separately for payment method.';
-        break;
+        //notice = isLangJp
+        //  ? '支払い方法について、記入してください。'
+        //  : 'Please contact us separately for payment method.';
+        //break;
       default:
         break;
     }
@@ -371,7 +372,7 @@ class AppBody extends React.Component {
     };
     return value === 'ja-JP' || value === 'en-US'
       ? newAddress[value]
-      : { country_code:   []
+      : { country_code:   [ 'JP' ]
         , postal_code:    ''
         , state:          ''
         , city:           ''
@@ -408,9 +409,9 @@ class AppBody extends React.Component {
     };
     return value === 'japan' || value === 'myanmer'
       ? newAddress[value]
-      : { country_code: []
+      : { country_code: [ 'JP' ]
         , postal_code:  ''
-        , country:      ''
+        , country:      isLangJp ? '日本' : 'Japan'
         , address1:     ''
         , address2:     ''
         , address3:     ''
@@ -474,41 +475,33 @@ class AppBody extends React.Component {
 
   componentWillUpdate(props, state) {
     if(!this.isValid(state)) return;
-    const price = this.isPrice(props.currency, state);
-    const shipping =
-      this.isShipping(props.shipping, props.currency, state);
-    const shipping_discount = this.isDiscount(shipping);
-    const subtotal = price * state.quantity.join();
+    const { shipping, currency } = props;
+    const newPrice    = this.isPrice(currency, state);
+    const newShipping = this.isShipping(shipping, currency, state);
+    const newDiscount = this.isDiscount(newShipping, state);
+    const newSubtotal = newPrice * state.quantity.join();
+    const newTotal    = newSubtotal + newShipping + newDiscount
     this.payment = {
-      price:        price
-      , shipping:   shipping
-      , shipping_discount: shipping_discount
-      , subtotal:   subtotal
-      , total:      subtotal + shipping + shipping_discount
-      , total_currency: state.currency
-      , name:       'Myanmar Companies YearBook Vol.1'
-      , description:'Myanmar Companies Yearbook'
+      price:                newPrice
+      , shipping:           newShipping
+      , shipping_discount:  newDiscount
+      , subtotal:           newSubtotal
+      , total:              newTotal
+      , total_currency:     state.currency
+      , name:               'Myanmar Companies YearBook Vol.1'
+      , description:        'Myanmar Companies Yearbook'
     };
     //this.logTrace(this.payment);
-  }
-
-  isDiscount(shipping) {
-    return this.state.deliery === 'myanmer'
-      || this.state.delivery === 'japan' ? shipping * -1 : 0;
   }
 
   componentDidUpdate(prevProps, prevState) {
     this.componentWillUnmount();
     this.componentDidMount();
-
-    const state = this.state;
-    if(!this.isValid(state)) return;
-
-    const payment = this.payment;
-    const options = this.setOptions(state, payment);
-    if(this.isPayPal(state)) {
+    if(!this.isValid(this.state)) return;
+    const options = this.setOptions(this.state, this.payment);
+    if(this.isPayPal(this.state)) {
       AppAction.createExpress(options);
-      this.logTrace(payment);
+      this.logTrace(this.payment);
     }
   }
 
@@ -532,7 +525,7 @@ class AppBody extends React.Component {
   }
 
   isPrice(currency, state) {
-    return this.isAreaJp(state)
+    return this.isDomestic(state)
       ? this.isUSD(state)
         ? Math.ceil((state.jpy / currency.USDJPY) * 100) / 100
         : Number(state.jpy)
@@ -551,7 +544,7 @@ class AppBody extends React.Component {
         ems.ems2_2 === 'OK' || ems.ems3   === 'OK') )[0];
     const isPay = obj => shipping.ems.filter(ems =>
       ems.code_2 === obj.country_code.join() && ems.paypal === 'OK' )[0];
-    return this.isAreaJp(state)
+    return this.isDomestic(state)
       ? isJpp(state)
         ? this.isUSD(state)
           ? Math.ceil((isJpp(state).price
@@ -566,6 +559,12 @@ class AppBody extends React.Component {
         : 0;
   }
 
+  isDiscount(shipping, state) {
+    const { delivery } = state;
+    return delivery === 'myanmer' || delivery === 'japan'
+      ? shipping * -1 : 0;
+  }
+
   isConfirm(shipping, state) {
     const o = shipping.ems.filter(ems =>
       ems.code_2 === state.country_code.join())[0];
@@ -577,8 +576,8 @@ class AppBody extends React.Component {
     }
   }
 
-  isAreaJp(state) {
-    return state.country_code && state.country_code.join() === 'JP';
+  isDomestic(state) {
+    return state.area === 'domestic';
   }
 
   isUSD(state) {
@@ -586,7 +585,13 @@ class AppBody extends React.Component {
   }
 
   isMail(state) {
-    return state.payment && state.payment.join() !== 'paypal';
+    const payment = state.payment ? state.payment.join() : '';
+    return payment !== 'paypal';
+  }
+
+  isQuantity(state) {
+    const quantity = state.quantity ? Number(state.quantity.join()) : 0;
+    return quantity > 0 && quantity < 11;
   }
 
   isValid(state) {
@@ -739,32 +744,67 @@ class AppBody extends React.Component {
   //    : this.renderSelect(opts_currency, 'name_en', 'value')
   //}
 
-  renderSelectCountry(objs, isJP) {
-    const opts_country = [
-      {   name_en: 'Japan'    , name_jp: '日本'           , code_2: 'JP' }
-       ,{ name_en: 'Myanmar'  , name_jp: 'ミャンマー'     , code_2: 'MM' }
-       ,{ name_en: 'Tai'      , name_jp: 'タイ'           , code_2: 'TH' }
-       ,{ name_en: 'China'    , name_jp: '中華人民共和国 (中国)'
-                                                          , code_2: 'CN' }
-       ,{ name_en: 'Singapore', name_jp: 'シンガポール'   , code_2: 'SG' }
-       ,{ name_en: 'Malaysia' , name_jp: 'マレーシア'     , code_2: 'MY' }
-       ,{ name_en: 'Taiwan'   , name_jp: '台湾'           , code_2: 'TW' }
-       ,{ name_en: 'Hong Kong', name_jp: '香港'           , code_2: 'HK' }
-       ,{ name_en: 'Vietnam'  , name_jp: 'ベトナム'       , code_2: 'VN' }
-       ,{ name_en: 'Korea'    , name_jp: '大韓民国 (韓国)', code_2: 'KR' }
-    ];
+  renderSelectCountry(objs, isDomestic, isJP) {
+    const opts_country = [{
+        name_en: 'Japan'
+        , name_jp: '日本'
+        , code_2: 'JP'
+        , disable: isDomestic ? false : true
+      },{
+        name_en: 'Myanmar'
+        , name_jp: 'ミャンマー'
+        , code_2: 'MM'
+      },{
+        name_en: 'Tai'
+        , name_jp: 'タイ'
+        , code_2: 'TH'
+      },{
+        name_en: 'China'
+        , name_jp: '中華人民共和国 (中国)'
+        , code_2: 'CN'
+      },{
+        name_en: 'Singapore'
+        , name_jp: 'シンガポール'
+        , code_2: 'SG'
+      },{
+        name_en: 'Malaysia'
+        , name_jp: 'マレーシア'
+        , code_2: 'MY'
+      },{
+        name_en: 'Taiwan'
+        , name_jp: '台湾'
+        , code_2: 'TW'
+      },{
+        name_en: 'Hong Kong'
+        , name_jp: '香港'
+        , code_2: 'HK'
+      },{
+        name_en: 'Vietnam'
+        , name_jp: 'ベトナム'
+        , code_2: 'VN'
+      },{
+        name_en: 'Korea'
+        , name_jp: '大韓民国 (韓国)'
+        , code_2: 'KR'
+    }];
+    const newObjs = objs ? objs.filter(obj => obj.code_2 !== 'JP') : [];
     return objs
       ? isJP
-        ? this.renderSelect(opts_country
-          .concat(std.sortObjUni(objs,'name_jp')), 'name_jp', 'code_2') 
-        : this.renderSelect(opts_country
-          .concat(std.sortObjStr(objs,'name_en')), 'name_en', 'code_2')
+        ? this.renderSelect(
+          opts_country.concat(
+            std.sortObjUni(newObjs,'name_jp')
+          )
+        , 'name_jp', 'code_2') 
+        : this.renderSelect(
+          opts_country.concat(
+            std.sortObjStr(newObjs,'name_en')
+          )
+        , 'name_en', 'code_2')
       : null;
   }
 
   renderSelectPayment(isDomestic, isJP) {
-    const opts_payment = [
-      {
+    const opts_payment = [{
         name_en: 'Credit card'
         , name_jp: 'クレジットカード'
         , value: 'paypal'
@@ -779,8 +819,7 @@ class AppBody extends React.Component {
         name_en: 'Cash payment'
         , name_jp: '現金手渡し'
         , value: 'cash'
-      }
-    ];
+    }];
     return isJP
       ? this.renderSelect(opts_payment, 'name_jp', 'value')
       : this.renderSelect(opts_payment, 'name_en', 'value')
@@ -825,7 +864,8 @@ class AppBody extends React.Component {
     const isJPY = this.state.currency === 'JPY';
     const isDomestic = this.state.area === 'domestic';
     const isDelivery = this.state.delivery === 'address';
-    const isPaypal = this.state.payment.join() === 'paypal';
+    const isPayPal = this.state.payment.join() === 'paypal';
+    const isCash = this.state.payment.join() === 'cash';
     //const Information = isJP ? 'お客様の情報' : 'Your Information';
     const Delivery = isJP ? 'お引き渡し方法' : 'Delivery method';
     const Area = isJP ? '届け先' : 'Delivery address';
@@ -912,9 +952,11 @@ class AppBody extends React.Component {
     //    : this.state.payment.join() === 'paypal'
     //      ? 'For payment with US $, a PayPal account is required.'
     //      : '';
-    const notes_currency_usd = isJP
-      ? 'PayPalアカウントの登録またはログインが必要です。'
-      : 'You need to register or log in to your PayPal account.'
+    const notes_currency_usd = !isDomestic && !isCash
+      ? isJP
+        ? 'PayPalアカウントの登録またはログインが必要です。'
+        : 'You need to register or log in to your PayPal account.'
+      : '';
     const notes_currency_jpy = isJP
       ? 'US ' + Number(this.state.usd).toLocaleString('en-US'
           , { style: 'currency', currency: 'USD' })
@@ -922,7 +964,7 @@ class AppBody extends React.Component {
       : 'US ' + Number(this.state.usd).toLocaleString('en-US'
           , { style: 'currency', currency: 'USD' })
         + ' will be charged as Japanese yen at the current day\'s rate.';
-    const notes_payment = !isDomestic && isPaypal
+    const notes_payment = !isDomestic && isPayPal
       ? isJP
         ? 'ミャンマー及び'
           + '一部地域発行のクレジットカードはご使用になれません。'
@@ -942,7 +984,8 @@ class AppBody extends React.Component {
     //    , this.state.postal_code);
     //const check_birthday
     //  = this.checkNumber(this.state.year, this.state.day, isJP);
-    const select_country = this.renderSelectCountry(shipping.ems, isJP);
+    const select_country =
+      this.renderSelectCountry(shipping.ems, isDomestic, isJP);
     //const select_currency =
     //  this.renderSelectCurrency(this.state.jpy, this.state.usd, isJP);
     const select_payment = this.renderSelectPayment(isDomestic, isJP);
@@ -1211,7 +1254,7 @@ class AppBody extends React.Component {
           <option value="8">8</option>
           <option value="9">9</option>
           <option value="10">10</option>
-          <option value="0">{quantity_other}</option>
+          <option value="11">{quantity_other}</option>
           </select>
           <label>{label_quantity}</label>
           </span>
@@ -1290,7 +1333,7 @@ class AppBody extends React.Component {
           </td>
         </tr>
         </tbody></table>
-      <div className={isDomestic ? 'hide' : 'no-hide'}>
+      <div className={isDomestic || !isDelivery ? 'hide' : 'no-hide'}>
         <table><tbody>
         <tr>
         {/*

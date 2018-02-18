@@ -20,7 +20,7 @@ class AppFooter extends React.Component {
       ? '所在地　〒135-0046　東京都江東区牡丹1-2-2'
       : 'Address　1-2-2 Botan, Koto-ku, TOKYO';
     const japan_phone = isJP
-      ? '電話　03（5875）8402' : 'Tel　03（5875）8402';
+      ? '電話　03(3641)8998' : 'Tel　03(3641)8998';
     const myanmer_name_en = isJP ? 'MYANMER OFFICE' : 'MYANMER OFFICE';
     const myanmer_name_jp = isJP ? 'ミャンマーオフィス' : '';
     const myanmer_address = isJP
