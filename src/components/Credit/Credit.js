@@ -62,44 +62,49 @@ class Credit extends React.Component {
   }
   
   setPrices(obj, isLangJp) {
-    const item_currency = obj.item.currency; 
-    const total_currency = obj.currency;
+    const total_currency = obj.infomation.price.total_currency;
     return {
       subtotal_price: this.item_currency !== ''
         ? isLangJp
-          ? Number(obj.details.subtotal).toLocaleString('ja-JP'
-            , { style: 'currency', currency: item_currency})
-          : Number(obj.details.subtotal).toLocaleString('en-US'
-            , { style: 'currency', currency: item_currency})
+          ? Number(obj.infomation.price.subtotal).toLocaleString('ja-JP'
+            , { style: 'currency', currency: total_currency})
+          : Number(obj.infomation.price.subtotal).toLocaleString('en-US'
+            , { style: 'currency', currency: total_currency})
         : 0
       , shipping_price: this.total_currency !== ''
         ? isLangJp
-          ? Number(obj.details.shipping).toLocaleString('ja-JP'
+          ? Number(obj.infomation.price.shipping).toLocaleString('ja-JP'
             , { style: 'currency', currency: total_currency})
-          : Number(obj.details.shipping).toLocaleString('en-US'
+          : Number(obj.infomation.price.shipping).toLocaleString('en-US'
             , { style: 'currency', currency: total_currency})
         : 0
       , discount_price: this.total_currency !== ''
         ? isLangJp
-          ? Number(obj.details.shipping_discount).toLocaleString('ja-JP'
+          ? Number(
+            obj.infomation.price.shipping_discount).toLocaleString('ja-JP'
             , { style: 'currency', currency: total_currency})
-          : Number(obj.details.shipping_discount).toLocaleString('en-US'
+          : Number(
+            obj.infomation.price.shipping_discount).toLocaleString('en-US'
             , { style: 'currency', currency: total_currency})
         : 0
       , total_shipping_price: this.total_currency !== ''
         ? isLangJp
-          ? (obj.details.shipping + obj.details.shipping_discount)
-            .toLocaleString('ja-JP'
-              , { style: 'currency', currency: total_currency})
-          : (obj.details.shipping + obj.details.shipping_discount)
-            .toLocaleString('en-US'
+          ? (
+            obj.infomation.price.shipping +
+            obj.infomation.price.shipping_discount
+          ).toLocaleString('ja-JP'
+            , { style: 'currency', currency: total_currency})
+          : (
+            obj.infomation.price.shipping +
+            obj.infomation.price.shipping_discount
+          ).toLocaleString('en-US'
               , { style: 'currency', currency: total_currency})
         : 0
       , total_price: this.total_currency !== ''
         ? isLangJp 
-          ? Number(obj.total).toLocaleString('ja-JP'
+          ? Number(obj.infomation.price.total).toLocaleString('ja-JP'
             , { style: 'currency', currency: total_currency})
-          : Number(obj.total).toLocaleString('en-US'
+          : Number(obj.infomation.price.total).toLocaleString('en-US'
             , { style: 'currency', currency: total_currency})
         : 0
     };
@@ -190,6 +195,13 @@ class Credit extends React.Component {
     const isLangJp = this.isLangJp();
     const contents = this.setContents(obj, isLangJp);
     const Shipping = isLangJp ? '配送先　： ' : 'Address       : ';
+    const Address  = (contents.postal_code.value !== ''
+        ? contents.postal_code.value + ' ': '')
+      + contents.country.value + ' '
+      + contents.address1.value + ' '
+      + (contents.address2.value !== ''
+        ? contents.address2.value + ' ' : '')
+      + contents.recipient_name.value;
     const Confirm = isLangJp
       ? 'ご注文内容の確認' : 'Confirmation of your order';
     const ConfirmOrder = isLangJp ? 'お支払' : 'Payment';
@@ -240,11 +252,9 @@ class Credit extends React.Component {
       </tr>
       <tr>
         <td className="item_name"><label>{Shipping}</label></td>
-        <td><span>{contents.postal_code.value}</span>
-        <span>{contents.country.value}</span>
-        <span>{contents.address1.value}</span>
-        <span>{contents.address2.value}</span>
-        <span>{contents.recipient_name.value}</span></td>
+        <td>
+          <span>{Address}</span>
+        </td>
       </tr>
       <tr>
         <td className="item_name"><label>{contents.recipient_phone.key}</label></td>

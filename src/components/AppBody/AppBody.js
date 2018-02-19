@@ -13,12 +13,11 @@ const pspid = 'AppBodyView';
 class AppBody extends React.Component {
   constructor(props) {
     super(props);
-    const { usd, jpy, options, results }
-      = props;
+    const { usd, jpy, options, results } = props;
     const { infomation, details, item, shipping_address } = options;
-
-    this.payment = {
-      total:                options.total
+    this.price = {
+      payment: {
+        total:              options.total
       , total_currency:     options.currency
       , subtotal:           details.subtotal
       , shipping:           details.shipping
@@ -26,8 +25,9 @@ class AppBody extends React.Component {
       , name:               item.name
       , description:        item.description
       , price:              item.price
+      }
+      , display:            infomation.price
     };
-
     this.state = {
       currency:           item.currency
       , quantity:         item.quantity
@@ -209,14 +209,14 @@ class AppBody extends React.Component {
     e.stopPropagation();
     const state = this.state;
     if(!this.isValid(state)) return;
-    if(this.isCredit(state) && this.isQuantity(state)) {
+    if(this.isCredit(state)) {
       this.setState({ showModalCredit: true });
       window.location.href = '#';
     } else {
-      const newOptions = this.setOptions(state, this.payment);
+      const newOptions = this.setOptions(state, this.price);
       AppAction.createMessage(newOptions);
     }
-    this.logTrace(this.payment);
+    this.logTrace(this.price);
   }
 
   setConfirm(shipping, state, isLangJp) {
@@ -292,7 +292,7 @@ class AppBody extends React.Component {
     return { head, body };
   }
 
-  setOptions(state, payment) {
+  setOptions(state, { payment, display }) {
     const isLangJp = this.isLangJp();
     const isSite = isLangJp ? 'ja-JP' : 'en-US';
     const shipping_address = this.setShippingAddress('ja-JP', isLangJp);
@@ -338,6 +338,7 @@ class AppBody extends React.Component {
         , recipient_name:  state.recipient_name
         , recipient_phone: state.recipient_phone
         , site:            isSite
+        , price:           display
       }
     });
   }
@@ -475,33 +476,52 @@ class AppBody extends React.Component {
 
   componentWillUpdate(props, state) {
     if(!this.isValid(state)) return;
+    this.setPrice(props, state);
+  }
+
+  setPrice(props, state) {
     const { shipping, currency } = props;
-    const newPrice    = this.isPrice(currency, state);
-    const newShipping = this.isShipping(shipping, currency, state);
+    const isDm        = this.isDomestic(state);
+    const isUSD       = this.isUSD(state);
+    const newPrice    = this.isPrice(currency, state, isDm);
+    const newShipping = this.isShipping(shipping, currency, state, isDm);
     const newDiscount = this.isDiscount(newShipping, state);
-    const newSubtotal = newPrice * state.quantity.join();
-    const newTotal    = newSubtotal + newShipping + newDiscount
-    this.payment = {
-      price:                newPrice
-      , shipping:           newShipping
-      , shipping_discount:  newDiscount
-      , subtotal:           newSubtotal
-      , total:              newTotal
-      , total_currency:     state.currency
-      , name:               'Myanmar Companies YearBook Vol.1'
-      , description:        'Myanmar Companies Yearbook'
+    const newSubTotal = this.isSubTotal(newPrice, state);
+    const newTotal
+      = this.isTotal(newSubTotal, newShipping, newDiscount);
+    this.price = {
+      payment: {
+        price:                isUSD ? newPrice.usd    : newPrice.jpy
+        , shipping:           isUSD ? newShipping.usd : newShipping.jpy
+        , shipping_discount:  isUSD ? newDiscount.usd : newDiscount.jpy
+        , subtotal:           isUSD ? newSubTotal.usd : newSubTotal.jpy
+        , total:              isUSD ? newTotal.usd    : newTotal.jpy
+        , total_currency:     isUSD ? 'USD'           : 'JPY'
+        , name:               'Myanmar Companies YearBook Vol.1'
+        , description:        'Myanmar Companies Yearbook'
+      }
+      , display: {
+        price:                isDm  ? newPrice.jpy    : newPrice.usd
+        , shipping:           isDm  ? newShipping.jpy : newShipping.usd
+        , shipping_discount:  isDm  ? newDiscount.jpy : newDiscount.usd
+        , subtotal:           isDm  ? newSubTotal.jpy : newSubTotal.usd
+        , total:              isDm  ? newTotal.jpy    : newTotal.usd   
+        , total_currency:     isDm  ? 'JPY'           : 'USD'
+        , name:               'Myanmar Companies YearBook Vol.1'
+        , description:        'Myanmar Companies Yearbook'
+      }
     };
-    //this.logTrace(this.payment);
+    this.logTrace(this.price);
   }
 
   componentDidUpdate(prevProps, prevState) {
     this.componentWillUnmount();
     this.componentDidMount();
     if(!this.isValid(this.state)) return;
-    const options = this.setOptions(this.state, this.payment);
     if(this.isPayPal(this.state)) {
-      AppAction.createExpress(options);
-      this.logTrace(this.payment);
+      const newOptions = this.setOptions(this.state, this.price);
+      AppAction.createExpress(newOptions);
+      this.logTrace(this.price);
     }
   }
 
@@ -510,31 +530,17 @@ class AppBody extends React.Component {
     buttonNode.removeChild(this.el);
   }
 
-  isLangJp() {
-    return this.props.language === 'jp';
+  isPrice(currency, state, isDomestic) {
+    const usd = isDomestic
+      ? Math.ceil((state.jpy / currency.USDJPY) * 100) / 100
+      : Number(state.usd);
+    const jpy = isDomestic
+      ? Number(state.jpy)
+      : Math.ceil(currency.USD);
+    return { usd, jpy };
   }
 
-  isCredit(state) {
-    return !this.isMail(state) && !this.isUSD(state)
-      && this.payment.shipping !== 0;
-  }
-
-  isPayPal(state) {
-    return !this.isMail(state) && this.isUSD(state)
-      && this.payment.shipping !== 0;
-  }
-
-  isPrice(currency, state) {
-    return this.isDomestic(state)
-      ? this.isUSD(state)
-        ? Math.ceil((state.jpy / currency.USDJPY) * 100) / 100
-        : Number(state.jpy)
-      : this.isUSD(state)
-        ? Number(state.usd)
-        : Math.ceil((currency.USD) * 100) / 100;
-  }
-
-  isShipping(shipping, currency, state) {
+  isShipping(shipping, currency, state, isDomestic) {
     const isJpp = obj => shipping.jpp.filter(jpp =>
       std.regexWord(jpp.name_jp, obj.address1.toUpperCase())
         || std.regexWord(jpp.name_en, obj.address1.toUpperCase()))[0];
@@ -542,27 +548,45 @@ class AppBody extends React.Component {
       ems.code_2 === obj.country_code.join()
       && (ems.ems1 === 'OK' || ems.ems2_1 === 'OK' ||
         ems.ems2_2 === 'OK' || ems.ems3   === 'OK') )[0];
-    const isPay = obj => shipping.ems.filter(ems =>
+    const isPpl = obj => shipping.ems.filter(ems =>
       ems.code_2 === obj.country_code.join() && ems.paypal === 'OK' )[0];
-    return this.isDomestic(state)
+    const isCfm = this.isConfirm(shipping, state);
+    const usd = isDomestic
       ? isJpp(state)
-        ? this.isUSD(state)
-          ? Math.ceil((isJpp(state).price
-            * state.quantity.join() / currency.USDJPY) * 100) / 100
-          : Number(isJpp(state).price) * state.quantity.join()
+        ? Math.ceil((isJpp(state).price *
+          state.quantity.join() / currency.USDJPY) * 100) / 100
         : 0
-      : isEms(state) && isPay(state) && this.isConfirm(shipping, state)
-        ? this.isUSD(state)
-          ? Math.ceil(
-            (isEms(state).price / currency.USDJPY) * 100) / 100 
-          : Number(isEms(state).price)
+      : isEms(state) && isPpl(state) && isCfm
+        ? Math.ceil((isEms(state).price / currency.USDJPY) * 100) / 100
         : 0;
+    const jpy = isDomestic
+      ? isJpp(state)
+        ? Number(isJpp(state).price) * state.quantity.join()
+        : 0
+      : isEms(state) && isPpl(state) && isCfm
+        ? Number(isEms(state).price)
+        : 0;
+    return { usd, jpy };
   }
 
-  isDiscount(shipping, state) {
+  isDiscount(shipping_price, state) {
     const { delivery } = state;
-    return delivery === 'myanmer' || delivery === 'japan'
-      ? shipping * -1 : 0;
+    const isDlv = delivery === 'myanmer' || delivery === 'japan';
+    const usd = isDlv ? shipping_price.usd * -1 : 0;
+    const jpy = isDlv ? shipping_price.jpy * -1 : 0;
+    return { usd, jpy }
+  }
+
+  isSubTotal(price, state) {
+    const usd = price.usd * state.quantity.join();
+    const jpy = price.jpy * state.quantity.join();
+    return { usd, jpy };
+  }
+
+  isTotal(subtotal, shipping_price, discount) {
+    const usd = subtotal.usd + shipping_price.usd + discount.usd;
+    const jpy = subtotal.jpy + shipping_price.jpy + discount.jpy;
+    return { usd, jpy };
   }
 
   isConfirm(shipping, state) {
@@ -574,6 +598,26 @@ class AppBody extends React.Component {
       case 'RC':          return 2;
       case 'NA': default: return 3;
     }
+  }
+
+  isLangJp() {
+    return this.props.language === 'jp';
+  }
+
+  isCredit(state) {
+    return !this.isMail(state) && !this.isUSD(state)
+      && this.isQuantity(state)
+      && (this.price.payment.shipping !== 0 || this.isOffice(state));
+  }
+
+  isPayPal(state) {
+    return !this.isMail(state) && this.isUSD(state)
+      && this.isQuantity(state)
+      && (this.price.payment.shipping !== 0 || this.isOffice(state));
+  }
+
+  isOffice(state) {
+    return state.delivery === 'japan' || state.delivery === 'myanmer';
   }
 
   isDomestic(state) {
@@ -827,7 +871,9 @@ class AppBody extends React.Component {
 
   renderButton(state) {
     if ( this.isMail(state) || this.isCredit(state)
-    || !this.isValid(state) || this.payment.shipping === 0) {
+      || !this.isQuantity(state)
+      || !this.isValid(state)
+      || (this.price.payment.shipping === 0 && !this.isOffice(state))) {
       return <input type="submit" value={ this.isLangJp()
         ? "送信" : "SEND"} className="button-primary"/>
     } else {
@@ -858,7 +904,7 @@ class AppBody extends React.Component {
    
   render() {
     this.logTrace(this.state);
-    //this.logTrace(this.payment);
+    //this.logTrace(this.price);
     const { shipping, language } = this.props;
     const isJP = this.isLangJp();
     const isJPY = this.state.currency === 'JPY';
@@ -964,12 +1010,18 @@ class AppBody extends React.Component {
       : 'US ' + Number(this.state.usd).toLocaleString('en-US'
           , { style: 'currency', currency: 'USD' })
         + ' will be charged as Japanese yen at the current day\'s rate.';
-    const notes_payment = !isDomestic && isPayPal
+    const notes_payment1 = !isDomestic && isPayPal
       ? isJP
-        ? 'ミャンマー及び'
-          + '一部地域発行のクレジットカードはご使用になれません。'
-        : 'We can not use credit card issued' +
-            'by Myanmar and some regions.'
+        ? 'ミャンマー及び一部地域発行のクレジットカードは'
+          + 'ご使用になれません。'
+        : 'We can not use credit card issued '
+          + 'by Myanmar and some regions.'
+      : '';
+    const notes_payment2 = !isDomestic && isPayPal
+      ? isJP
+        ? '取扱以外のクレジットカードの場合は別途ご連絡致します。'
+        : 'In the case of credit cards other than handling,'
+          + 'we will contact you separately.'
       : '';
     const notes_notice = this.setNotice(this.state, isJP); 
     const notes_confirm = this.setConfirm(shipping, this.state, isJP);
@@ -993,7 +1045,7 @@ class AppBody extends React.Component {
     const results = this.setResults(this.state.results, isJP);
     const showModalCredit = !!this.state.showModalCredit;
     const showModalResults = !!this.state.showModalResults;
-    const options = this.setOptions(this.state, this.payment);
+    const newOptions = this.setOptions(this.state, this.price);
 
     return <div className="buynow_contactlast">
       <form id="user-sign-up" onSubmit={this.handleSubmit.bind(this)}>
@@ -1216,7 +1268,10 @@ class AppBody extends React.Component {
           {select_payment}
           </select>
           </div>
-          <span className="notes">{notes_payment}</span>
+          <span className="notes" style={{ color: 'red' }}>
+            {notes_payment1}</span>
+          <span className="notes" style={{ color: 'red' }}>
+            {notes_payment2}</span>
           </td>
         </tr>
         </tbody></table>
@@ -1522,8 +1577,8 @@ class AppBody extends React.Component {
           <td>
           <input type="text" name="recipient_phone" id="recipient_phone"
             value={this.state.recipient_phone}
-            onChange={this.handleChangeText.bind(this, 'recipient_phone')}
-            onFocus={this.handleFocusText.bind(this, 'recipient_phone')}
+            onChange={this.handleChangeText.bind(this,'recipient_phone')}
+            onFocus={this.handleFocusText.bind(this,'recipient_phone')}
             placeholder={recipient_phone}
             className="add-placeholder"/>
           </td>
@@ -1588,7 +1643,7 @@ class AppBody extends React.Component {
         onCompleted={this.handleClickButton.bind(this, 'results')}/>
     </Modal>
     <Modal showModal={showModalCredit}>
-      <Credit language={language} options={options}
+      <Credit language={language} options={newOptions}
         onCompleted={this.handleClickButton.bind(this, 'credit')}/>
     </Modal>
     </div>;

@@ -61,6 +61,7 @@ class AppStore extends ReduceStore {
           , address2:         ''
           , recipient_name:   ''
           , recipient_phone:  ''
+          , price:            null
         }
         , credit_validate: {
           custom:           ''
