@@ -16,7 +16,8 @@ const files = [
   , 'ems_2_2_europe.csv' 
   , 'ems_3_africa.csv'
   , 'ems_3_south_america.csv'
-  , 'ems_price.csv'
+  //, 'ems_price.csv'
+  , 'fwp_price_usd.csv'
   , 'paypal_africa.csv'
   , 'paypal_americas.csv'
   , 'paypal_asia_pacific.csv'
@@ -33,7 +34,8 @@ const files = [
   , 'jpp_kyuusyuu.csv'
   , 'jpp_okinawa.csv'
   , 'jpp_matrix.csv'
-  , 'jpp_price.csv'
+  //, 'jpp_price.csv'
+  , 'fwp_price_yen.csv'
   , 'confirmed.csv'
 ];
 

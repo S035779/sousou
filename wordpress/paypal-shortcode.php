@@ -13,8 +13,8 @@ function display_paypal_payment($arr, $content="") {
     'language' => 'jp',
     'usd' => 600,
     'jpy' => 72000,
-    'length' => 60,
-    'weight' => 1.5,
+    'length' => 1,
+    'weight' => 1,
     'from' => '東京都',
   );
   

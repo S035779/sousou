@@ -111,6 +111,7 @@ class AppBody extends React.Component {
       case 'address3':
         newState = {
           address1: e.target.value
+        , address2: ' '
         , address3: e.target.value
         };
         break;
@@ -132,7 +133,7 @@ class AppBody extends React.Component {
           address1: document.getElementById('address1').value
         , address2: document.getElementById('address2').value
         , address3: document.getElementById('address1').value
-          + ' ' + document.getElementById('address2').value
+          + document.getElementById('address2').value
         };
         this.setState(newState);
         break;
@@ -186,8 +187,11 @@ class AppBody extends React.Component {
     switch(name) {
       case 'quantity':
         const { length, weight, from } = this.props;
-        AppAction.fetchShipping({ length
-          , weight: weight * Number(values.join()), from });
+        AppAction.fetchShipping({
+          length: length * Number(values.join())
+        , weight: weight * Number(values.join())
+        , from
+        });
         this.setState(newState);
         break;
       case 'country_code':
@@ -541,6 +545,7 @@ class AppBody extends React.Component {
   }
 
   isShipping(shipping, currency, state, isDomestic) {
+    console.dir(shipping);
     const isJpp = obj => shipping.jpp.filter(jpp =>
       std.regexWord(jpp.name_jp, obj.address1.toUpperCase())
         || std.regexWord(jpp.name_en, obj.address1.toUpperCase()))[0];
@@ -553,18 +558,17 @@ class AppBody extends React.Component {
     const isCfm = this.isConfirm(shipping, state);
     const usd = isDomestic
       ? isJpp(state)
-        ? Math.ceil((isJpp(state).price *
-          state.quantity.join() / currency.USDJPY) * 100) / 100
-        : 0
-      : isEms(state) && isPpl(state) && isCfm
-        ? Math.ceil((isEms(state).price / currency.USDJPY) * 100) / 100
-        : 0;
-    const jpy = isDomestic
-      ? isJpp(state)
-        ? Number(isJpp(state).price) * state.quantity.join()
+        ? Math.ceil((isJpp(state).price / currency.USDJPY) * 100) / 100
         : 0
       : isEms(state) && isPpl(state) && isCfm
         ? Number(isEms(state).price)
+        : 0;
+    const jpy = isDomestic
+      ? isJpp(state)
+        ? Number(isJpp(state).price)
+        : 0
+      : isEms(state) && isPpl(state) && isCfm
+        ? Math.ceil(isEms(state).price * currency.USDJPY)
         : 0;
     return { usd, jpy };
   }
@@ -647,6 +651,7 @@ class AppBody extends React.Component {
       //&& state.postal_code
       //&& !this.isNotPostal(state.postal_code, state.country_code.join())
       && state.address1
+      && state.address2
       && state.address3
       && state.quantity       && (state.quantity.join() !== '')
       && state.currency
@@ -1459,7 +1464,7 @@ class AppBody extends React.Component {
             onChange={this.handleChangeText.bind(this, 'address2')}
             onFocus={this.handleFocusText.bind(this, 'address2')}
             placeholder={address2}
-            className="add-placeholder" />
+            className="required add-placeholder" />
           </td>
         </tr>
         {/*
