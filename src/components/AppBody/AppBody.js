@@ -8,7 +8,6 @@ import Notice from '../../components/Notice/Notice';
 import std from '../../utils/stdutils';
 import { log } from '../../utils/webutils';
 
-const redirect_url = process.env.REDIRECT_URL;
 const pspid = 'AppBodyView';
 
 class AppBody extends React.Component {
@@ -82,7 +81,6 @@ class AppBody extends React.Component {
         break;
       case 'results':
         this.setState({ results: null, showModalResults: false });
-        location.href=redirect_url;
         break;
     }
   }
