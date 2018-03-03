@@ -8,6 +8,9 @@ import Notice from '../../components/Notice/Notice';
 import std from '../../utils/stdutils';
 import { log } from '../../utils/webutils';
 
+const redirect_url = process.env.REDIRECT_URL;
+const canceled_url = process.env.CANCELED_URL;
+
 const pspid = 'AppBodyView';
 
 class AppBody extends React.Component {
@@ -70,6 +73,7 @@ class AppBody extends React.Component {
       , showModalCredit:  false
       , showModalResults: false
       , notice:           ''
+      , redirect_url:     ''
     };
   }
 
@@ -81,6 +85,7 @@ class AppBody extends React.Component {
         break;
       case 'results':
         this.setState({ results: null, showModalResults: false });
+        parent.location.href = this.state.redirect_url;
         break;
     }
   }
@@ -453,12 +458,14 @@ class AppBody extends React.Component {
       && nextProps.results.accepted[0] === this.state.email) {
         this.setState({
           results: nextProps.results
-          , showModalResults: true
+        , showModalResults: true
+        , redirect_url: redirect_url
         });
       } else if(nextProps.results.error) {
         this.setState({
           results: nextProps.results
-          , showModalResults: true
+        , showModalResults: true
+        , redirect_url: canceled_url
         });
       }
       window.location.href = '#';
