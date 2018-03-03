@@ -82,6 +82,7 @@ class AppBody extends React.Component {
     switch(name) {
       case 'credit':
         this.setState({ showModalCredit: false });
+        parent.location.href = redirect_url;
         break;
       case 'results':
         this.setState({ results: null, showModalResults: false });
@@ -225,7 +226,7 @@ class AppBody extends React.Component {
       const newOptions = this.setOptions(state, this.price);
       AppAction.createMessage(newOptions);
     }
-    this.logTrace(this.price);
+    //this.logTrace(this.price);
   }
 
   setConfirm(shipping, state, isLangJp) {
@@ -256,7 +257,7 @@ class AppBody extends React.Component {
     let notice = '';
     switch(value) {
       case 'paypal':
-        this.logTrace(`${this.isCredit(state)} ${this.isPayPal(state)}`);
+        //this.logTrace(`${this.isCredit(state)} ${this.isPayPal(state)}`);
         notice = (!this.isCredit(state) && !this.isPayPal(state))
           ? isLangJp
             ? 'クレジットカード取扱地域外の為、'
@@ -522,7 +523,7 @@ class AppBody extends React.Component {
         , description:        'Myanmar Companies Yearbook'
       }
     };
-    this.logTrace(this.price);
+    //this.logTrace(this.price);
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -532,7 +533,7 @@ class AppBody extends React.Component {
     if(this.isPayPal(this.state)) {
       const newOptions = this.setOptions(this.state, this.price);
       AppAction.createExpress(newOptions);
-      this.logTrace(this.price);
+      //this.logTrace(this.price);
     }
   }
 
@@ -552,7 +553,6 @@ class AppBody extends React.Component {
   }
 
   isShipping(shipping, currency, state, isDomestic) {
-    console.dir(shipping);
     const isJpp = obj => shipping.jpp.filter(jpp =>
       std.regexWord(jpp.name_jp, obj.address1.toUpperCase())
         || std.regexWord(jpp.name_en, obj.address1.toUpperCase()))[0];
@@ -915,7 +915,7 @@ class AppBody extends React.Component {
   }
    
   render() {
-    this.logTrace(this.state);
+    //this.logTrace(this.state);
     //this.logTrace(this.price);
     const { shipping, language } = this.props;
     const isJP = this.isLangJp();

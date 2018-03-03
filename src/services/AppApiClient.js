@@ -160,7 +160,6 @@ export default {
     const buyer = this.setCustomer(options);
     const seler = this.setManager(options);
     return this.postCredit(Object.assign({}, options, {buyer}, {seler}))
-      .then(obj => console.log(obj));
   },
   createExpress(params) {
     const options = this.validate(params);
@@ -287,16 +286,13 @@ export default {
     };
     return { message };
   },
-  logInfo(request) {
-    log.info(`${pspid}>`, 'Request:', request);
-    //console.info(`${pspid}>`, 'Request:', request);
+  logInfo(name, message) {
+    log.info(`${pspid}>`, name, ':', message);
   },
-  logTrace(response) {
-    log.trace(`${pspid}>`, 'Response:', response);
-    //console.trace(`${pspid}>`, 'Response:', response);
+  logTrace(name, message) {
+    log.trace(`${pspid}>`, name, ':', message);
   },
-  logError({ error }) {
+  logError(error) {
     log.error(`${pspid}>`, error.name, ':', error.message);
-    //console.error(`${pspid}>`, error.name, error.message);
   },
 }

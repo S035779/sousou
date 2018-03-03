@@ -6,6 +6,9 @@ import { getStores, getState } from '../../stores';
 import AppHeader from '../../components/AppHeader/AppHeader';
 import AppFooter from '../../components/AppFooter/AppFooter';
 import AppBody from '../../components/AppBody/AppBody';
+import { log } from '../../utils/webutils';
+
+const pspid = 'App';
 
 class App extends React.Component {
   static getStores() {
@@ -16,31 +19,36 @@ class App extends React.Component {
     return getState('appStore');
   }
 
-  static prefetch(props) {
-    const { length, weight, from, usd, jpy } = props;
+  componentDidMount() {
+    const { length, weight, from, usd, jpy } = this.props;
     const shipping = obj => AppAction.fetchShipping(obj);
     const currency = obj => AppAction.fetchCurrency(obj);
     return Promise.all([
       shipping({ length, weight, from })
     , currency({ usd, jpy }
     )])
-      .then(() => console.log('Complete!!'))
-      .catch(err => console.log(err.name, err.message));
+      .then(() => this.logInfo('prefetch', 'Complete!!'))
+      .catch(err => this.logError(err));
   }
 
-  componentDidMount() {
-    App.prefetch(this.props);
+  logInfo(name, message) {
+    log.info(`${pspid}>`, name, ':', message);
+  }
+
+  logError(error) {
+    log.error(`${pspid}>`, error.name, ':', error.message);
   }
 
   render() {
     const props = this.props;
+    const { options, currency, shipping, results } = this.state;
     return <div>
       <AppHeader {...props} />
       <AppBody {...props}
-        options={this.state.options}
-        currency={this.state.currency}
-        shipping={this.state.shipping}
-        results={this.state.results} />
+        options={options}
+        currency={currency}
+        shipping={shipping}
+        results={results} />
       <AppFooter {...props} />
     </div>;
   }
