@@ -80,6 +80,10 @@ class AppBody extends React.Component {
   handleClickButton(name, e) {
     //this.logInfo('handleClickButton');
     switch(name) {
+      case 'close':
+        this.setState({ showModalCredit: false });
+        parent.location.href = canceled_url;
+        break;
       case 'credit':
         this.setState({ showModalCredit: false });
         parent.location.href = redirect_url;
@@ -1656,6 +1660,7 @@ class AppBody extends React.Component {
     </Modal>
     <Modal showModal={showModalCredit}>
       <Credit language={language} options={newOptions}
+        onClose={this.handleClickButton.bind(this, 'close')}
         onCompleted={this.handleClickButton.bind(this, 'credit')}/>
     </Modal>
     </div>;

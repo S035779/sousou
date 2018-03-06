@@ -42,7 +42,7 @@ class Credit extends React.Component {
 
   handleClickClose(e) {
     //this.logInfo('handleClickClose');
-    if(this.isConfirm()) this.props.onCompleted();
+    if(this.isConfirm()) this.props.onClose();
   }
 
   handleClickButton(e) {
