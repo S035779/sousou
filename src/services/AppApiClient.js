@@ -42,8 +42,8 @@ export default {
               , label:  'paypal'
             }
             , client: {
-              sandbox:    productions_access_key,
-              production: development_access_key
+              sandbox:    development_access_key,
+              production: productions_access_key
             }
             , payment: function(data, actions) {
               return actions.payment.create({
@@ -76,39 +76,39 @@ export default {
             }
           }, '#paypal-button');
         });
-      case '/payment':
-        return new Promise((resolve, reject) => {
-          paypal.Button.render({
-            env: paypal_env
-            , locale: 'ja_JP'
-            , commit: true
-            , style: {
-              size:     'responsive' 
-              , color:  'gold'
-              , shape:  'rect'
-              , label:  'paypal'
-            }
-            , payment: function() {
-              return paypal.request.post(uri + '/create-payment')
-                .then(res => res.id);
-            }
-            , onAuthorize: function(data) {
-              return paypal.request.post(uri + '/execute-payment'
-                , { paymentID: data.paymentID, payerID: data.payerID })
-                .then(payment => {
-                  resolve(payment)
-              });
-            }
-            , onCancel: function() {
-              reject({ error:
-                { name: 'Error', message: 'Buyer cancelled the payment.' }
-              });
-            }
-            , onError: function(err) {
-              reject(err);
-            }
-          }, '#paypal-button');
-        });
+      //case '/payment':
+      //  return new Promise((resolve, reject) => {
+      //    paypal.Button.render({
+      //      env: paypal_env
+      //      , locale: 'ja_JP'
+      //      , commit: true
+      //      , style: {
+      //        size:     'responsive' 
+      //        , color:  'gold'
+      //        , shape:  'rect'
+      //        , label:  'paypal'
+      //      }
+      //      , payment: function() {
+      //        return paypal.request.post(uri + '/create-payment')
+      //          .then(res => res.id);
+      //      }
+      //      , onAuthorize: function(data) {
+      //        return paypal.request.post(uri + '/execute-payment'
+      //          , { paymentID: data.paymentID, payerID: data.payerID })
+      //          .then(payment => {
+      //            resolve(payment)
+      //        });
+      //      }
+      //      , onCancel: function() {
+      //        reject({ error:
+      //          { name: 'Error', message: 'Buyer cancelled the payment.' }
+      //        });
+      //     }
+      //      , onError: function(err) {
+      //        reject(err);
+      //      }
+      //    }, '#paypal-button');
+      //  });
       case '/payment/credit':
         return new Promise((resolve, reject) => {
           xhr.postJSON(uri, options
