@@ -8,7 +8,8 @@ import Notice from '../../components/Notice/Notice';
 import std from '../../utils/stdutils';
 import { log } from '../../utils/webutils';
 
-const redirect_url = process.env.REDIRECT_URL;
+const redirect_url_jp = process.env.REDIRECT_URL_JP;
+const redirect_url_en = process.env.REDIRECT_URL_EN;
 const canceled_url = process.env.CANCELED_URL;
 
 const pspid = 'AppBodyView';
@@ -86,7 +87,8 @@ class AppBody extends React.Component {
         break;
       case 'credit':
         this.setState({ showModalCredit: false });
-        parent.location.href = redirect_url;
+        parent.location.href
+          = this.isLangJp() ? redirect_url_jp : redirect_url_en;
         break;
       case 'results':
         this.setState({ results: null, showModalResults: false });
@@ -167,9 +169,8 @@ class AppBody extends React.Component {
       case 'area':
         newState['currency']      = value === 'domestic' ? 'JPY' : 'USD';
         newState['country_code']  = value === 'domestic' ? ['JP']  : [];
-        newState['country']       = value === 'domestic'
-          ? isLangJp ? '日本' : 'Japan'
-          : '';
+        newState['country']       =
+          value === 'domestic' ? isLangJp ? '日本' : 'Japan' : '';
         newState['delivery']      = 'address';
         newAddress = this.setAddress('', isLangJp);
         this.setState(Object.assign({}, newAddress, newState));
@@ -462,7 +463,8 @@ class AppBody extends React.Component {
         this.setState({
           results: nextProps.results
         , showModalResults: true
-        , redirect_url: redirect_url
+        , redirect_url:
+            this.isLangJp() ? redirect_url_jp : redirect_url_en
         });
       } else if(nextProps.results.error) {
         this.setState({
@@ -820,7 +822,7 @@ class AppBody extends React.Component {
         , name_jp: 'ミャンマー'
         , code_2: 'MM'
       },{
-        name_en: 'Tai'
+        name_en: 'Thailand'
         , name_jp: 'タイ'
         , code_2: 'TH'
       },{
@@ -844,7 +846,7 @@ class AppBody extends React.Component {
         , name_jp: '香港'
         , code_2: 'HK'
       },{
-        name_en: 'Vietnam'
+        name_en: 'Vietnum'
         , name_jp: 'ベトナム'
         , code_2: 'VN'
       },{
@@ -852,7 +854,9 @@ class AppBody extends React.Component {
         , name_jp: '大韓民国 (韓国)'
         , code_2: 'KR'
     }];
-    const newObjs = objs ? objs.filter(obj => obj.code_2 !== 'JP') : [];
+    const codes = opts_country.map(obj => obj.code_2);
+    const isCode = obj => codes.some(code => code === obj);
+    const newObjs = objs ? objs.filter(obj => !isCode(obj.code_2)) : [];
     return objs
       ? isJP
         ? this.renderSelect(

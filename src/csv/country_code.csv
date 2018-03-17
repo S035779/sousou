@@ -4,7 +4,7 @@ AZ,AZE,031,アゼルバイジャン,Azerbaijan,994
 AF,AFG,004,アフガニスタン,Afghanistan,93
 US,USA,840,アメリカ合衆国,United States,1
 AS,ASM,016,アメリカ領サモア,American Samoa,1
-VI,VIR,850,アメリカ領バージン諸島,Virgin Islands,1
+VI,VIR,850,アメリカ領バージン諸島,US Virgin Islands,1
 AE,ARE,784,アラブ首長国連邦,United Arab Emirates,971
 DZ,DZA,012,アルジェリア,Algeria,213
 AR,ARG,032,アルゼンチン,Argentina,54
@@ -18,7 +18,7 @@ AD,AND,020,アンドラ,Andorra,376
 YE,YEM,887,イエメン,Yemen,967
 GB,GBR,826,イギリス,United Kingdom,44
 IO,IOT,086,イギリス領インド洋地域,British Indian Ocean Territory,246
-VG,VGB,092,イギリス領バージン諸島,Virgin Islands,1
+VG,VGB,092,イギリス領バージン諸島,British Virgin Islands,1
 IL,ISR,376,イスラエル,Israel,972
 IT,ITA,380,イタリア,Italy,39
 IQ,IRQ,368,イラク,Iraq,964
@@ -190,7 +190,7 @@ BG,BGR,100,ブルガリア,Bulgaria,359
 BF,BFA,854,ブルキナファソ,Burkina Faso,226
 BN,BRN,096,ブルネイ・ダルサラーム,Brunei Darussalam,673
 BI,BDI,108,ブルンジ,Burundi,257
-VN,VNM,704,ベトナム,Viet Nam,84
+VN,VNM,704,ベトナム,Vietnum,84
 BJ,BEN,204,ベナン,Benin,229
 VE,VEN,862,ベネズエラ・ボリバル共和国,Venezuela,58
 BY,BLR,112,ベラルーシ,Belarus,375
