@@ -9,3 +9,16 @@ IPN NOTIFICATION    : ON
 BUILD               : yarn run build
 RELEASE             : sudo yarn run release
 START               : sudo systemctl restart sousou
+
+/etc/apache2/conf.d/r_proxy.conf
+
+# cat r_proxy.conf
+<IfModule mod_proxy.c>
+  ProxyRequests Off
+  <Proxy *>
+    Require all granted
+  </Proxy>
+  ProxyPass         /api/ http://localhost:8081/api/ retry=0 timeout=300 
+  ProxyPassReverse  /api/ http://localhost:8081/api/
+</IfModule>
+
