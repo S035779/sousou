@@ -122,7 +122,7 @@ class Credit extends React.Component {
         , value: obj.infomation.name
       }
       , company: {
-        key: isLangJp ? '会　社　： ' : 'Company : '
+        key: isLangJp ? '会　社　： ' : 'Company Name : '
         , value: obj.infomation.company
       }
       , subtotal: {
@@ -130,7 +130,7 @@ class Credit extends React.Component {
         , value: prices.subtotal_price
       }
       , shipping: {
-        key: isLangJp ? '配送料　： ' : 'Shipping fee : '
+        key: isLangJp ? '配送料　： ' : 'Delivery Fee : '
         //, value: prices.shipping_price
         , value: prices.total_shipping_price
       }
@@ -139,7 +139,7 @@ class Credit extends React.Component {
       //  , value: prices.discount_price
       //}
       , total: {
-        key: isLangJp ? '合　計　： ' : 'Total : '
+        key: isLangJp ? '合　計　： ' : 'Grand Total : '
         , value: prices.total_price
       }
       , postal_code: {
@@ -153,7 +153,7 @@ class Credit extends React.Component {
           ? obj.infomation.country : ''
       }
       , address1: {
-        key: isLangJp ? '住　所　： ' : 'Address : '
+        key: isLangJp ? '住　所　： ' : 'Delivery Address : '
         , value: obj.infomation.address1
       }
       , address2: {
@@ -171,7 +171,7 @@ class Credit extends React.Component {
         , value: obj.infomation.recipient_phone
       }
       , email: {
-        key: isLangJp ? 'メール　： ' : 'Email : '
+        key: isLangJp ? 'メール　： ' : 'E-Mail : '
         , value: obj.infomation.email
       }
     };
@@ -194,7 +194,7 @@ class Credit extends React.Component {
     const obj = this.props.options;
     const isLangJp = this.isLangJp();
     const contents = this.setContents(obj, isLangJp);
-    const Shipping = isLangJp ? '配送先　： ' : 'Address       : ';
+    const Shipping = isLangJp ? '配送先　： ' : 'Delivery Address : ';
     const Address  = (contents.postal_code.value !== ''
         ? contents.postal_code.value + ' ': '')
       + contents.country.value + ' '
@@ -203,7 +203,7 @@ class Credit extends React.Component {
         ? contents.address2.value + ' ' : '')
       + contents.recipient_name.value;
     const Confirm = isLangJp
-      ? 'ご注文内容の確認' : 'Confirmation of your order';
+      ? 'ご注文内容の確認' : 'Purchase order confirmation';
     const ConfirmOrder = isLangJp ? 'お支払' : 'Payment';
     const language =  isLangJp ? 'JP' : 'US';
     const custom = this.state.custom;

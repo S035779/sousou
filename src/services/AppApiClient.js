@@ -33,7 +33,7 @@ export default {
         return new Promise((resolve, reject) => {
           paypal.Button.render({
             env: paypal_env
-            , locale: 'ja_JP'
+            , locale: options.infomation.site
             , commit: true
             , style: {
               size:     'responsive' 
@@ -208,38 +208,39 @@ export default {
   setManager(obj) {
     const message = {
       from: `${obj.infomation.name}<${obj.infomation.email}>`
-      , to: sender
-      , subject: `(Yearbook) ${obj.infomation.company} : `
-        + `Yearbook Vol.1のご注文がありました`
-      , text: `FWP Researchの公式HPからYearbook vol.1の注文がありました。`
-        + `\n\n`
-        + `--------------------------------------------------------------`
-        + `--------\n\n`
-        + `ご注文内容\n\n`
-        + `お申込み元サイト: ${obj.infomation.site}\n`
-        + `名前            : ${obj.infomation.name}\n`
-        + `会社名          : ${obj.infomation.company}\n`
-        + `メールアドレス  : ${obj.infomation.email}\n`
-        + `電話番号        : ${obj.infomation.phone}\n`
-        + `ご購入数と通貨  : ${
-          obj.item.quantity > 0 && obj.item.quantity < 11
-            ? obj.item.quantity + '冊' : 'その他' }【${obj.currency}】\n`
-        + `お支払い方法    : ${obj.infomation.payment_method}\n`
-        + `お引き渡し場所  : ${obj.infomation.postal_code}\n`
-        + `                  ${obj.infomation.address1}\n`
-        + `                  ${obj.infomation.address2}\n`
-        + `                  ${obj.infomation.country}\n\n`
-        + `お届け先人名    : ${obj.infomation.recipient_name}\n`
-        + `お届け先電話番号: ${obj.infomation.recipient_phone}\n`
-        + `ご連絡事項      :\n${obj.infomation.message}\n\n`
-        + `--------------------------------------------------------------`
-        + `--------\n`
+    , to: sender
+    , subject: `(Yearbook) ${obj.infomation.company} : `
+      + `Yearbook Vol.1のご注文がありました`
+    , text: `FWP Researchの公式HPからYearbook vol.1の注文がありました。`
+      + `\n\n`
+      + `--------------------------------------------------------------`
+      + `--------\n\n`
+      + `ご注文内容\n\n`
+      + `お申込み元サイト: ${obj.infomation.site}\n`
+      + `名前            : ${obj.infomation.name}\n`
+      + `会社名          : ${obj.infomation.company}\n`
+      + `メールアドレス  : ${obj.infomation.email}\n`
+      + `電話番号        : ${obj.infomation.phone}\n`
+      + `ご購入数と通貨  : ${
+        obj.item.quantity > 0 && obj.item.quantity < 11
+          ? obj.item.quantity + '冊' : 'その他' }【${obj.currency}】\n`
+      + `お支払い方法    : ${obj.infomation.payment_method}\n`
+      + `お引き渡し場所  : ${obj.infomation.postal_code}\n`
+      + `                  ${obj.infomation.address1}\n`
+      + `                  ${obj.infomation.address2}\n`
+      + `                  ${obj.infomation.country}\n\n`
+      + `お届け先人名    : ${obj.infomation.recipient_name}\n`
+      + `お届け先電話番号: ${obj.infomation.recipient_phone}\n`
+      + `ご連絡事項      :\n${obj.infomation.message}\n\n`
+      + `--------------------------------------------------------------`
+      + `--------\n`
     };
     return { message };
   },
   setCustomer(obj) {
-    const message = {
-      from: sender
+    const message = obj.infomation.site === 'ja_JP'
+      ? {
+        from: sender
       , to: obj.infomation.email
       , subject:
         `【FWP Research】ご注文内容の確認-ミャンマー企業年鑑 Vol.1`
@@ -283,7 +284,53 @@ export default {
         + `(MYANMAR)  TEL +95 94-5210-2233\n`
         + `==============================================================`
         + `========\n`
-    };
+      } : {
+        from: sender
+      , to: obj.infomation.email
+      , subject:
+        `【FWP Research】Confirmation of Purchase Order Detail`
+          + `- Myanmar Companies Yearbook Vol.1`
+      , text: `Dear ${obj.infomation.name}\n\n`
+        + `Thank you so much for ordering`
+          + ` our Myanmar Companies Yearbook Vol.1.\n\n`
+        + `This is an automatic mail to notify the confirmation`
+          + ` of purchase order.\n`
+        + `We are now confirming your purchase order.\n`
+        + `Please wait for a while and we will contact you again`
+          + ` once the confirmation is complete.\n\n`
+        + `--------------------------------------------------------------`
+        + `--------\n\n`
+        + `Purchase Order Detail\n\n`
+        + `Name                    : ${obj.infomation.name}\n`
+        + `Company Name            : ${obj.infomation.company}\n`
+        + `E-Mail                  : ${obj.infomation.email}\n`
+        + `Phone                   : ${obj.infomation.phone}\n`
+        + `Quantities and Currency : ${
+          obj.item.quantity > 0 && obj.item.quantity < 11
+            ? obj.item.quantity + 'books' : 'other' }【${obj.currency}】\n`
+        + `Payment method          : ${obj.infomation.payment_method}\n`
+        + `Delivery place          : ${obj.infomation.postal_code}\n`
+        + `                          ${obj.infomation.address1}\n`
+        + `                          ${obj.infomation.address2}\n`
+        + `                          ${obj.infomation.country}\n\n`
+        + `Receipent's name        : ${obj.infomation.recipient_name}\n`
+        + `Receipent"s phone       : ${obj.infomation.recipient_phone}\n`
+        + `Message                 :\n${obj.infomation.message}\n\n`
+        + `--------------------------------------------------------------`
+        + `--------\n\n`
+        + `==============================================================`
+        + `========\n`
+        + `We are very sorry for your inconvenience.\n`
+        + `Please kindly contact our company`
+          + ` if this mail doesn't satisfy your inquiry.\n`
+        + `= FWP Research =\n`
+        + `info@fwpresearch.com\n`
+        + `http://fwpresearch.com\n`
+        + `(JAPAN)    TEL +81 3-3641-8998\n`
+        + `(MYANMAR)  TEL +95 94-5210-2233\n`
+        + `==============================================================`
+        + `========\n`
+      };
     return { message };
   },
   logInfo(name, message) {

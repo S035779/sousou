@@ -29,7 +29,7 @@ class AppBody extends React.Component {
       , description:        item.description
       , price:              item.price
       }
-      , display:            infomation.price
+    , display:            infomation.price
     };
     this.state = {
       currency:           item.currency
@@ -121,7 +121,7 @@ class AppBody extends React.Component {
       case 'address3':
         newState = {
           address1: e.target.value
-        , address2: ' '
+        , address2: this.isDomestic(this.state) ? '' : ' '
         , address3: e.target.value
         };
         break;
@@ -219,23 +219,21 @@ class AppBody extends React.Component {
 
   handleSubmit(e) {
     //this.logInfo('handleSubmit');
+    if(!this.isValid(this.state)) return;
     e.preventDefault();
-    e.stopPropagation();
-    const state = this.state;
-    if(!this.isValid(state)) return;
-    if(this.isCredit(state)) {
+    if(this.isCredit(this.state)) {
       this.setState({ showModalCredit: true });
       window.location.href = '#';
     } else {
-      const newOptions = this.setOptions(state, this.price);
+      const newOptions = this.setOptions(this.state, this.price);
       AppAction.createMessage(newOptions);
     }
     //this.logTrace(this.price);
   }
 
   setConfirm(shipping, state, isLangJp) {
-    const value = this.isValid(state)
-      ? this.isConfirm(shipping, state) : '';
+    const value
+      = this.isValid(state) ? this.isConfirm(shipping, state) : '';
     let confirm = '';
     switch(value) {
       case 0:
@@ -249,37 +247,37 @@ class AppBody extends React.Component {
       case 2: case 3: default:
         confirm = isLangJp
           ? 'EMS取扱地域外の場合は、別途ご連絡差し上げます。'
-          : 'In the case of EMS unsupported area,' 
-            + 'we will contact you separately.';
+          : 'If your address is in EMS unsupported areas,' 
+            + ' we will contact you separately.';
         break;
     }
     return confirm;
   }
 
   setNotice(state, isLangJp) {
+    //this.logTrace(`${this.isCredit(state)} ${this.isPayPal(state)}`);
     const value = this.isValid(state) ? this.state.payment.join() : '';
     let notice = '';
     switch(value) {
-      case 'paypal':
-        //this.logTrace(`${this.isCredit(state)} ${this.isPayPal(state)}`);
-        notice = (!this.isCredit(state) && !this.isPayPal(state))
-          ? isLangJp
-            ? 'クレジットカード取扱地域外の為、'
-              + '別途ご連絡差し上げます。'
-            : 'It is an area not compliant with Credit or PayPal. '
-          : '';
-        break;
+      //case 'paypal':
+      //  notice = (!this.isCredit(state) && !this.isPayPal(state))
+      //    ? isLangJp
+      //      ? 'クレジットカード取扱地域外の為、'
+      //        + '別途ご連絡差し上げます。'
+      //      : 'It is an area not compliant with Credit or PayPal. '
+      //    : '';
+      //  break;
       case 'deposit':
         notice = isLangJp
           ? 'お振込先などは別途ご連絡差し上げます。'
           : 'For bank transfer method, details will be contacted'
             + ' separately.';
         break;
-      case 'cash':
-        //notice = isLangJp
-        //  ? '支払い方法について、記入してください。'
-        //  : 'Please contact us separately for payment method.';
-        //break;
+      //case 'cash':
+      //  notice = isLangJp
+      //    ? '支払い方法について、記入してください。'
+      //    : 'Please contact us separately for payment method.';
+      //  break;
       default:
         break;
     }
@@ -291,11 +289,11 @@ class AppBody extends React.Component {
     if (results && results.accepted) {
       head = isLangJp
         ? 'ご購入ありがとうございます。注文手続きが完了しました。'
-        : 'Thank you for your purchase.'
-          + 'The ordering process is complete.';
+        : 'Purchase Order process is now completed. Thank you so much'
+          + ' for buying our Myanmar Companies Yearbook Vol.1.';
       body = isLangJp
         ? '注文内容の確認メールを送信しました。'
-        : 'We sent a confirmation email of the order contents.';
+        : 'Purchase order confirmation mail is sent to your email.';
     } else if (results && results.error) {
       head = results.error.name;
       body = std.is('Object', results.error.message)
@@ -308,8 +306,8 @@ class AppBody extends React.Component {
 
   setOptions(state, { payment, display }) {
     const isLangJp = this.isLangJp();
-    const isSite = isLangJp ? 'ja-JP' : 'en-US';
-    const shipping_address = this.setShippingAddress('ja-JP', isLangJp);
+    const isSite = isLangJp ? 'ja_JP' : 'en_US';
+    const shipping_address = this.setShippingAddress('ja_JP', isLangJp);
     return Object.assign({}, this.props.options, {
       total:      payment.total
       , currency: payment.total_currency
@@ -359,7 +357,7 @@ class AppBody extends React.Component {
 
   setShippingAddress(value, isLangJp) {
     let newAddress = {};
-    newAddress['ja-JP'] = {
+    newAddress['ja_JP'] = {
       country_code:     [ 'JP' ]
       , postal_code:    isLangJp ? '135-0046' : '135-0046'
       , state:          isLangJp ? '東京都'
@@ -375,7 +373,7 @@ class AppBody extends React.Component {
       , recipient_name: isLangJp ? '...'
                                  : '...'
     };
-    newAddress['en-US'] = {
+    newAddress['en_US'] = {
       country_code:     [ 'MM' ]
       , postal_code:    '11181'
       , state:          'YANGON'
@@ -385,7 +383,7 @@ class AppBody extends React.Component {
       , phone:          '+95 94-5210-2233'
       , recipient_name: '...'
     };
-    return value === 'ja-JP' || value === 'en-US'
+    return value === 'ja_JP' || value === 'en_US'
       ? newAddress[value]
       : { country_code:   [ 'JP' ]
         , postal_code:    ''
@@ -447,10 +445,10 @@ class AppBody extends React.Component {
       payment_method: isLangJp ? 'クレジットカード' : 'Credit card'
     };
     newPayment['deposit'] = {
-      payment_method: isLangJp ? '銀行振込' : 'Bank transfer (prepayment)'
+      payment_method: isLangJp ? '銀行振込' : 'Bank Transfer'
     };
     newPayment['cash'] = {
-      payment_method: isLangJp ? '現金手渡し' : 'Cash payment'
+      payment_method: isLangJp ? '現金手渡し' : 'Cash'
     };
     return value === 'paypal' || value === 'deposit' || value === 'cash' 
       ? newPayment[value] : { payment_method: '' };
@@ -534,6 +532,7 @@ class AppBody extends React.Component {
     this.componentWillUnmount();
     this.componentDidMount();
     if(!this.isValid(this.state)) return;
+
     if(this.isPayPal(this.state)) {
       const newOptions = this.setOptions(this.state, this.price);
       AppAction.createExpress(newOptions);
@@ -620,15 +619,21 @@ class AppBody extends React.Component {
   }
 
   isCredit(state) {
-    return !this.isMail(state) && !this.isUSD(state)
-      && this.isQuantity(state)
-      && (this.price.payment.shipping !== 0 || this.isOffice(state));
+    return (
+         !this.isMail(state)
+      && !this.isUSD(state)
+      &&  this.isQuantity(state)
+      && (this.price.payment.shipping !== 0 || this.isOffice(state))
+    );
   }
 
   isPayPal(state) {
-    return !this.isMail(state) && this.isUSD(state)
-      && this.isQuantity(state)
-      && (this.price.payment.shipping !== 0 || this.isOffice(state));
+    return (
+         !this.isMail(state)
+      &&  this.isUSD(state)
+      &&  this.isQuantity(state)
+      && (this.price.payment.shipping !== 0 || this.isOffice(state))
+    );
   }
 
   isOffice(state) {
@@ -655,26 +660,26 @@ class AppBody extends React.Component {
 
   isValid(state) {
     return (
-      state.name
+         state.name
       && state.phone          && !this.isNotPhone(state.phone)
       && state.email          && !this.isNotEmail(state.email)
       && state.country_code   && (state.country_code.join() !== '')
-      //&& state.postal_code
-      //&& !this.isNotPostal(state.postal_code, state.country_code.join())
+    //&& state.postal_code
+    //&& !this.isNotPostal(state.postal_code, state.country_code.join())
       && state.address1
       && state.address2
       && state.address3
       && state.quantity       && (state.quantity.join() !== '')
       && state.currency
       && state.payment        && (state.payment.join() !== '')
-      //&& state.first_name
-      //&& state.last_name
-      //&& state.confirm_email  && (state.email === state.confirm_email)
-      //&& state.state
-      //&& state.city
-      //&& state.line1
-      //&& state.line2
-      //&& state.agreement
+    //&& state.first_name
+    //&& state.last_name
+    //&& state.confirm_email  && (state.email === state.confirm_email)
+    //&& state.state
+    //&& state.city
+    //&& state.line1
+    //&& state.line2
+    //&& state.agreement
     );
   }
   
@@ -886,12 +891,14 @@ class AppBody extends React.Component {
   }
 
   renderButton(state) {
-    if ( this.isMail(state) || this.isCredit(state)
+    if (  this.isMail(state)
+      ||  this.isCredit(state)
       || !this.isQuantity(state)
       || !this.isValid(state)
       || (this.price.payment.shipping === 0 && !this.isOffice(state))) {
-      return <input type="submit" value={ this.isLangJp()
-        ? "送信" : "SEND"} className="button-primary"/>
+      return <input type="submit"
+        value={ this.isLangJp() ? "送信" : "SEND" }
+        className="button-primary" />
     } else {
       return <div></div>;
     }
@@ -919,7 +926,7 @@ class AppBody extends React.Component {
   }
    
   render() {
-    //this.logTrace(this.state);
+    this.logTrace(this.state);
     //this.logTrace(this.price);
     const { shipping, language } = this.props;
     const isJP = this.isLangJp();
@@ -938,7 +945,7 @@ class AppBody extends React.Component {
     const name = isJP ? '名前' : 'Name';
     //const first_name = isJP ? '姓' : 'First';
     //const last_name = isJP ? '名' : 'Last';
-    const company = isJP ? '会社名' : 'Company';
+    const company = isJP ? '会社名' : 'Company Name';
     //const gender = isJP ? '性別' : 'Gender';
     //const birthday = isJP ? '誕生日' : 'Birthday';
     const phone = isJP ? '電話番号' : 'Phone';
@@ -950,24 +957,24 @@ class AppBody extends React.Component {
     const country_code = isJP ? 'お届け先' : 'Delivery address';
     const postal_code = isJP ? '郵便番号' : 'Zip Code';
     const address1 = isJP ? '住所' : 'Address';
-    const address2 = isJP ? '番地' : 'A lot number';
+    const address2 = isJP ? '番地' : 'Other Address';
     const address3 = isJP ? '住所（郵便番号）' : 'Address(Zip code)';
     //const state = isJP ? '都道府県' : 'State';
     //const city = isJP ? '市区町村' : 'City';
     //const line1 = isJP ? '地域' : 'Municipality';
     //const line2 = isJP ? '番地・部屋番号' : 'A lot / Room Number';
-    const recipient_name = isJP ? '受取人名' : 'Recipient Name';
-    const recipient_phone = isJP ? '受取人電話' : 'Recipient Phone';
+    const recipient_name = isJP ? '受取人名' : 'Recipient\'s  Name';
+    const recipient_phone = isJP ? '受取人電話' : 'Recipient\'s Phone';
     const quantity = isJP ? '注文数' : 'Quantity';
     const quantity_other = isJP ? 'その他' : 'Other';
     //const currency = isJP ? '通貨' : 'Currency';
     const currency = isJPY 
       ? isJP
         ? Number(this.state.jpy).toLocaleString('ja-JP') + ' 円'
-        : 'JP ' + Number(this.state.jpy).toLocaleString('ja-JP') + ' yen'
+        : 'JPY ' + Number(this.state.jpy).toLocaleString('ja-JP')
       : 'US ' + Number(this.state.usd).toLocaleString('en-US'
           , { style: 'currency', currency: 'USD' });
-    const payment = isJP ? '支払方法' : 'Payment';
+    const payment = isJP ? '支払方法' : 'Payment Method';
     const message = isJP ? 'ご連絡事項' : 'Message';
     //const agreement = ' Agree to our terms of us and privacy policy. ';
     //const gender_male = isJP ? '男性' : 'Male';
@@ -975,21 +982,23 @@ class AppBody extends React.Component {
     //const year = isJP ? '年' : 'Year';
     //const month = isJP ? '月' : 'Month';
     //const day = isJP ? '日' : 'Day';
-    const area_domestic = isJP ? '日本国内' : 'Domestic delivery';
+    const area_domestic = isJP ? '日本国内' : 'Japan Domestic';
     const area_oversea = isJP ? '国外' : 'Oversea delivery';
     const delivery_address = isJP ? '指定場所配達' : 'Delivery Address';
-    const delivery_japan = isJP ? '日本事務所来店' : 'Japan office';
+    const delivery_japan  = isJP
+      ? '日本事務所来店' : 'Visit Japan office';
     const delivery_myanmer = isJP
-      ? 'ミャンマー事務所来店' : 'Myanmar office';
-    const delivery_check = isJP ? '来店先を確認' : 'Check the address';
+      ? 'ミャンマー事務所来店' : 'Visit Myanmar office';
+    const delivery_check = isJP
+      ? '来店先を確認' : 'Check the ofiice address';
     const label_quantity = isJP ? '冊 x ' : 'book(s) x '
     const label_currency = isJP
-      ? '（送料別）': '(shipping fee is separately)';
+      ? '（送料別）': '(Delivery fee is separately)';
     const label_currency_usd = isJP ? 'US $' : 'US $';
     const label_currency_jpy = isJP ? '日本円' : 'JPY';
     const notes_delivery = isJP 
       ? 'ご来店いただく場合は送料はかかりません。'
-      : 'There is no shipping fee when visiting the shop.';
+      : 'There is no delivery fee if you visit our office.';
     //const notes_quantity = isJP
     //  ? isJPY 
     //    ? ''
@@ -1030,14 +1039,14 @@ class AppBody extends React.Component {
       ? isJP
         ? 'ミャンマー及び一部地域発行のクレジットカードは'
           + 'ご使用になれません。'
-        : 'We can not use credit card issued '
-          + 'by Myanmar and some regions.'
+        : 'Payments using credit cards issued in Myanmmar'
+          + ' and someregions are not available.'
       : '';
     const notes_payment2 = !isDomestic && isPayPal
       ? isJP
         ? '取扱以外のクレジットカードの場合は別途ご連絡致します。'
-        : 'In the case of credit cards other than handling,'
-          + 'we will contact you separately.'
+        : 'If you are using valid cregit card,'
+          + ' we will contact you seperately.'
       : '';
     const notes_notice = this.setNotice(this.state, isJP); 
     const notes_confirm = this.setConfirm(shipping, this.state, isJP);
@@ -1454,7 +1463,7 @@ class AppBody extends React.Component {
             value={this.state.postal_code}
             onChange={this.handleChangeText.bind(this, 'postal_code')}
             onFocus={this.handleFocusText.bind(this, 'postal_code')}
-            className="short-field required add-placeholder"
+            className="short-field add-placeholder"
             placeholder={postal_code} />
           </span>
           <span className="postal-field">
