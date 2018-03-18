@@ -997,7 +997,7 @@ class AppBody extends React.Component {
     const delivery_myanmer = isJP
       ? 'ミャンマー事務所来店' : 'Visit Myanmar office';
     const delivery_check = isJP
-      ? '来店先を確認' : 'Check the ofiice address';
+      ? '来店先を確認' : 'Check the office address';
     const label_quantity = isJP ? '冊 x ' : 'book(s) x '
     const label_currency = isJP
       ? '（送料別）': '(Delivery fee is separately)';
