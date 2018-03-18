@@ -8,8 +8,9 @@ const env = process.env.NODE_ENV || 'development';
 const host = process.env.TOP_URL || '';
 const notify_url = host + '/api/payment/notify';
 const redirect_url_jp = process.env.REDIRECT_URL_JP;
+const canceled_url_jp = process.env.CANCELED_URL_JP;
 const redirect_url_en = process.env.REDIRECT_URL_EN;
-const canceled_url = process.env.CANCELED_URL;
+const canceled_url_en = process.env.CANCELED_URL_EN;
 const paypal_sandbox = 'https://securepayments.sandbox.paypal.com/webapps/HostedSoleSolutionApp/webflow/sparta/hostedSoleSolutionProcess';
 const paypal_production = 'https://securepayments.paypal.com/webapps/HostedSoleSolutionApp/webflow/sparta/hostedSoleSolutionProcess';
 
@@ -304,7 +305,8 @@ class Credit extends React.Component {
       <input name='template' type='hidden' value='mobile-iframe'/>
       <input name='return' type='hidden' value={
         isLangJp ? redirect_url_jp : redirect_url_en}/>
-      <input name='cancel_return' type='hidden' value={canceled_url}/>
+      <input name='cancel_return' type='hidden' value={
+        isLangJp ? canceled_url_jp : canceled_url_en}/>
       <input name='notify_url' type='hidden' value={notify_url}/>
       <input name='lc' type='hidden' value={language}/>
       <input name='custom' type='hidden' value={custom}/>

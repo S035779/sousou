@@ -9,8 +9,9 @@ import std from '../../utils/stdutils';
 import { log } from '../../utils/webutils';
 
 const redirect_url_jp = process.env.REDIRECT_URL_JP;
+const canceled_url_jp = process.env.CANCELED_URL_JP;
 const redirect_url_en = process.env.REDIRECT_URL_EN;
-const canceled_url = process.env.CANCELED_URL;
+const canceled_url_en = process.env.CANCELED_URL_EN;
 
 const pspid = 'AppBodyView';
 
@@ -83,7 +84,8 @@ class AppBody extends React.Component {
     switch(name) {
       case 'close':
         this.setState({ showModalCredit: false });
-        parent.location.href = canceled_url;
+        parent.location.href
+          = this.isLangJp() ? canceled_url_jp : canceled_url_en;
         break;
       case 'credit':
         this.setState({ showModalCredit: false });
@@ -470,7 +472,8 @@ class AppBody extends React.Component {
         this.setState({
           results: nextProps.results
         , showModalResults: true
-        , redirect_url: canceled_url
+        , redirect_url:
+            this.isLangJp() ? canceled_url_jp : canceled_url_en
         });
       }
       window.location.href = '#';
