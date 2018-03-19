@@ -90,7 +90,7 @@ class AppBody extends React.Component {
       case 'credit':
         this.setState({ showModalCredit: false });
         parent.location.href
-          = this.isLangJp() ? redirect_url_jp : redirect_url_en;
+          = this.isLangJp() ? canceled_url_jp : canceled_url_en;
         break;
       case 'results':
         this.setState({ results: null, showModalResults: false });
@@ -933,7 +933,7 @@ class AppBody extends React.Component {
   }
    
   render() {
-    this.logTrace(this.state);
+    //this.logTrace(this.state);
     //this.logTrace(this.price);
     const { shipping, language } = this.props;
     const isJP = this.isLangJp();
