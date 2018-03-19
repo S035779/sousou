@@ -259,7 +259,7 @@ class AppBody extends React.Component {
 
   setNotice(state, isLangJp) {
     //this.logTrace(`${this.isCredit(state)} ${this.isPayPal(state)}`);
-    const value = this.isValid(state) ? this.state.payment.join() : '';
+    const value = this.isValid(state) ? state.payment.join() : '';
     let notice = '';
     switch(value) {
       //case 'paypal':
