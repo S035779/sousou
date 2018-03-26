@@ -208,10 +208,20 @@ export default {
   setManager(obj) {
     const message = obj.infomation.site === 'ja_JP'
       ? {
-        from: { name: obj.infomation.name, address: obj.infomation.email }
-      , to: sender
-      , subject: `(Yearbook) ${obj.infomation.company} : `
-        + `Yearbook Vol.1のご注文がありました`
+        to:       {
+          name: 'FWP Research'
+        , address: sender
+        }
+      , from:     {
+          name: obj.infomation.company
+        , address: 'contact@fwpreaearch.com'
+        }
+      , subject:  `(Yearbook) ${
+          obj.infomation.company } : Yearbook Vol.1のご注文がありました`
+      , replyTo:  {
+          name: obj.infomation.name
+        , address: obj.infomation.email
+        }
       , text: `FWP Researchの公式HPからYearbook vol.1の注文がありました。`
         + `\n\n`
         + `--------------------------------------------------------------`
@@ -226,43 +236,51 @@ export default {
           obj.item.quantity > 0 && obj.item.quantity < 11
             ? obj.item.quantity + '冊' : 'その他' }【${obj.currency}】\n`
         + `お支払い方法    : ${obj.infomation.payment_method}\n`
-        + `お引き渡し場所  : ${obj.infomation.postal_code}\n`
-        + `                  ${obj.infomation.address1}\n`
-        + `                  ${obj.infomation.address2}\n`
-        + `                  ${obj.infomation.country}\n\n`
+        + `お引き渡し場所  : ${obj.infomation.postal_code}`
+          + ` ${obj.infomation.address1} ${obj.infomation.address2}\n`
+          + ` ${obj.infomation.country}\n`
         + `お届け先人名    : ${obj.infomation.recipient_name}\n`
         + `お届け先電話番号: ${obj.infomation.recipient_phone}\n`
-        + `ご連絡事項      :\n${obj.infomation.message}\n\n`
+        + `ご連絡事項:\n`
+        + `${obj.infomation.message}\n`
         + `--------------------------------------------------------------`
         + `--------\n`
       } : {
-        from: {
-          name: obj.infomation.company
-        , address: 'contact@fwpresearch.com'
+        to:       {
+          name: 'FWP Research'
+        , address: sender
         }
-      , to: [
-          { name: 'FWP Research', address: sender }
-        , { name: '', address: obj.infomation.email }
-        ]
-      , subject: `(Yearbook) ${obj.infomation.company} : `
-          + `There was an order for Yearbook vol.1`
+      , from:     {
+          name: obj.infomation.company
+        , address: 'contact@fwpreaearch.com'
+        }
+      , subject:  `(Yearbook) ${
+          obj.infomation.company} : There was an order for Yearbook vol.1`
+      , replyTo:  {
+          name: obj.infomation.name
+        , address: obj.infomation.email
+        }
       , text: `We have the following order from FWP research official HP.`
         + `\n\n`
         + `--------------------------------------------------------------`
         + `--------\n\n`
         + `Application details\n\n`
-        + `Name                    : ${obj.infomation.name}\n`
-        + `Company Name            : ${obj.infomation.company}\n`
-        + `E-Mail Address          : ${obj.infomation.email}\n`
-        + `Phone number            : ${obj.infomation.phone}\n`
-        + `Order details           : US$600 x ${
+        + `Site             : ${obj.infomation.site}\n`
+        + `Name             : ${obj.infomation.name}\n`
+        + `Company Name     : ${obj.infomation.company}\n`
+        + `E-Mail Address   : ${obj.infomation.email}\n`
+        + `Phone number     : ${obj.infomation.phone}\n`
+        + `Order details    : US$600 x ${
           obj.item.quantity > 0 && obj.item.quantity < 11
             ? obj.item.quantity + 'books' : 'other' }\n`
-        + `Payment method          : ${obj.infomation.payment_method}\n`
-        + `Place of delivery       : ${obj.infomation.postal_code} `
+        + `Payment method   : ${obj.infomation.payment_method}\n`
+        + `Place of delivery: ${obj.infomation.postal_code} `
           + `${obj.infomation.address1} ${obj.infomation.address2} `
           + `${obj.infomation.country}\n`
-        + `Message:\n${obj.infomation.message}\n\n`
+        + `Recipient\'s name : ${obj.infomation.recipient_name}\n`
+        + `Recipient\'s phone: ${obj.infomation.recipient_phone}\n`
+        + `Message:\n`
+        + `${obj.infomation.message}\n\n`
         + `--------------------------------------------------------------`
         + `--------\n`
     };
@@ -271,18 +289,25 @@ export default {
   setCustomer(obj) {
     const message = obj.infomation.site === 'ja_JP'
       ? {
-        from: sender
-      , to: obj.infomation.email
+        to:       {
+          name: obj.infomation.name
+        , address: obj.infomation.email
+        }
+      , from:     {
+          name: 'FWP Research'
+        , address: sender
+        }
       , subject:
         `【FWP Research】ご注文内容の確認-ミャンマー企業年鑑 Vol.1`
       , text: `${obj.infomation.name} 様\n\n`
         + `この度は、ミャンマー企業年鑑 Vol.1をご注文いただきまして、`
-        + `誠にありがとうございます。\n\n`
+          + `誠にありがとう`
+        + `ございます。\n\n`
         + `このメールは、ご注文内容確認のため、`
           + `自動配信にてお知らせしています。\n`
-        + `只今ご注文の確認を行っています。\n`
-          + `確認が完了しましたら改めてご連絡致しますので`
-        + `しばらくお待ちください。\n\n`
+        + `後ほど、ご注文内容の確認を行い、送料を追加した合計金額を`
+          + `ご案内いたしますので、\n`
+        + `しばらくお待ちくださいませ。\n\n`
         + `--------------------------------------------------------------`
         + `--------\n\n`
         + `ご注文内容\n\n`
@@ -294,13 +319,18 @@ export default {
           obj.item.quantity > 0 && obj.item.quantity < 11
             ? obj.item.quantity + '冊' : 'その他' }【${obj.currency}】\n`
         + `お支払い方法    : ${obj.infomation.payment_method}\n`
-        + `お引き渡し場所  : ${obj.infomation.postal_code}\n`
-        + `                  ${obj.infomation.address1}\n`
-        + `                  ${obj.infomation.address2}\n`
-        + `                  ${obj.infomation.country}\n\n`
+        + `お引き渡し場所  : ${obj.infomation.postal_code}`
+          + ` ${obj.infomation.address1} ${obj.infomation.address2}`
+          + ` ${obj.infomation.country}\n`
         + `お届け先人名    : ${obj.infomation.recipient_name}\n`
         + `お届け先電話番号: ${obj.infomation.recipient_phone}\n`
-        + `ご連絡事項      :\n${obj.infomation.message}\n\n`
+        + `ご連絡事項:\n`
+        + `${obj.infomation.message}\n\n`
+        + `* ご希望の通貨に関わらず、日本国内への発送は72,000円`
+          + `(税込み・送料別）\n`
+          + `海外への発送はUS$600(送料別)となります。\n\n`
+        + `* ミャンマー発行のクレジットカードは\n`
+          + `クレジットカード決済にご利用いただけません。\n`
         + `--------------------------------------------------------------`
         + `--------\n\n`
         + `==============================================================`
@@ -316,39 +346,47 @@ export default {
         + `==============================================================`
         + `========\n`
       } : {
-        from: `"FWP Research" <${sender}>`
-      , to: `obj.infomation.email, "FWP Research" <${sender}> `
+        to:       {
+          name: obj.infomation.name
+        , address: obj.infomation.email
+        }
+      , from:     {
+          name: 'FWP Research'
+        , address: sender
+        }
       , subject: `(FWP Research) Confirmation of your order `
           + `- Myanmar Companies Yearbook Vol.1`
       , text: `Dear ${obj.infomation.name}\n\n`
         + `Thank you very much for ordering`
           + ` Myanmar Companies Yearbook Vol.1\n`
-          + ` at this time.\n\n`
+        + `at this time.\n\n`
         + `This mail is informed by automatic delivery`
           + ` for your order details\n`
-          + ` confirmation.\n`
+        + `confirmation.\n`
         + `Because we will confirm your order details`
           + ` and inform you about the\n`
-          + ` total amount adding shipping charge later,`
+        + `total amount adding shipping charge later,`
           + ` so please wait a moment now.\n\n`
         + `--------------------------------------------------------------`
         + `--------\n\n`
         + `Order details\n\n`
-        + `Name                    : ${obj.infomation.name}\n`
-        + `Company Name            : ${obj.infomation.company}\n`
-        + `E-Mail address          : ${obj.infomation.email}\n`
-        + `Phone number            : ${obj.infomation.phone}\n`
-        + `Order details           : US$600 x ${
+        + `Name             : ${obj.infomation.name}\n`
+        + `Company Name     : ${obj.infomation.company}\n`
+        + `E-Mail address   : ${obj.infomation.email}\n`
+        + `Phone number     : ${obj.infomation.phone}\n`
+        + `Order details    : US$600 x ${
           obj.item.quantity > 0 && obj.item.quantity < 11
             ? obj.item.quantity + 'books' : 'other' }\n`
-        + `Payment method          : ${obj.infomation.payment_method}\n`
-        + `Place of delivery       : ${obj.infomation.postal_code} `
+        + `Payment method   : ${obj.infomation.payment_method}\n`
+        + `Place of delivery: ${obj.infomation.postal_code} `
         + `${obj.infomation.address1} ${obj.infomation.address2} `
-        + `${obj.infomation.country}\n\n`
+        + `${obj.infomation.country}\n`
+        + `Recipient\'s name : ${obj.infomation.recipient_name}\n`
+        + `Recipient\'s phone: ${obj.infomation.recipient_phone}\n`
         + `Message:\n${obj.infomation.message}\n\n`
         + `* Regardless of the currency of your choice,\n` 
-          + ` Overseas shipping is US$ 600 (extra shipping fee)\n`
-          + ` Japan domestic shipping is JPY 72,000`
+        + `Overseas shipping is US$ 600 (extra shipping fee)\n`
+        + `Japan domestic shipping is JPY 72,000`
           + ` (tax included,extra shipping fee).\n\n`
         + `* Credit cards issued in Myanmar cannot be used`
           + ` for payment settlement.\n`
