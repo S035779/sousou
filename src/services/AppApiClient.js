@@ -6,6 +6,7 @@ const env = process.env.NODE_ENV || 'development';
 const productions_access_key = process.env.PAYPAL_ACCESS_KEY;
 const development_access_key = process.env.PAYPAL_ACCESS_KEY;
 const sender = process.env.MMS_FROM;
+const dummy = process.env.MMS_FROM2;
 const host = process.env.TOP_URL;
 const api_path = process.env.API_PATH;
 const api = host + api_path;
@@ -214,7 +215,7 @@ export default {
         }
       , from:     {
           name: obj.infomation.company
-        , address: 'contact@fwpreaearch.com'
+        , address: dummy
         }
       , subject:  `(Yearbook) ${
           obj.infomation.company } : Yearbook Vol.1のご注文がありました`
@@ -252,7 +253,7 @@ export default {
         }
       , from:     {
           name: obj.infomation.company
-        , address: 'contact@fwpreaearch.com'
+        , address: dummy
         }
       , subject:  `(Yearbook) ${
           obj.infomation.company} : There was an order for Yearbook vol.1`
