@@ -1,5 +1,6 @@
 import React from 'react';
 import { log } from 'Utilities/webutils';
+import ini from 'Utilities/config';
 
 const pspid = 'NoticeView';
 
@@ -22,6 +23,10 @@ class Notice extends React.Component {
     log.error(`${pspid}>`, error.name, error.message);
   }
 
+  translate(label, isJP) {
+    return isJP ? ini.translate[label].ja : ini.translate[label].en;
+  }
+
   render() {
     const { head, body } = this.props.message;
     const isLangJp = this.props.language === 'jp';
@@ -32,7 +37,8 @@ class Notice extends React.Component {
       <p>{body}</p>
       </fieldset>
       <div id="signup-next">
-      <input type="submit" value={ isLangJp ? "閉じる" : "CLOSE" }
+      <input type="submit"
+        value={ this.translate('button_primary_close', isLangJp) }
         onClick={this.handleClickButton.bind(this)}
         className="button-primary"/>
       </div>

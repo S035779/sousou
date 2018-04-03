@@ -2,6 +2,7 @@ import React from 'react';
 import AppAction from '../../actions/AppAction'
 import std from '../../utils/stdutils';
 import { log } from '../../utils/webutils';
+import ini from '../../utils/config';
 
 const receiver_email = process.env.PAYPAL_ID;
 const env = process.env.NODE_ENV || 'development';
@@ -14,13 +15,19 @@ const canceled_url_en = process.env.CANCELED_URL_EN;
 const paypal_sandbox = 'https://securepayments.sandbox.paypal.com/webapps/HostedSoleSolutionApp/webflow/sparta/hostedSoleSolutionProcess';
 const paypal_production = 'https://securepayments.paypal.com/webapps/HostedSoleSolutionApp/webflow/sparta/hostedSoleSolutionProcess';
 
-let credit_url = '';
+let credit_url;
+let isDebug;
 if (env === 'development') {
   credit_url = paypal_sandbox;
-} else if (env === 'staging') {
+  isDebug = true;
+} else
+if (env === 'staging') {
   credit_url = paypal_sandbox;
-} else if (env === 'production') {
+  isDebug = true;
+} else
+if (env === 'production') {
   credit_url = paypal_production;
+  isDebug = false;
 }
 
 const pspid = 'CreditView';
@@ -43,12 +50,12 @@ class Credit extends React.Component {
   }
 
   handleClickClose(e) {
-    //this.logInfo('handleClickClose');
+    if(isDebug) this.logInfo('handleClickClose');
     if(this.isConfirm()) this.props.onClose();
   }
 
   handleClickButton(e) {
-    //this.logInfo('handleClickButton');
+    if(isDebug) this.logInfo('handleClickButton');
     if(this.isConfirm()) this.props.onCompleted();
   }
 
@@ -116,65 +123,58 @@ class Credit extends React.Component {
     const prices = this.setPrices(obj, isLangJp);
     return {
       item: {
-        key: isLangJp ? '商品名　： ' : 'Product : '
-        , value: obj.item.name
+        key: this.translate('credit_item', isLangJp)
+      , value: obj.item.name
       }
-      , name: {
-        key: isLangJp ? '名　前　： ' : 'Name : '
-        , value: obj.infomation.name
+    , name: {
+        key: this.translate('credit_name', isLangJp)
+      , value: obj.infomation.name
       }
-      , company: {
-        key: isLangJp ? '会　社　： ' : 'Company Name : '
-        , value: obj.infomation.company
+    , company: {
+        key: this.translate('credit_company', isLangJp)
+      , value: obj.infomation.company
       }
-      , subtotal: {
-        key: isLangJp ? '小　計　： ' : 'Subtotal : '
-        , value: prices.subtotal_price
+    , subtotal: {
+        key: this.translate('credit_subtotal', isLangJp)
+      , value: prices.subtotal_price
       }
-      , shipping: {
-        key: isLangJp ? '配送料　： ' : 'Delivery Fee : '
-        //, value: prices.shipping_price
-        , value: prices.total_shipping_price
+    , shipping: {
+        key: this.translate('credit_shipping', isLangJp)
+      , value: prices.total_shipping_price
       }
-      //, discount: {
-      //  key: isLangJp ? '値引き　： ' : 'Discount : '
-      //  , value: prices.discount_price
-      //}
-      , total: {
-        key: isLangJp ? '合　計　： ' : 'Grand Total : '
-        , value: prices.total_price
+    , total: {
+        key: this.translate('credit_total', isLangJp)
+      , value: prices.total_price
       }
-      , postal_code: {
-        key: isLangJp ? '郵便番号： ' : 'Zip : '
-        , value: obj.infomation.postal_code
-          ? obj.infomation.postal_code : ''
+    , postal_code: {
+        key: this.translate('credit_postal_code', isLangJp)
+      , value:
+          obj.infomation.postal_code ? obj.infomation.postal_code  : ''
       }
-      , country: {
-        key: isLangJp ? '国　名　： ' : 'Country : '
-        , value: obj.infomation.country
-          ? obj.infomation.country : ''
+    , country: {
+        key: this.translate('credit_country', isLangJp)
+      , value: obj.infomation.country ? obj.infomation.country : ''
       }
-      , address1: {
-        key: isLangJp ? '住　所　： ' : 'Delivery Address : '
-        , value: obj.infomation.address1
+    , address1: {
+        key: this.translate('credit_address1', isLangJp)
+      , value: obj.infomation.address1
       }
-      , address2: {
-        key: isLangJp ? '番　地　： ' : 'A lot number : '
-        , value: obj.infomation.address2
-          ? obj.infomation.address2 : ''
-      }
-      , recipient_name: {
-        key: isLangJp ? '受取人名： ' : 'Name : '
-        , value: obj.infomation.recipient_name 
+    , address2: {
+        key: this.translate('credit_address2', isLangJp)
+      , value: obj.infomation.address2 ? obj.infomation.address2 : ''
+    }
+    , recipient_name: {
+        key: this.translate('credit_recipient_name', isLangJp)
+      , value: obj.infomation.recipient_name
           ? obj.infomation.recipient_name : ''
       }
-      , recipient_phone: {
-        key: isLangJp ? '電話番号： ' : 'Phone : '
-        , value: obj.infomation.recipient_phone
+    , recipient_phone: {
+        key: this.translate('credit_recipient_phone', isLangJp)
+      , value: obj.infomation.recipient_phone
       }
-      , email: {
-        key: isLangJp ? 'メール　： ' : 'E-Mail : '
-        , value: obj.infomation.email
+    , email: {
+        key: this.translate('credit_email', isLangJp)
+      , value: obj.infomation.email
       }
     };
   }
@@ -191,25 +191,31 @@ class Credit extends React.Component {
     log.error(`${pspid}>`, error.name, error.message);
   }
 
+  translate(label, isJP) {
+    return isJP ? ini.translate[label].ja : ini.translate[label].en;
+  }
+
   render() {
+    if(isDebug) this.logInfo(this.props);
+    if(isDebug) this.logInfo(this.state);
     const form_styles = { display: 'none' };
-    const obj = this.props.options;
-    const isLangJp = this.isLangJp();
-    const contents = this.setContents(obj, isLangJp);
-    const Shipping = isLangJp ? '配送先　： ' : 'Delivery Address : ';
-    const Address  = (contents.postal_code.value !== ''
-        ? contents.postal_code.value + ' ': '')
-      + contents.country.value + ' '
-      + contents.address1.value + ' '
-      + (contents.address2.value !== ''
-        ? contents.address2.value + ' ' : '')
-      + contents.recipient_name.value;
-    const Confirm = isLangJp
-      ? 'ご注文内容の確認' : 'Purchase order confirmation';
-    const ConfirmOrder = isLangJp ? 'お支払' : 'Payment';
-    const language =  isLangJp ? 'JP' : 'US';
-    const custom = this.state.custom;
-    const receiver = this.state.receiver_email
+    const obj         = this.props.options;
+    const isLangJp    = this.isLangJp();
+    const contents    = this.setContents(obj, isLangJp);
+    const Shipping    = this.translate('credit_shipping', isLangJp);
+    const Address     =
+      (contents.postal_code.value !== '' ?
+        contents.postal_code.value + ' ': '')
+          + contents.country.value + ' '
+          + contents.address1.value + ' '
+          + (contents.address2.value !== '' ?
+            contents.address2.value + ' ' : '')
+          + contents.recipient_name.value;
+    const Confirm     = this.translate('Confirm', isLangJp);
+    const ConfirmOrder= this.translate('ConfirmOrder', isLangJp);
+    const language    =  isLangJp ? 'JP' : 'US';
+    const custom      = this.state.custom;
+    const receiver    = this.state.receiver_email
     return <div className="buynow_contactlast">
       <a href="#" className="close-thik"
         onClick={this.handleClickClose.bind(this)}></a>
@@ -227,25 +233,22 @@ class Credit extends React.Component {
         <td><span>{contents.item.value}</span></td>
       </tr>
       <tr>
-        <td className="item_name"><label>{contents.subtotal.key}</label></td>
+        <td className="item_name">
+          <label>{contents.subtotal.key}</label></td>
         <td><span>{contents.subtotal.value}</span></td>
       </tr>
       <tr>
-        <td className="item_name"><label>{contents.shipping.key}</label></td>
+        <td className="item_name">
+          <label>{contents.shipping.key}</label></td>
         <td><span>{contents.shipping.value}</span></td>
       </tr>
-      {/*
-      <tr>
-        <td className="item_name"><label>{contents.discount.key}</label></td>
-        <td><span>{contents.discount.value}</span></td>
-      </tr>
-      */}
       <tr>
         <td className="item_name"><label>{contents.total.key}</label></td>
         <td><span>{contents.total.value}</span></td>
       </tr>
       <tr>
-        <td className="item_name"><label>{contents.company.key}</label></td>
+        <td className="item_name">
+          <label>{contents.company.key}</label></td>
         <td><span>{contents.company.value}</span></td>
       </tr>
       <tr>
@@ -259,7 +262,8 @@ class Credit extends React.Component {
         </td>
       </tr>
       <tr>
-        <td className="item_name"><label>{contents.recipient_phone.key}</label></td>
+        <td className="item_name">
+          <label>{contents.recipient_phone.key}</label></td>
         <td><span>{contents.recipient_phone.value}</span></td>
       </tr>
       <tr>
@@ -313,7 +317,8 @@ class Credit extends React.Component {
       </form>
       </fieldset>
       <div id="signup-next">
-      <input type="submit" value={ isLangJp ? "閉じる" : "CLOSE"}
+      <input type="submit"
+        value={ this.translate('button_primary_close', isLangJp) }
         onClick={this.handleClickButton.bind(this)}
         className="button-primary"/>
       </div>
@@ -325,8 +330,6 @@ class Credit extends React.Component {
 const styles = {
   iframe: {
     width: '100%'
-    //, height: '565px'
-    //, margin: '0 0 0 10px'
     , height: '426px'
     , border: 'none'
     , overflow: 'auto'

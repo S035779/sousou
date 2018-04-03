@@ -1,15 +1,16 @@
-import std from '../utils/stdutils';
-import xhr from '../utils/xhrutils';
-import { log } from '../utils/webutils';
+import std      from 'Utilities/stdutils';
+import xhr      from 'Utilities/xhrutils';
+import { log }  from 'Utilities/webutils';
 
 const env = process.env.NODE_ENV || 'development';
-const productions_access_key = process.env.PAYPAL_ACCESS_KEY;
-const development_access_key = process.env.PAYPAL_ACCESS_KEY;
-const sender = process.env.MMS_FROM;
-const host = process.env.TOP_URL;
-const api_path = process.env.API_PATH;
-const api = host + api_path;
-const pspid = 'AppApiClient';
+const productions_access_key  = process.env.PAYPAL_ACCESS_KEY;
+const development_access_key  = process.env.PAYPAL_ACCESS_KEY;
+const sender                  = process.env.MMS_FROM;
+const host                    = process.env.TOP_URL;
+const api_path                = process.env.API_PATH;
+const api                     = host + api_path;
+
+const displayName = 'AppApiClient';
 
 let paypal_env = '';
 if (env === 'development') {
@@ -22,8 +23,8 @@ if (env === 'development') {
   paypal_env = 'production';
   log.config('console', 'json', 'webpay-renderer', 'INFO');
 }
-log.info(`${pspid}>`, 'Paypal Environment:', paypal_env);
-log.info(`${pspid}>`, 'PayPal Payment API URI:', api);
+log.info(`${displayName}>`, 'Paypal Environment:', paypal_env);
+log.info(`${displayName}>`, 'PayPal Payment API URI:', api);
 
 export default {
   request(operation, options) {
@@ -389,12 +390,12 @@ export default {
     return { message };
   },
   logInfo(name, message) {
-    log.info(`${pspid}>`, name, ':', message);
+    log.info(`${displayName}>`, name, ':', message);
   },
   logTrace(name, message) {
-    log.trace(`${pspid}>`, name, ':', message);
+    log.trace(`${displayName}>`, name, ':', message);
   },
   logError(error) {
-    log.error(`${pspid}>`, error.name, ':', error.message);
+    log.error(`${displayName}>`, error.name, ':', error.message);
   },
 }

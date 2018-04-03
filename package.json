@@ -3,14 +3,22 @@
   "version": "1.0.0",
   "description": "PayPal Payment Form",
   "scripts": {
-    "release": "wordpress/install.sh",
-    "watch": "wabpack --progress --watch",
-    "build": "webpack --config webpack.production.js",
-    "all": "npm-run-all --parallel dev api mms",
-    "dev": "node --require ./src/hook/babel-register.js src/dev-server.js",
-    "api": "node --require ./src/hook/babel-register.js src/ssr-server.js",
-    "mms": "node --require ./src/hook/babel-register.js src/mms-server.js",
-    "start": "webpack-dev-server --config webpack.development.js"
+    "release":
+      "wordpress/install.sh",
+    "watch": 
+      "wabpack --progress --watch",
+    "build": 
+      "NODE_ENV=production webpack --config webpack.production.js",
+    "all": 
+      "npm-run-all --parallel dev api mms",
+    "dev": 
+      "node --require ./src/hook/babel-register.js src/dev-server.js",
+    "api": 
+      "node --require ./src/hook/babel-register.js src/ssr-server.js",
+    "mms": 
+      "node --require ./src/hook/babel-register.js src/mms-server.js",
+    "start": 
+      "webpack-dev-server --config webpack.development.js"
   },
   "license": "ISC",
   "devDependencies": {

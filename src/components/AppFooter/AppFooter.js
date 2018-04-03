@@ -1,5 +1,6 @@
 import React from 'react';
-import Photo from '../../assets/image/myanmaphoto.png';
+import Photo from 'Assets/image/myanmaphoto.png';
+import ini   from 'Utilities/config';
 
 const env = process.env.NODE_ENV || 'development';
 const host = process.env.TOP_URL;
@@ -12,22 +13,20 @@ if (env === 'development') {
 }
 
 class AppFooter extends React.Component {
+  translate(label, isJP) {
+    return isJP ? ini.translate[label].ja : ini.translate[label].en;
+  }
   render() {
     const isJP = this.props.language === 'jp' ? true : false;
-    const japan_name_en = isJP ? 'TOKYO OFFICE' : 'TOKYO OFFICE';
-    const japan_name_jp = isJP ? '東京オフィス' : '';
-    const japan_address = isJP
-      ? '所在地　〒135-0046　東京都江東区牡丹1-2-2'
-      : 'Address　1-2-2 Botan, Koto-ku, TOKYO';
-    const japan_phone = isJP
-      ? '電話　03(3641)8998' : 'Tel　03(3641)8998';
-    const myanmer_name_en = isJP ? 'MYANMER OFFICE' : 'MYANMER OFFICE';
-    const myanmer_name_jp = isJP ? 'ミャンマーオフィス' : '';
-    const myanmer_address = isJP
-      ? 'Address　#307, 3rd Floor, Hledan Center, Kamayut Tsp, YANGON'
-      : 'Address　#307, 3rd Floor, Hledan Center, Kamayut Tsp, YANGON';
-    const myanmer_phone = isJP
-      ? 'Tel　+95(94)52102233' : 'Tel　+95(94)52102233';
+    const japan_name_en   = this.translate('office_japan_name_en', isJP);
+    const japan_name_jp   = this.translate('office_japan_name_jp', isJP);
+    const japan_address   = this.translate('office_japan_address', isJP);
+    const japan_phone     = this.translate('office_japan_phone', isJP);
+    const myanmar_name_en = this.translate('office_myanmar_name_en',isJP);
+    const myanmar_name_jp = this.translate('office_myanmar_name_jp',isJP);
+    const myanmar_address = this.translate('office_myanmar_address',isJP);
+    const myanmar_phone   = this.translate('office_myanmar_phone', isJP);
+
     return <footer>
       <div className="lightbox" id="fl1">
       <div id="tokyo-office">
@@ -51,8 +50,8 @@ class AppFooter extends React.Component {
       <div className="office-right">
         <div className="office-p-wrap">
           <p className="office-name">
-            {myanmer_name_en}<br />{myanmer_name_jp}</p>
-          <p>{myanmer_address}<br />{myanmer_phone}</p>
+            {myanmar_name_en}<br />{myanmar_name_jp}</p>
+          <p>{myanmar_address}<br />{myanmar_phone}</p>
           <img src={assets + Photo}/>
         </div>
       </div>

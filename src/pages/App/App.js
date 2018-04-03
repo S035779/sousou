@@ -1,12 +1,13 @@
-import querystring from 'querystring';
-import React from 'react';
-import { Container } from 'flux/utils';
-import AppAction from '../../actions/AppAction';
-import { getStores, getState } from '../../stores';
-import AppHeader from '../../components/AppHeader/AppHeader';
-import AppFooter from '../../components/AppFooter/AppFooter';
-import AppBody from '../../components/AppBody/AppBody';
-import { log } from '../../utils/webutils';
+import querystring    from 'querystring';
+import React          from 'react';
+import { Container }  from 'flux/utils';
+import AppAction      from 'Actions/AppAction';
+import { getStores, getState }
+                      from 'Stores';
+import AppHeader      from 'Components/AppHeader/AppHeader';
+import AppFooter      from 'Components/AppFooter/AppFooter';
+import AppBody        from 'Components/AppBody/AppBody';
+import { log }        from 'Utilities/webutils';
 
 const pspid = 'App';
 

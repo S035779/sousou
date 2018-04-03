@@ -30,7 +30,7 @@ module.exports = {
     new ManifestPlugin(),
     new ExtractTextPlugin({ filename: 'style.css' }),
     new webpack.NamedModulesPlugin(),
-    new webpack.HotModuleReplacementPlugin()
+    new webpack.HotModuleReplacementPlugin(),
   ],
   output: {
     filename: '[name].bundle.js',
