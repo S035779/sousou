@@ -7,7 +7,8 @@ const host = process.env.TOP_URL || '';
 const assets = process.env.ASSET_PATH || '';
 const paypal_path = 'https://www.paypalobjects.com/api/checkout.js';
 const jquery_path
-  = 'https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js';
+  //= 'https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js';
+  = 'https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js';
 
 let react_path = '';
 let react_dom_path = '';
