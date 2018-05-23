@@ -3,36 +3,30 @@
   "version": "1.0.0",
   "description": "PayPal Payment Form",
   "scripts": {
-    "release":
-      "wordpress/install.sh",
-    "watch": 
-      "wabpack --progress --watch",
-    "build": 
-      "NODE_ENV=production webpack --config webpack.production.js",
-    "all": 
-      "npm-run-all --parallel dev api mms",
-    "dev": 
-      "node --require ./src/hook/babel-register.js src/dev-server.js",
-    "api": 
-      "node --require ./src/hook/babel-register.js src/ssr-server.js",
-    "mms": 
-      "node --require ./src/hook/babel-register.js src/mms-server.js",
-    "start": 
-      "webpack-dev-server --config webpack.development.js"
+    "release": "wordpress/install.sh",
+    "watch": "wabpack --progress --watch",
+    "build": "cross-env NODE_ENV=production webpack --config webpack.production.js",
+    "all": "npm-run-all --parallel dev api mms",
+    "dev": "node --require ./src/hook/babel-register.js src/dev-server.js",
+    "api": "node --require ./src/hook/babel-register.js src/ssr-server.js",
+    "mms": "node --require ./src/hook/babel-register.js src/mms-server.js",
+    "start": "webpack-dev-server --config webpack.development.js"
   },
   "license": "ISC",
   "devDependencies": {
     "babel-core": "6.26.0",
     "babel-loader": "7.1.2",
-    "babel-preset-env": "1.6.1",
+    "babel-preset-env": "1.7.0",
     "babel-preset-es2015": "6.24.1",
     "babel-preset-react": "6.24.1",
     "babel-register": "6.26.0",
     "clean-webpack-plugin": "0.1.17",
+    "cross-env": "5.1.6",
     "css-loader": "0.28.7",
     "exports-loader": "0.6.4",
     "extract-text-webpack-plugin": "3.0.2",
     "file-loader": "1.1.5",
+    "http-proxy-middleware": "0.18.0",
     "npm-run-all": "4.1.2",
     "postcss-easy-import": "3.0.0",
     "postcss-loader": "2.0.9",
@@ -45,6 +39,7 @@
     "webpack-merge": "4.1.1"
   },
   "dependencies": {
+    "babel-polyfill": "6.26.0",
     "body-parser": "1.18.2",
     "dotenv-webpack": "1.5.4",
     "express": "4.16.2",
@@ -53,7 +48,6 @@
     "jquery-jpostal-ja": "2.11.5",
     "log4js": "2.3.12",
     "nodemailer": "4.4.1",
-    "proxy-middleware": "0.15.0",
     "ramda": "0.25.0",
     "react": "16.2.0",
     "react-dom": "16.2.0",

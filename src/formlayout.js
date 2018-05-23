@@ -71,6 +71,7 @@ jQuery(function($) {
       }
     }
   });
+
   $.extend($.validator.messages, {
     required:     isLangJp
       ? "必須項目です" : 'This field is required.',
@@ -93,5 +94,62 @@ jQuery(function($) {
       parent.postMessage({ app }, host);
     }
   });
+
 });
 
+// browser name
+$.extend({
+  browser_group: (function(){
+    var appName = window.navigator.appName.toLowerCase();
+    var browser_string = "unknown"
+
+    if (appName.indexOf("microsoft") > -1) {
+      browser_string = "MS";
+    } else {
+      browser_string = "Others";
+    }
+    return browser_string;
+  })(),
+  browser_name: (function(){
+    var userAgent = window.navigator.userAgent.toLowerCase();
+    var appVersion = window.navigator.appVersion.toLowerCase();
+    var browser_string = "unknown"
+
+    if (userAgent.indexOf("msie") > -1) {
+      if (appVersion.indexOf("msie 6.0") > -1) {
+        browser_string = "IE6";
+      }
+      else if (appVersion.indexOf("msie 7.0") > -1) {
+        browser_string = "IE7";
+      }
+      else if (appVersion.indexOf("msie 8.0") > -1) {
+        browser_string = "IE8";
+      }
+      else if (appVersion.indexOf("msie 9.0") > -1) {
+        browser_string = "IE9";
+      }
+      else if (appVersion.indexOf("msie 10.0") > -1) {
+        browser_string = "IE10";
+      }
+    }
+    else if (appVersion.indexOf("trident/7.0") > -1) {
+      browser_string = "IE11";
+    }
+    else if (userAgent.indexOf("edge") > -1) {
+      browser_string = "Edge";
+    }
+    else if (userAgent.indexOf("firefox") > -1) {
+      browser_string = "Firefox";
+    }
+    else if (userAgent.indexOf("opera") > -1) {
+      browser_string = "Opera";
+    }
+    else if (userAgent.indexOf("chrome") > -1) {
+      browser_string = "Chrome";
+    }
+    else if (userAgent.indexOf("safari") > -1) {
+      browser_string = "Safari";
+    }
+    return browser_string;
+  })()
+});

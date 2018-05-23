@@ -25,6 +25,8 @@ if (env === 'development') {
 }
 log.info(`${displayName}>`, 'Paypal Environment:', paypal_env);
 log.info(`${displayName}>`, 'PayPal Payment API URI:', api);
+log.info(`${displayName}>`, 'Browser Group/Name:'
+  , $.browser_group + '/' + $.browser_name);
 
 export default {
   request(operation, options) {

@@ -10,6 +10,7 @@ import { log }    from 'Utilities/webutils';
 import ini        from 'Utilities/config';
 
 const env = process.env.NODE_ENV || 'development';
+const isPatch = process.env.IE_PATCH || 'disable';
 const redirect_url_jp = process.env.REDIRECT_URL_JP;
 const canceled_url_jp = process.env.CANCELED_URL_JP;
 const redirect_url_en = process.env.REDIRECT_URL_EN;
@@ -583,7 +584,7 @@ class AppBody extends React.Component {
 
   isCredit(state) {
     return (
-         !this.isMail(state)
+         !this.isMail(state) && !this.isPatch()
       && !this.isUSD(state)
       &&  this.isQuantity(state)
       && (this.price.payment.shipping !== 0 || this.isOffice(state))
@@ -592,11 +593,15 @@ class AppBody extends React.Component {
 
   isPayPal(state) {
     return (
-         !this.isMail(state)
+         !this.isMail(state) && !this.isPatch()
       &&  this.isUSD(state)
       &&  this.isQuantity(state)
       && (this.price.payment.shipping !== 0 || this.isOffice(state))
     );
+  }
+
+  isPatch() {
+    return $.browser_group === 'MS' && isPatch === 'enable';
   }
 
   isOffice(state) {
@@ -737,7 +742,7 @@ class AppBody extends React.Component {
   }
 
   renderButton(state) {
-    if (  this.isMail(state)
+    if (  this.isMail(state) || this.isPatch()
       ||  this.isCredit(state)
       || !this.isQuantity(state)
       || !this.isValid(state)

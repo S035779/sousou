@@ -2,7 +2,7 @@
 
 /*style*/
 html{
-  font-size: 100%;
+  font-size: 1rem
 }
 
 @media screen and (max-width: 600px) {
@@ -14,17 +14,17 @@ html{
 }
 @media screen and (min-width: 600px) {
   html{
-    font-size: calc((12/16*100%) + (14 - 12) * (100vw - 600px) / 360);
+    font-size: calc(0.75rem + (14 - 12) * (100vw - 600px) / 360);
   }
 }
 @media screen and (min-width: 960px) {
   html{
-    font-size: calc((14/16*100%) + (16 - 14) * (100vw - 960px) / 320);
+    font-size: calc(0.875rem + (16 - 14) * (100vw - 960px) / 320);
   }
 }
 @media screen and (min-width: 1280px) {
   html{
-    font-size: calc(16/16*100%);
+    font-size: 1rem;
   }
 }
 body{

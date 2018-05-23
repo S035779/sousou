@@ -15,6 +15,7 @@ module.exports = {
       './assets/js/jquery.exresize-latest.js',
       './assets/js/featherlight.min.js',
       './formlayout.js',
+      'babel-polyfill',
       'react-hot-loader/patch',
       './main.js',
     ],
