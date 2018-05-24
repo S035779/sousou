@@ -25,12 +25,14 @@
 }
 
 .category-group legend {
-	margin: 7px 0 2px 0;
+	margin: 7px 0 7px 0;
 	padding-left: 14px;
 	font-weight: bold;
   color: #929292;
   border-left: solid 1px #cccccc;
 	font-size: 1.0rem;
+  width: 100%;
+  word-wrap: break-word;
 }
 
 /* table layout */
