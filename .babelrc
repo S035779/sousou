@@ -3,8 +3,7 @@
 , "presets": [
     ["env", {
       "targets": {
-        "ie": 10
-      , "safari": 10
+        "ie": 11
       , "browsers": ["last 2 versions"]
       }
     , "debug": true
