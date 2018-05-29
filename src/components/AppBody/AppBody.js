@@ -281,7 +281,8 @@ class AppBody extends React.Component {
   setOptions(state, { payment, display }) {
     const isLangJp = this.isLangJp();
     const isSite = isLangJp ? 'ja_JP' : 'en_US';
-    const shipping_address = this.setShippingAddress('ja_JP', isLangJp);
+    const shipping_address =
+      this.setShippingAddress(state, 'ja_JP', isLangJp);
     return Object.assign({}, this.props.options, {
       total:      payment.total
       , currency: payment.total_currency
@@ -321,36 +322,30 @@ class AppBody extends React.Component {
     });
   }
 
-  setShippingAddress(value, isLangJp) {
+  setShippingAddress(state, office, isLangJp) {
     let newAddress = {};
     newAddress['ja_JP'] = {
       country_code:     [ 'JP' ]
-      , postal_code:    isLangJp ? '135-0046' : '135-0046'
-      , state:          isLangJp ? '東京都'
-                                 : 'TOKYO'
-      , city:           isLangJp ? '江東区 牡丹'
-                                 : 'Koto-ku, Botan'
-      , line1:          isLangJp ? '1-2-2'
-                                 : 'Address 1-2-2'
-      , line2:          isLangJp ? '東京オフィス'
-                                 : 'TOKYO OFFICE'
-      , phone:          isLangJp ? '03-5875-8402'
-                                 : '03-5875-8402'
-      , recipient_name: isLangJp ? '...'
-                                 : '...'
+      , state:          isLangJp ? '東京都' : 'TOKYO-TO'
+      , postal_code:    '134-0046'
+      , city:           isLangJp ? '江東区' : 'Koto-ku'
+      , line1:          isLangJp ? '牡丹' : 'Botan'
+      , line2:          isLangJp ? '1-2-2' : 'Address 1-2-2'
+      , phone:          state.recipient_phone
+      , recipient_name: state.recipient_name
     };
     newAddress['en_US'] = {
       country_code:     [ 'MM' ]
       , postal_code:    '11181'
-      , state:          'YANGON'
-      , city:           'Kamayut Tsp'
-      , line1:          'Hledan Center, #307, 3rd Floor'
-      , line2:          'MYANMER OFFICE'
-      , phone:          '+95 94-5210-2233'
-      , recipient_name: '...'
+      , state:          'Myanmar'
+      , city:           'YANGON'
+      , line1:          'Kamayut Tsp'
+      , line2:          'Hledan Center, #307, 3rd Floor'
+      , phone:          state.recipient_phone
+      , recipient_name: state.recipient_name 
     };
-    return value === 'ja_JP' || value === 'en_US'
-      ? newAddress[value]
+    return office === 'ja_JP' || office === 'en_US'
+      ? newAddress[office]
       : { country_code:   [ 'JP' ]
         , postal_code:    ''
         , state:          ''

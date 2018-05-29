@@ -90,18 +90,18 @@ export default {
         dispatch({ type: 'config/fetch/currency', results });
       });
   },
-  logInfo(request) {
-    log.info(`${pspid}>`, 'Request:', request);
+  logInfo(message) {
+    log.info(`${pspid}>`, 'Request:', message);
   },
-  logTrace(response) {
-    log.trace(`${pspid}>`, 'Response:', response);
+  logTrace(message) {
+    log.trace(`${pspid}>`, 'Response:', message);
   },
-  logError({ error }) {
-    log.error(`${pspid}>`
-      , error.name    ? error.name    : ''
-      , ':'
-      , error.message ? error.message : ''
-      , error.stack   ? error.stack   : ''
-    );
+  logError(message) {
+    if (message.error) {
+      const error = message.error;
+      log.error(`${pspid}>`, error.name, ':', error.message, error.stack);
+    } else {
+      log.error(`${pspid}>`, 'Error:', message);
+    }
   }
 };
