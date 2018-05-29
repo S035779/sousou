@@ -100,10 +100,14 @@ jQuery(function($) {
 // browser name
 $.extend({
   browser_group: (function(){
+    var userAgent = window.navigator.userAgent.toLowerCase();
     var appName = window.navigator.appName.toLowerCase();
     var browser_string = "unknown"
 
-    if (appName.indexOf("microsoft") > -1) {
+    if (appName.indexOf("microsoft") > -1
+      || userAgent.indexOf("trident/7.0") > -1
+      || userAgent.indexOf("edge") > -1
+    ) {
       browser_string = "MS";
     } else {
       browser_string = "Others";

@@ -4,7 +4,6 @@
     ["env", {
       "targets": {
         "ie": 11
-      , "safari": 10
       , "browsers": ["last 2 versions"]
       }
     , "debug": true
