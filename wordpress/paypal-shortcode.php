@@ -16,7 +16,7 @@ function display_paypal_payment($arr, $content="") {
     'length' => 1,
     'weight' => 1,
     'from' => '東京都',
-    'anouncement' => '',
+    'announcement' => '',
   );
   
   $opt = shortcode_atts($def, $arr);
@@ -34,7 +34,7 @@ function display_paypal_payment($arr, $content="") {
     data-length="<?php echo $opt['length']; ?>"
     data-weight="<?php echo $opt['weight']; ?>"
     data-from="<?php echo $opt['from']; ?>"
-    data-anouncement="<?php echo $opt['anouncement']; ?>"
+    data-announcement="<?php echo $opt['announcement']; ?>"
   >This site is here!</a>
   <script src="/assets/js/widget.bundle.js"></script>
 </div>
