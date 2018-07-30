@@ -29,6 +29,7 @@ window.addEventListener('message', event => {
   option['length']  = atag[0].dataset.length;
   option['weight']  = atag[0].dataset.weight;
   option['from']  = atag[0].dataset.from;
+  option['announcement'] = atag[0].dataset.announcement;
   atag[0].style.display = 'none';
 
   const iframe = document.createElement('iframe');

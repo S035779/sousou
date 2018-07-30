@@ -6,7 +6,7 @@
         "ie": 11
       , "browsers": ["last 2 versions"]
       }
-    , "debug": true
+    , "debug": false
     }]
   , "react"
   , ["es2015", { "modules": false }]

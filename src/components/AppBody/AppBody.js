@@ -42,33 +42,33 @@ class AppBody extends React.Component {
     };
     this.state = {
       currency:           item.currency
-      , quantity:         item.quantity
-      , name:             infomation.name
-      , phone:            infomation.phone
-      , company:          infomation.company
-      , email:            infomation.email
-      , area:             infomation.area
-      , delivery:         infomation.delivery
-      , payment:          infomation.payment
-      , payment_method:   infomation.payment_method
-      , message:          infomation.message
-      , country_code:     infomation.country_code
-      , postal_code:      infomation.postal_code
-      , country:          infomation.country !== ""
-        ? infomation.country
-        : props.language === 'jp' ? '日本' : 'Japan'
-      , address1:         infomation.address1
-      , address2:         infomation.address2
-      , address3:         ''
-      , recipient_name:   infomation.recipient_name
-      , recipient_phone:  infomation.recipient_phone
-      , usd:              usd
-      , jpy:              jpy
-      , results:          results
-      , showModalCredit:  false
-      , showModalResults: false
-      , notice:           ''
-      , redirect_url:     ''
+    , quantity:         item.quantity
+    , name:             infomation.name
+    , phone:            infomation.phone
+    , company:          infomation.company
+    , email:            infomation.email
+    , area:             infomation.area
+    , delivery:         infomation.delivery
+    , payment:          infomation.payment
+    , payment_method:   infomation.payment_method
+    , message:          infomation.message
+    , country_code:     infomation.country_code
+    , postal_code:      infomation.postal_code
+    , country:          infomation.country !== ""
+      ? infomation.country
+      : props.language === 'jp' ? '日本' : 'Japan'
+    , address1:         infomation.address1
+    , address2:         infomation.address2
+    , address3:         ''
+    , recipient_name:   infomation.recipient_name
+    , recipient_phone:  infomation.recipient_phone
+    , usd:              usd
+    , jpy:              jpy
+    , results:          results
+    , showModalCredit:  false
+    , showModalResults: false
+    , notice:           ''
+    , redirect_url:     ''
     };
   }
 
@@ -769,7 +769,7 @@ class AppBody extends React.Component {
   render() {
     if(isDebug) this.logTrace(this.state);
     if(isDebug) this.logTrace(this.price);
-    const { shipping, language } = this.props;
+    const { shipping, language, announcement } = this.props;
     const isJP              =this.isLangJp();
     const isJPY             =this.state.currency === 'JPY';
     const isDomestic        =this.state.area === 'domestic';
@@ -928,7 +928,7 @@ class AppBody extends React.Component {
         </tr>
         </tbody></table>
       </fieldset>
-      {/* How to buy */}
+      {/* Payment */}
 
       {/* Quantity */}
       <fieldset className="category-group">
@@ -963,6 +963,8 @@ class AppBody extends React.Component {
           <label>{label_currency}</label>
           </span>
           </div>
+          <span className="notes" style={{ color: 'red' }}>
+            {announcement}</span>
           </td>
         </tr>
         </tbody></table>
