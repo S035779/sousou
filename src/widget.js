@@ -33,7 +33,7 @@ window.addEventListener('message', event => {
   atag[0].style.display = 'none';
 
   const iframe = document.createElement('iframe');
-  iframe.src = '/api/' + '?' + std.encodeFormData(option);
+  iframe.src = '/api/' + '?' + std.urlencode(option);
   iframe.frameBorder = 0;
   iframe.width = '100%';
   iframe.height = '100%';

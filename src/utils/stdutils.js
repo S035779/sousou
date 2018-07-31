@@ -519,7 +519,28 @@ export default {
    * @param {objct} obj - query parameter object.
    * @return {string}
    */
-  urlencode(obj) {
+  urlencode(data) {
+    if (!data) return "";
+    let pairs = [];
+    for(let name in data) {
+      if (!data.hasOwnProperty(name)) continue;
+      if (typeof data[name] === "function") continue;
+      let value = data[name].toString();
+      name = encodeURIComponent(name);
+      value = encodeURIComponent(value);
+      pairs.push(name + "=" + value);
+    }
+    return pairs.join('&');
+  },
+
+  /**
+   * Function that return a character string encode 
+   * from Associative array object.
+   * 
+   * @param {objct} obj - query parameter object.
+   * @return {string}
+   */
+  urlencode_fake(obj) {
     const keys = [];
     for(let key in obj) {
       if(obj.hasOwnProperty(key)) keys.push(key);
